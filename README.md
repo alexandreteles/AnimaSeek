@@ -42,4 +42,4 @@ so I try to make my use of it as ethical as possible, if such an ethical use of 
 
 ## License
 
-AnimaSeek and the inherited Seeker code are distributed under the [GNU General Public License, version 3](LICENSE). Vendored dependencies retain their own license files and upstream notices.
+AnimaSeek and the inherited Seeker code are distributed under the [GNU General Public License, version 3](LICENSE).
