@@ -2,28 +2,11 @@ name: iOS
 
 on:
   pull_request:
-    branches: [ios, master]
-    paths:
-      - "Common/**"
-      - "UnitTestCommon/**"
-      - "Seeker.iOS/**"
-      - "Seeker/Soulseek.NET-master/src/**"
-      - "Seeker/Soulseek.NET-master/tests/Soulseek.Tests.Aot/**"
-      - "Seeker/Mono.Nat-master/Mono.Nat/**"
-      - "Directory.Packages.props"
-      - "global.json"
-      - ".github/workflows/ios.yml"
-      - ".releaserc.json"
+    branches: [master]
   push:
-    # Deliberately unfiltered: every push to these branches runs the pipeline,
-    # and semantic-release alone decides from the commit types whether a
-    # master push publishes a release.
-    branches: [ios, master]
+    branches: [master]
   workflow_dispatch:
 
-# Cancel superseded in-flight runs for PRs and ios-branch pushes; master runs
-# are never cancelled so a release always completes, and the shared group
-# serializes master pushes so concurrent releases cannot race on tags.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
@@ -70,6 +53,10 @@ jobs:
 
   build:
     name: Build Debug Mock
+    # PR (and manual-dispatch) validation gate only. Master pushes skip it:
+    # the release job's non-mock Release publish is the compile that matters
+    # there, and running both would spend a second macOS runner per push.
+    if: github.event_name != 'push'
     needs: test
     runs-on: macos-26
     timeout-minutes: 30
@@ -137,7 +124,7 @@ jobs:
   release:
     name: Release
     if: needs.version.outputs.published == 'true'
-    needs: [build, version]
+    needs: [test, version]
     runs-on: macos-26
     timeout-minutes: 60
     permissions:
@@ -180,9 +167,11 @@ jobs:
 
       # Until a paid Apple developer account exists every release ships an
       # unsigned IPA; sideloading tools such as AltStore re-sign it on install.
-      - name: Publish unsigned IPA
+      # The Xcode-archive path (ArchiveOnBuild) refuses to run without code
+      # signing, so the unsigned artifact is the bare .app zipped into an IPA.
+      - name: Build unsigned app bundle
         run: >-
-          dotnet publish Seeker.iOS/Seeker.iOS.csproj
+          dotnet build Seeker.iOS/Seeker.iOS.csproj
           --configuration Release
           --framework net10.0-ios
           --runtime ios-arm64
@@ -191,22 +180,22 @@ jobs:
           -p:MtouchLink=Full
           -p:TrimmerSingleWarn=false
           -p:ILLinkTreatWarningsAsErrors=true
-          -p:ArchiveOnBuild=true
-          -p:BuildIpa=true
           -p:EnableCodeSigning=false
           -p:ApplicationDisplayVersion="${{ env.RELEASE_VERSION }}"
           -p:ApplicationVersion="${{ steps.stamp.outputs.build }}"
 
-      - name: Collect unsigned IPA
+      - name: Package unsigned IPA
         shell: bash
         run: |
-          ipa_source="$(find Seeker.iOS/bin/Release/net10.0-ios/ios-arm64 -type f -name '*.ipa' -print -quit)"
-          if [[ -z "${ipa_source}" ]]; then
-            echo "The unsigned publish did not produce an IPA." >&2
+          app_bundle="$(find Seeker.iOS/bin/Release/net10.0-ios/ios-arm64 -maxdepth 1 -type d -name '*.app' -print -quit)"
+          if [[ -z "${app_bundle}" ]]; then
+            echo "The unsigned build did not produce an app bundle." >&2
             exit 1
           fi
-          mkdir -p dist
-          mv "${ipa_source}" "dist/animaseek_v${RELEASE_VERSION}_unsigned.ipa"
+          staging="${RUNNER_TEMP}/unsigned-ipa"
+          mkdir -p "${staging}/Payload" dist
+          cp -R "${app_bundle}" "${staging}/Payload/"
+          (cd "${staging}" && zip -qry "${GITHUB_WORKSPACE}/dist/animaseek_v${RELEASE_VERSION}_unsigned.ipa" Payload)
 
       # The signed IPA is additive: when any signing secret is absent the
       # release still ships, carrying only the unsigned IPA.
