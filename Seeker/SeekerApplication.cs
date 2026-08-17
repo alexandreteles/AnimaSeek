@@ -131,13 +131,11 @@ namespace Seeker
             Services.FileSystemService.Instance = new Services.FileSystemService();
 
             var loggerBackend = new AndroidLoggerBackend();
-#if !IzzySoft
             Firebase.FirebaseApp app = Firebase.FirebaseApp.InitializeApp(this);
             if (app == null)
             {
                 loggerBackend.CrashlyticsEnabled = false;
             }
-#endif
             Logger.Backend = loggerBackend;
             MicroTagReader.Instance = new MicroTagReader(loggerBackend);
 
@@ -169,8 +167,6 @@ namespace Seeker
             this.RegisterReceiver(new ConnectionReceiver(), new IntentFilter(ConnectivityManager.ConnectivityAction));
             var sharedPrefs = this.GetSharedPreferences(Constants.SharedPrefFile, 0);
             SeekerState.SharedPreferences = sharedPrefs;
-
-            //SerializationTests.PopulateSharedPreferencesFromFile(this, sharedPrefs);
 
             RestoreSeekerState(sharedPrefs, this);
             StorageState.LoadFromPreferences(this);
@@ -258,7 +254,7 @@ namespace Seeker
                 SharingService.TurnOnSharing();
             #else
                 SeekerState.SoulseekClient = new SoulseekClient(
-                    128,
+                    SoulseekClientIdentity.MinorVersion,
                     new SoulseekClientOptions(
                         minimumDiagnosticLevel: PreferencesState.LogDiagnostics ? Soulseek.Diagnostics.DiagnosticLevel.Debug : Soulseek.Diagnostics.DiagnosticLevel.Info,
                         messageTimeout: 30000,
@@ -847,17 +843,22 @@ namespace Seeker
             {
                 // Restore all pure-data preferences via PreferencesManager
                 PreferencesManager.RestoreAll(sharedPreferences);
-                PreferencesManager.RestoreListeningState(sharedPreferences);
+                var keyValueStore = new AndroidSharedPreferencesKeyValueStore(sharedPreferences);
 
                 // Side-effect restores that depend on Android APIs
                 UploadDirectoryManager.RestoreFromSavedState(sharedPreferences);
 
-                CommonState.UserList = SerializationHelper.RestoreUserListFromString(sharedPreferences.GetString(KeyConsts.M_UserList, string.Empty));
-                RestoreRecentUsersManagerFromString(sharedPreferences.GetString(KeyConsts.M_RecentUsersList, string.Empty));
-                CommonState.IgnoreUserList = SerializationHelper.RestoreUserListFromString(sharedPreferences.GetString(KeyConsts.M_IgnoreUserList, string.Empty));
+                CommonState.UserList = SerializationHelper.RestoreUserListFromString(
+                    keyValueStore.GetString(KeyConsts.M_UserList, string.Empty) ?? string.Empty);
+                RestoreRecentUsersManagerFromString(
+                    keyValueStore.GetString(KeyConsts.M_RecentUsersList, string.Empty) ?? string.Empty);
+                CommonState.IgnoreUserList = SerializationHelper.RestoreUserListFromString(
+                    keyValueStore.GetString(KeyConsts.M_IgnoreUserList, string.Empty) ?? string.Empty);
 
-                UserMetadataService.UserNotes = SerializationHelper.RestoreUserNotesFromString(sharedPreferences.GetString(KeyConsts.M_UserNotes, string.Empty));
-                UserMetadataService.UserOnlineAlerts = SerializationHelper.RestoreUserOnlineAlertsFromString(sharedPreferences.GetString(KeyConsts.M_UserOnlineAlerts, string.Empty));
+                UserMetadataService.UserNotes = SerializationHelper.RestoreUserNotesFromString(
+                    keyValueStore.GetString(KeyConsts.M_UserNotes, string.Empty) ?? string.Empty);
+                UserMetadataService.UserOnlineAlerts = SerializationHelper.RestoreUserOnlineAlertsFromString(
+                    keyValueStore.GetString(KeyConsts.M_UserOnlineAlerts, string.Empty) ?? string.Empty);
 
                 SearchTabHelper.RestoreHeadersFromSharedPreferences();
                 SettingsActivity.RestoreAdditionalDirectorySettingsFromSharedPreferences();
@@ -881,11 +882,13 @@ namespace Seeker
             PreferencesManager.SaveSmartFilterState();
         }
 
-        public static void RestoreRecentUsersManagerFromString(string xmlRecentUsersList)
+        public static void RestoreRecentUsersManagerFromString(string serializedRecentUsers)
         {
             //if empty then this is the first time creating it.  initialize it with our list of added users.
-            UserMetadataService.RecentUsersManager = new RecentUserManager();
-            if (xmlRecentUsersList == string.Empty)
+            UserMetadataService.RecentUsersManager = new RecentUserManager(
+                recentUsers => PreferencesManager.SaveRecentUsers(
+                    SerializationHelper.SaveStringListToString(recentUsers)));
+            if (string.IsNullOrWhiteSpace(serializedRecentUsers))
             {
                 int count = CommonState.UserList?.Count ?? 0;
                 if (count > 0)
@@ -899,26 +902,15 @@ namespace Seeker
             }
             else
             {
-                List<string> recentUsers = new List<string>();
-                using (var stream = new System.IO.StringReader(xmlRecentUsersList))
-                {
-                    var serializer = new System.Xml.Serialization.XmlSerializer(recentUsers.GetType()); //this happens too often not allowing new things to be properly stored..
-                    UserMetadataService.RecentUsersManager.SetRecentUserList(serializer.Deserialize(stream) as List<string>);
-                }
+                UserMetadataService.RecentUsersManager.SetRecentUserList(
+                    SerializationHelper.RestoreStringListFromString(serializedRecentUsers));
             }
         }
 
         public static void SaveRecentUsers()
         {
-            string recentUsersStr;
             List<string> recentUsers = UserMetadataService.RecentUsersManager.GetRecentUserList();
-            using (var writer = new System.IO.StringWriter())
-            {
-                var serializer = new System.Xml.Serialization.XmlSerializer(recentUsers.GetType());
-                serializer.Serialize(writer, recentUsers);
-                recentUsersStr = writer.ToString();
-            }
-            PreferencesManager.SaveRecentUsers(recentUsersStr);
+            PreferencesManager.SaveRecentUsers(SerializationHelper.SaveStringListToString(recentUsers));
         }
 
         /// <summary>

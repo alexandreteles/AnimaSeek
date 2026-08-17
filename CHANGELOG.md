@@ -1,0 +1,119 @@
+# Changelog
+
+## Unreleased
+
+- Pointed the About screen's source-code link at the renamed `alexandreteles/AnimaSeek` repository.
+- Consolidated CI into a single workflow: an Ubuntu test matrix (portable core and Soulseek AOT regression suites) gates the sole strict `Debug Mock` macOS build, the on-simulator filesystem harness became local-only, and every bundled-license check was removed from CI.
+- Simplified tagged releases to a single stable channel: removed the beta channel, prerelease flag, IPA license injection, notice verification, and legal boilerplate from release notes and AltStore metadata, which now carry a plain product description.
+- Approved and staged the complete Phoenix identity: a four-form upright broad-V bird traced from the user-approved PNG, with color, reversed, and monochrome symbols, wordmarks and lockups, iOS Any, Dark, and Tinted app icons, and launch/in-app assets; preserved the original and cleaned transparent raster masters with SHA-256 provenance.
+- Adopted the Phoenix identity in production: replaced the legacy `Seeker.iOS/Assets.xcassets` with the staged catalog (Any/Dark/Tinted app icons, brand tile, adaptive in-app mark) and removed the hard-coded white backdrop behind the About logo.
+- Added the reversed stacked Phoenix lockup to the identity package (SVG, raster export, and a scaled `LaunchLockup` catalog imageset with a dark appearance) and taught the build tool to regenerate them.
+- Redesigned the launch experience as a Vacuum Navy brand field with the reversed stacked lockup, extended through hierarchy composition by a matching in-app placeholder so cold start never shows a blank frame; the splash ships as loose bundle files because launch storyboards cannot resolve asset-catalog images in this toolchain.
+- Fixed the Transfers grouping bar button to use a compact grouped-rows glyph so it renders as a circle matching every other header action instead of a stretched lozenge.
+- Rewrote the README in the upstream Seeker style with the Phoenix logo and added Debug Mock simulator screenshots under `docs/screenshots/`.
+- Added an AI Usage Disclaimer to the README covering AI-assisted development and asset generation, mandatory human review, and the project's position on AI-industry ethics.
+- Retargeted first-party projects and unit-test automation to .NET 10 and centralized first-party NuGet package versions.
+- Pinned the validated .NET 10.0.302 SDK and runtime-notice inventory for reproducible iOS release artifacts.
+- Renamed the application to AnimaSeek with the `com.animaseek.app` bundle identifier and an English-only fork identity.
+- Removed obsolete Android publishing workflows, hard-coded signing defaults, orphan project entries, and dead BinaryFormatter migration code.
+- Moved platform-neutral browse, search, transfer, lifecycle, exception, and helper code from the Android head into `Common`.
+- Added portable key-value storage, notification, preference-restoration, and semantic file-finalization contracts with focused regression tests.
+- Added portable preference writing and canonical persistence for recent users, user metadata, search headers, room preferences, and private-message state.
+- Added a portable English resource catalog and a deterministic Android-string-to-RESX conversion script.
+- Upgraded MessagePack to 3.1.8 and added static generated resolver registrations for AOT-safe persisted-data serialization.
+- Added a strict full-link iOS gate with an explicit third-party MessagePack trim-analysis boundary and no first-party linker suppressions.
+- Replaced current transfer-state XML writes with source-generated JSON while preserving safe legacy transfer and settings XML reads.
+- Rebased the vendored Soulseek.NET library to official 10.0.2 and removed dynamic and reflective completion paths that blocked full AOT.
+- Standardized every production Soulseek client on minor version 793.
+- Marked the modified vendored protocol component and embedded its GPLv3 license and notice.
+- Pruned unused vendored examples and legacy test suites while retaining the rebranded AOT regression project.
+- Bundled Soulseek and third-party notices with the iOS app.
+- Bundled byte-exact .NET runtime, Microsoft.iOS, and StringTools license notices with versioned provenance.
+- Fixed resumed downloads to preserve partial-file stream positions without requiring seekable platform streams.
+- Added a minimal `net10.0-ios` UIKit application head with AnimaSeek identity, lifecycle delegates, launch assets, and a native composition root.
+- Added iOS adapters for `NSUserDefaults`, sandbox storage and caches, Network framework monitoring, local notifications, logging, user lists, sharing, settings import, and deep links.
+- Fixed iOS settings imports to merge canonical friends, ignores, wishlists, and notes, report actual additions, and refresh live metadata.
+- Preflighted canonical wishlist and note state so malformed metadata cannot leave a settings import partially committed.
+- Serialized settings imports with wishlist refresh commits so concurrent updates cannot overwrite each other.
+- Reconciled connected Soulseek friend watches after imports, including unwatching users moved to ignore.
+- Fixed legacy V2 transfer restoration to avoid duplicating folder children while retaining distinct top-level attempts.
+- Added real and Mock Soulseek session composition with file-backed transfer restoration, eager enqueue checkpoints, and interrupted-download recovery on iOS.
+- Added versioned relative-path interrupted-download descriptors with contained migration of legacy absolute sandbox paths.
+- Persisted interrupted-download descriptors before manager and network work and prevented stale reconciliation from resurrecting terminal transfers.
+- Persisted peer-corrected download sizes before volatile retry state and reconciled upward and downward v4 size changes across crashes.
+- Added v5 reset-required descriptors so peer size corrections discard stale partial bytes before retrying or finalizing.
+- Added a durable finalization journal so crashes after moving completed bytes reconcile terminal state without duplicate redownloads.
+- Withheld download-success toasts and transfer/folder notifications until finalized bytes and durable terminal state are proven.
+- Isolated private partial files by full transfer identity and made production finalization preserve same-named files with collision suffixes.
+- Added durable account-scoped private-message history, read positions, explicit acknowledgements, ignored-sender filtering, and direct replies.
+- Added bounded chatroom, private-room, presence, ticker, user-statistics, friend, ignore, and online-alert session services for iOS.
+- Added sandbox share indexing, ignored-user filtering, managed audio metadata, peer upload serving, and server share-count publication.
+- Enforced metered-route upload preferences on iOS and made require-VPN sharing fail closed when VPN status is not provable.
+- Coalesced share-index refreshes after file finalization and scene activation so Files changes and completed downloads are published promptly.
+- Added foreground wishlist scheduling, best-effort background refresh, notification authorization, and keep-screen-awake transfer coordination.
+- Added semantic iOS notifications for private messages, chatrooms, wishlist hits, user presence, transfer states, and completed folders.
+- Added user-initiated iOS 26 continued-processing coordination and opportunistic wishlist refresh registration with progress, expiration, checkpoint, and resume handling.
+- Kept continued download batches pending across retries until file finalization and terminal metadata are durably committed.
+- Closed the scene-background scheduler race with an in-flight continued-task handshake and rejection rollback.
+- Added cancellable foreground reconnect with 1/2/4/10/20-second backoff, reachability and scene gating, and kick/logout suppression.
+- Added a foreground-only, best-effort NAT-PMP TCP mapping coordinator with Network framework gating, lease renewal, and non-fatal fallback.
+- Added the iOS project to the solution, an iOS-focused solution filter, and full-AOT ARM64 simulator build automation on GitHub Actions.
+- Corrected GitHub Actions checkout jobs to a published action major and kept tagged releases dependent on portable tests.
+- Added an iOS simulator harness covering append, resume, finalization, collision containment, and cleanup filesystem semantics.
+- Corrected NSUserDefaults object access and string-set persistence, surfaced failed flushes, and covered reopen semantics on simulator.
+- Added tag-derived bundle versions, signed IPA automation, and AltStore source scaffolding for credentialed releases.
+- Required portable and protocol AOT tests for tagged releases.
+- Hardened signed releases with step-scoped Apple secrets, byte-exact IPA notice validation, and beta tags that follow mutable beta assets.
+- Expanded portable regression coverage for serialization, extracted core code, notifications, preference restoration, resources, and transfer persistence.
+- Reworked the README and development guide around the in-progress iOS port, simulator workflow, temporary Android validation harness, and unfinished signing and packaging work.
+- Serialized terminal download commits with finalization reconciliation, closing a race that could resurrect forgotten descriptors and duplicate completed downloads.
+- Gated interrupted-download resume on foreground scene state so background refresh windows cannot restart transfers without a continued-processing grant.
+- Discarded oversized partial files through the reset flow when peer size corrections shrink a download, preventing non-converging retry loops.
+- Moved file-backed transfer restoration, finalization reconciliation, and initial share indexing off the launch main thread behind an explicit restoration gate.
+- Withheld iOS download-success toasts until durable terminal state and retired terminal transfers from session collections with a bounded recent history.
+- Reused a fixed pool of continued-processing task identifiers and rebased persisted absolute sandbox paths onto the current app container across app updates.
+- Guarded reconnect, logout, and kick cancellation paths against disposed cancellation sources and checkpointed transfers when a background continuation is refused.
+- Restored the Android validation head's persistence of the chosen storage directory lost during preference-restore extraction.
+- Resumed reconnect backoff waits immediately when connectivity returns and serialized recent-user persistence so the newest snapshot always lands last.
+- Normalized legacy local-time wishlist ticks for scheduling, skipped conflicting share-catalog entries instead of disabling sharing, and made import metadata swaps atomic with persistence.
+- Restored Android-parity defaults for legacy search-style expansion and made keyword normalization culture-invariant.
+- Restored official exact-type wait-completion semantics in the vendored protocol library and added Latin-1 wire-encoding regression tests to the AOT test project.
+- Routed backward-compatibility transfer fixtures through the production legacy parser instead of a test-local reimplementation.
+- Serialized tagged releases with workflow concurrency groups, ran the client-identity gate first, filtered push builds by path, and made beta-channel updates idempotent.
+- Enforced the strict linker gate in Release project settings and anchored the MessagePack trim-suppression path to the project directory.
+- Implemented Android quote-and-whitespace string rendering in the conversion script and regenerated the English catalog from current sources.
+- Corrected README and development-guide status claims, documented the exact SDK pin, the on-simulator filesystem harness, and stale-AOT-artifact recovery.
+- Removed tautological, duplicate, and vacuous unit tests; pinned locale-sensitive formatting tests to en-US and categorized encrypted-fixture tests as RealData.
+- Fixed mock-composed search returning no results for every query by implementing the mock client's response-handler search overload against the same simulation as its collection overload, and pinned both overloads to one contract in tests.
+- Added an `ANIMASEEK_UI_QUERY` mock launch variable so a simulator smoke can drive a real search from request to rendered rows without keyboard automation.
+- Stopped Chatrooms stranding a room-refresh failure over a room list the session fetched moments later, and skipped the launch refresh while disconnected so the live offline state is shown instead.
+- Made `ANIMASEEK_MOCK_BACKGROUND` able to re-enable the mock's spontaneous room, message, and status traffic during a launch-route run, since those loops are its only source.
+- Fixed a launch-blocking crash where any transfer row carrying progress aborted the app, because the progress accessory disabled the autoresizing-mask translation that `UICellAccessoryCustomView` requires, and sized the accessory so it no longer displaces the row's title and status text.
+- Fixed Search hiding its scope, sort, and filter controls for as long as the search field was engaged, which left filters reachable only before a query had ever been run, and stopped the search field's Cancel button from cancelling the running query and discarding received results.
+- Rebuilt the Search header around a horizontally scrollable chip row that shows scope, ordering, and the active filter count as controls rather than as summary text, moved the live result count into the otherwise redundant navigation title, dropped the large title, and reduced the permanent header to the search field plus one chip row at every Dynamic Type size.
+- Replaced Search's scope and sort action sheets with native pull-down menus carrying system checkmarks, and put the free-slot, locked-file, format, and category filters, the complete filter form, and a clear action directly in the filters menu instead of behind a modal apply cycle.
+- Added an explicit stop control while a Search query is running and let the search field scroll away once results exist.
+- Removed the repeated modified-library notice block and its "Read All Legal Notices" action from every Home state, leaving the verbatim notice as the leading entry of the permanent Legal Notices destination, which signed-out Home now routes to alongside Settings and About.
+- Moved sign-out off Home into a Session section on Account, kept the same confirmation and retained-content wording, and returned to Home once the session ends.
+- Reduced Home to identity, connection, a Community list of Messages/Chatrooms/Users, and sharing counts by dropping the Account, Settings, About, and Legal Notices rows that Settings already routes to identically, and moved Settings itself to a navigation-bar action available in every account state.
+- Gave Settings' About and Legal Notices rows the descriptive detail text they carried on Home instead of repeating their titles.
+- Fixed Home's destination rows responding only near their trailing chevron, because the title and subtitle sat in a stack view that accepts touches by default and absorbed every tap over the text.
+- Fixed a crash that ended the app on the first tap inside a chatroom, where the timeline table carried both a custom table source and a `Scrolled` event handler; scroll tracking is now an override on that source, which is already the scroll-view delegate.
+- Rebuilt the room timeline as a native conversation: messages are width-capped bubbles aligned by authorship, consecutive messages from one sender share a single name and closing timestamp, and member-activity events are centered captions inside the layout margins instead of full-bleed banded rows with their own separators and icons.
+- Rebuilt the room composer as an outlined capsule input and a circular send control floating over the conversation, clearing the tab bar by a visible margin and matching its width instead of resting against it edge to edge as a full-bleed bar; the composer still rises with the keyboard.
+- Replaced the full-width Jump to Latest row with a floating circular control over the conversation, collapsed the composer status line when a room is joined, and stopped the room title from claiming a wrapping large title.
+- Stopped allocating a fresh table cell for every room timeline row by registering and reusing the two cell classes.
+- Fixed a left room disappearing from Public Rooms and reporting no user count, even after a refresh: leaving retains the room locally with its room data cleared, and the overview grouped every retained session as joined, which both kept the room out of the server listing and pinned its count at zero because the listing pass skips names already present. Only active sessions are grouped as joined now, joined rooms fall back to the server's count when their own is unavailable, and a retained room the listing does not name is still shown.
+- Registered every pooled continued-processing identifier during application launch instead of at submission time, because iOS requires all `BGTaskScheduler` launch handlers to exist before launch finishes and rejected registrations left downloads with no way to survive backgrounding.
+- Kept a still-running transfer eligible for a background grant after iOS refuses one submission, retrying on a 30-second backoff rather than disqualifying the download for the rest of the session.
+- Reported a refused background-execution grant instead of failing silently: a one-time notice explains that transfers pause when the app leaves the foreground, a Diagnostics row shows the current grant state, and the notice names the iOS Simulator when it is the cause.
+- Made Home's Shared Documents row open the Files app on the app's Documents folder, which is both the share root and the download destination.
+- Stopped ending the Soulseek session the instant the app leaves the foreground: without a continued-processing grant the session now survives a bounded grace period behind a background assertion, so opening Files or another app briefly and returning no longer costs a disconnect and reconnect.
+- Fixed selection controls being unreachable behind the floating tab bar in the folder download review, Transfers, Browse, and Messages, which hid the Selection and Download buttons entirely. They now sit in a transparent bar placed from the tab bar's measured frame, so the tab bar stays visible and usable throughout.
+- Gave the selection bars one arrangement — equal-width glass actions on the edges, a compact count between them with the full phrase kept for VoiceOver — so the spacing either side of the count matches and long labels no longer collide with the buttons or run past the screen edges.
+- Rebuilt the Account screen as a native inset-grouped form: section actions are now table rows whose availability is announced to assistive technologies, Save Profile is the screen's single filled primary action, and status and progress persist in a bottom area that rides above the keyboard.
+- Unified rounded corners under shared treatments: message and room bubbles share one 18 pt configuration, the Account image well uses the same treatment, and the room composer is a true capsule at every text size with a hairline border that re-resolves on Light/Dark changes.
+- Rendered rapidly changing transfer numbers (progress, sizes, remaining counts) with monospaced digits so rows no longer jitter as values update.
+- Made Legal Notices rows rescale immediately when the Dynamic Type size changes while the screen is open.
+- Replaced the Account screen's hard-coded English fallback copy with the shared string catalog it already duplicated.
+- Moved privilege management to a dedicated Privileges screen behind an Account disclosure row that shows remaining time at a glance. Accounts without privileges now see a single Donate to Soulseek action with a footer explaining that privileges are tied to Soulseek donations; privileged accounts keep donation alongside Give Privilege Days without the explainer. The donation link opens the account-prefilled Soulseek page in the external browser, and privilege time refreshes automatically when the app returns to the foreground.

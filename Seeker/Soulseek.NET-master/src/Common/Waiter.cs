@@ -1,10 +1,12 @@
 ﻿// <copyright file="Waiter.cs" company="JP Dillingham">
-//     Copyright (c) JP Dillingham. All rights reserved.
+//     Copyright (c) JP Dillingham.
+//     Copyright (c) 2026 AnimaSeek contributors.
+//     Modified: Reworked wait completion around typed, reflection-free sources for AOT,
+//     preserving upstream exact result-type matching on completion.
 //
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
-//     (at your option) any later version.
+//     the Free Software Foundation, version 3.
 //
 //     This program is distributed in the hope that it will be useful,
 //     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,6 +15,14 @@
 //
 //     You should have received a copy of the GNU General Public License
 //     along with this program.  If not, see https://www.gnu.org/licenses/.
+//
+//     This program is distributed with Additional Terms pursuant to Section 7
+//     of the GPLv3.  See the LICENSE file in the root directory of this
+//     project for the complete terms and conditions.
+//
+//     SPDX-FileCopyrightText: JP Dillingham
+//     SPDX-FileCopyrightText: 2026 AnimaSeek contributors
+//     SPDX-License-Identifier: GPL-3.0-only
 // </copyright>
 
 namespace Soulseek
@@ -22,7 +32,6 @@ namespace Soulseek
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     ///     Enables await-able server messages.
@@ -64,7 +73,7 @@ namespace Soulseek
         public void Cancel(WaitKey key)
         {
             Disposition(key, wait =>
-                wait.TaskCompletionSource.TrySetCanceled());
+                wait.CompletionSource.TrySetCanceled());
         }
 
         /// <summary>
@@ -88,8 +97,19 @@ namespace Soulseek
         /// <param name="result">The wait result.</param>
         public void Complete<T>(WaitKey key, T result)
         {
-            Disposition(key, wait =>
-                ((TaskCompletionSource<T>)wait.TaskCompletionSource).TrySetResult(result));
+            try
+            {
+                // the cast below mirrors upstream's TaskCompletionSource<T> cast; because
+                // WaitCompletionSource<T> is invariant, it throws InvalidCastException whenever the
+                // type specified by Complete() does not exactly match the type specified by Wait(),
+                // including Complete(key) (object) against a typed wait.
+                Disposition(key, wait =>
+                    ((WaitCompletionSource<T>)wait.CompletionSource).TrySetResult(result));
+            }
+            catch (InvalidCastException ex)
+            {
+                throw new SoulseekClientException($"Failed to complete the wait for key {key}; the result type specified by Complete() does not match the type specified by Wait().", ex);
+            }
         }
 
         /// <summary>
@@ -142,7 +162,7 @@ namespace Soulseek
         public void Throw(WaitKey key, Exception exception)
         {
             Disposition(key, wait =>
-                wait.TaskCompletionSource.TrySetException(exception));
+                wait.CompletionSource.TrySetException(exception));
         }
 
         /// <summary>
@@ -152,7 +172,7 @@ namespace Soulseek
         public void Timeout(WaitKey key)
         {
             Disposition(key, wait =>
-                wait.TaskCompletionSource.TrySetException(new TimeoutException($"The wait timed out after {wait.Timeout} milliseconds")));
+                wait.CompletionSource.TrySetException(new TimeoutException($"The wait timed out after {wait.Timeout} milliseconds")));
         }
 
         /// <summary>
@@ -180,10 +200,10 @@ namespace Soulseek
             timeout ??= DefaultTimeout;
             cancellationToken ??= CancellationToken.None;
 
-            var taskCompletionSource = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var completionSource = new WaitCompletionSource<T>();
 
             var wait = new PendingWait(
-                taskCompletionSource,
+                completionSource,
                 timeout.Value,
                 cancelAction: () => Cancel(key),
                 timeoutAction: () => Timeout(key),
@@ -211,7 +231,7 @@ namespace Soulseek
             // defer registration to prevent the wait from being dispositioned prior to being successfully queued this is a
             // concern if we are given a timeout of 0, or a cancellation token which is already cancelled
             wait.Register();
-            return ((TaskCompletionSource<T>)wait.TaskCompletionSource).Task;
+            return completionSource.Task;
         }
 
         /// <summary>
@@ -239,59 +259,101 @@ namespace Soulseek
 
         private void Disposition(WaitKey key, Action<PendingWait> action)
         {
-            try
+            if (Waits.TryGetValue(key, out var queue) && queue.TryDequeue(out var wait))
             {
-                if (Waits.TryGetValue(key, out var queue) && queue.TryDequeue(out var wait))
+                try
                 {
                     action(wait);
+                }
+                finally
+                {
                     wait.Dispose();
+                    Cleanup(key, queue);
+                }
+            }
+        }
 
-                    if (Locks.TryGetValue(key, out var recordLock))
+        private void Cleanup(WaitKey key, ConcurrentQueue<PendingWait> queue)
+        {
+            if (Locks.TryGetValue(key, out var recordLock))
+            {
+                // enter a read lock first; TryPeek and TryDequeue are atomic so there's no risky operation until later.
+                recordLock.EnterUpgradeableReadLock();
+
+                try
+                {
+                    // clean up entries in the Waits and Locks dictionaries if the corresponding ConcurrentQueue is empty.
+                    // this is tricky, because we don't want to remove a record if another thread is in the process of
+                    // enqueueing a new wait.
+                    if (queue.IsEmpty)
                     {
-                        // enter a read lock first; TryPeek and TryDequeue are atomic so there's no risky operation until later.
-                        recordLock.EnterUpgradeableReadLock();
+                        // enter the write lock to prevent Wait() (which obtains a read lock) from enqueing any more waits
+                        // before we can delete the dictionary record. it's ok and expected that Wait() might add this record
+                        // back to the dictionary as soon as this unblocks; we're preventing new waits from being discarded if
+                        // they are added by another thread just prior to the TryRemove() operation below.
+                        recordLock.EnterWriteLock();
 
                         try
                         {
-                            // clean up entries in the Waits and Locks dictionaries if the corresponding ConcurrentQueue is empty.
-                            // this is tricky, because we don't want to remove a record if another thread is in the process of
-                            // enqueueing a new wait.
+                            // check the queue again to ensure Wait() didn't enqueue anything between the last check and when
+                            // we entered the write lock. this is guarateed to be safe since we now have exclusive access to
+                            // the record and it should be impossible to remove a record containing a non-empty queue
                             if (queue.IsEmpty)
                             {
-                                // enter the write lock to prevent Wait() (which obtains a read lock) from enqueing any more waits
-                                // before we can delete the dictionary record. it's ok and expected that Wait() might add this record
-                                // back to the dictionary as soon as this unblocks; we're preventing new waits from being discarded if
-                                // they are added by another thread just prior to the TryRemove() operation below.
-                                recordLock.EnterWriteLock();
-
-                                try
-                                {
-                                    // check the queue again to ensure Wait() didn't enqueue anything between the last check and when
-                                    // we entered the write lock. this is guarateed to be safe since we now have exclusive access to
-                                    // the record and it should be impossible to remove a record containing a non-empty queue
-                                    if (queue.IsEmpty)
-                                    {
-                                        Waits.TryRemove(key, out _);
-                                        Locks.TryRemove(key, out _);
-                                    }
-                                }
-                                finally
-                                {
-                                    recordLock.ExitWriteLock();
-                                }
+                                Waits.TryRemove(key, out _);
+                                Locks.TryRemove(key, out _);
                             }
                         }
                         finally
                         {
-                            recordLock.ExitUpgradeableReadLock();
+                            recordLock.ExitWriteLock();
                         }
                     }
                 }
+                finally
+                {
+                    recordLock.ExitUpgradeableReadLock();
+                }
             }
-            catch (RuntimeBinderException ex)
-            {
-                throw new SoulseekClientException($"Failed to bind Wait Types for key {key}; this is likely a mismatch in the Types specified in the Wait() and the Complete(), which needs investigation. Please file a GitHub issue https://github.com/jpdillingham/Soulseek.NET. Exception message: {ex.Message}", ex);
-            }
+        }
+
+        /// <summary>
+        ///     Adapts a generic task completion source to the non-generic pending-wait abstraction.
+        /// </summary>
+        /// <typeparam name="T">The wait result type.</typeparam>
+        internal sealed class WaitCompletionSource<T> : IWaitCompletionSource
+        {
+            /// <summary>
+            ///     Gets the task completed by this source.
+            /// </summary>
+            public Task<T> Task => Source.Task;
+
+            /// <summary>
+            ///     Gets the typed task completion source wrapped by this instance.
+            /// </summary>
+            public TaskCompletionSource<T> Source { get; } = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            /// <inheritdoc />
+            public bool TrySetCanceled() => Source.TrySetCanceled();
+
+            /// <inheritdoc />
+            public bool TrySetException(Exception exception) => Source.TrySetException(exception);
+
+            /// <summary>
+            ///     Attempts to transition the wait task to the completed state with the specified <paramref name="result"/>.
+            /// </summary>
+            /// <param name="result">The result with which to complete the wait.</param>
+            /// <returns><see langword="true"/> if the transition succeeded; otherwise, <see langword="false"/>.</returns>
+            public bool TrySetResult(T result) => Source.TrySetResult(result);
+
+            /// <inheritdoc />
+            /// <remarks>
+            ///     Completion type checking is enforced ahead of this call; <see cref="Waiter.Complete{T}(WaitKey, T)"/>
+            ///     casts to the exact <see cref="WaitCompletionSource{T}"/> instantiation and invokes
+            ///     <see cref="TrySetResult(T)"/> directly, matching upstream semantics.  This non-generic path retains
+            ///     only the runtime cast for any other <see cref="IWaitCompletionSource"/> consumer.
+            /// </remarks>
+            bool IWaitCompletionSource.TrySetResult(object result) => TrySetResult((T)result);
         }
 
         /// <summary>
@@ -302,14 +364,14 @@ namespace Soulseek
             /// <summary>
             ///     Initializes a new instance of the <see cref="PendingWait"/> class.
             /// </summary>
-            /// <param name="taskCompletionSource">The task completion source for the wait task.</param>
+            /// <param name="completionSource">The completion source for the wait task.</param>
             /// <param name="timeout">The number of milliseconds after which the wait is to time out.</param>
             /// <param name="cancelAction">The action to invoke when the task is cancelled.</param>
             /// <param name="timeoutAction">The action to invoke when the task times out.</param>
             /// <param name="cancellationToken">The cancellation token for the wait.</param>
-            public PendingWait(dynamic taskCompletionSource, int timeout, Action cancelAction, Action timeoutAction, CancellationToken cancellationToken)
+            public PendingWait(IWaitCompletionSource completionSource, int timeout, Action cancelAction, Action timeoutAction, CancellationToken cancellationToken)
             {
-                TaskCompletionSource = taskCompletionSource;
+                CompletionSource = completionSource;
                 Timeout = timeout;
                 CancelAction = cancelAction;
                 TimeoutAction = timeoutAction;
@@ -317,9 +379,9 @@ namespace Soulseek
             }
 
             /// <summary>
-            ///     Gets the task completion source for the wait task.
+            ///     Gets the completion source for the wait task.
             /// </summary>
-            public dynamic TaskCompletionSource { get; }
+            public IWaitCompletionSource CompletionSource { get; }
 
             /// <summary>
             ///     Gets the number of milliseconds after which the wait is to time out.

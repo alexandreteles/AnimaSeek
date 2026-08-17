@@ -4,7 +4,6 @@ using Java.IO;
 using Soulseek;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
 using Seeker.Helpers;
@@ -72,50 +71,6 @@ namespace Seeker.Helpers
             sw.Stop();
             Logger.Debug("HEADERS - Save ALL Search Results: " + sw.ElapsedMilliseconds);
         }
-
-#if BinaryFormatterAvailable
-
-        /// <summary>
-        /// Restoring them when someone taps them is fast enough even for 1000 results...
-        /// So this method probably isnt needed.
-        /// </summary>
-        /// <param name="c"></param>
-        public static void MigrateAllSearchTabsFromDisk(Context c)
-        {
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-            string stringToSave = string.Empty;
-            //we should only save things we need for the wishlist searches.
-            List<int> tabsToSave = SearchTabDialog.GetWishesTabIds();
-            if (tabsToSave.Count == 0)
-            {
-                Logger.Debug("Nothing to Save");
-            }
-            else
-            {
-                foreach (int tabIndex in tabsToSave)
-                {
-                    List<SearchResponse> results = null;
-                    try
-                    {
-                        results = RestoreSearchResultsFromDisk_Imp(tabIndex, c, true);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Firebase("Error Migrating Seach Tabs: " + ex.Message + ex.StackTrace);
-                        RemoveTabFromSharedPrefs(tabIndex, c, true);
-                    }
-
-                    if (results != null)
-                    {
-                        RemoveTabFromSharedPrefs(tabIndex, c, true);
-                        SaveSearchResultsToDisk_Imp(tabIndex, c, results);
-                    }
-                }
-            }
-            sw.Stop();
-            Logger.Debug("HEADERS - Restore ALL Search Results: " + sw.ElapsedMilliseconds);
-        }
-#endif
 
         public static void SaveSearchResultsToDisk_Imp(int wishlistSearchResultsToSave, Context c, List<SearchResponse> searchResultsToSave)
         {
@@ -389,30 +344,6 @@ namespace Seeker.Helpers
             Logger.Debug("HEADERS - SaveHeadersToSharedPrefs: " + sw.ElapsedMilliseconds);
         }
 
-#if BinaryFormatterAvailable
-
-        //load legacy, and then save new to shared prefs and disk
-        public static void ConvertLegacyWishlistsIfApplicable(Context c)
-        {
-            string savedState = SeekerState.SharedPreferences.GetString(KeyConsts.M_SearchTabsState_LEGACY, string.Empty);
-            if (savedState == string.Empty)
-            {
-                //nothing to do...
-                return;
-            }
-            else
-            {
-                Logger.Debug("Converting Wishlists to New Format...");
-                RestoreStateFromSharedPreferencesLegacy();
-                SeekerState.SharedPreferences.Edit().Remove(KeyConsts.M_SearchTabsState_LEGACY).Commit();
-                //string x = SeekerState.SharedPreferences.GetString(KeyConsts.M_SearchTabsState_LEGACY, string.Empty); //works, string is empty.
-                SaveHeadersToSharedPrefs();
-                SaveAllSearchTabsToDisk(c);
-            }
-        }
-
-#endif
-
         public static void RestoreHeadersFromSharedPreferences()
         {
             string savedState = SeekerState.SharedPreferences.GetString(KeyConsts.M_SearchTabsState_Headers, string.Empty);
@@ -447,44 +378,6 @@ namespace Seeker.Helpers
             }
             //SeekerState.SharedPreferences.Edit().Remove
         }
-
-#if BinaryFormatterAvailable
-        public static void RestoreStateFromSharedPreferencesLegacy()
-        {
-            string savedState = SeekerState.SharedPreferences.GetString(KeyConsts.M_SearchTabsState_LEGACY, string.Empty);
-            if (savedState == string.Empty)
-            {
-                return;
-            }
-            else
-            {
-                var sw = System.Diagnostics.Stopwatch.StartNew();
-
-                Logger.Debug("base64 string length: " + sw.ElapsedMilliseconds);
-
-                using (System.IO.MemoryStream memStream = new System.IO.MemoryStream(Convert.FromBase64String(savedState)))
-                {
-                    BinaryFormatter formatter = SerializationMigrationHelper.GetLegacyBinaryFormatter();
-                    var savedStateDict = formatter.Deserialize(memStream) as Dictionary<int, SavedStateSearchTab>;
-                    int lowestID = int.MaxValue;
-                    foreach (var pair in savedStateDict)
-                    {
-                        if (pair.Key < lowestID)
-                        {
-                            lowestID = pair.Key;
-                        }
-                        SearchTabCollection[pair.Key] = SavedStateSearchTab.GetTabFromSavedState(pair.Value);
-                    }
-                    if (lowestID != int.MaxValue)
-                    {
-                        lastWishlistID = lowestID;
-                    }
-                }
-                sw.Stop();
-                Logger.Debug("RestoreStateFromSharedPreferences: wishlist: " + sw.ElapsedMilliseconds);
-            }
-        }
-#endif
 
         static SearchTabHelper()
         {

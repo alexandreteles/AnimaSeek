@@ -14,6 +14,40 @@ namespace UnitTestCommon
     public class SerializationTests
     {
         [Test]
+        public void StaticResolver_CoversEveryPersistedMessagePackRoot()
+        {
+            var resolver = SerializationHelper.BrowseResponseOptions.Resolver;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(resolver.GetFormatter<BrowseResponse>(), Is.Not.Null);
+                Assert.That(resolver.GetFormatter<List<Soulseek.Directory>>(), Is.Not.Null);
+                Assert.That(resolver.GetFormatter<List<SearchResponse>>(), Is.Not.Null);
+                Assert.That(resolver.GetFormatter<List<UserListItem>>(), Is.Not.Null);
+                Assert.That(
+                    resolver.GetFormatter<ConcurrentDictionary<string, ConcurrentDictionary<string, List<Message>>>>(),
+                    Is.Not.Null);
+                Assert.That(resolver.GetFormatter<Dictionary<int, string>>(), Is.Not.Null);
+                Assert.That(resolver.GetFormatter<Dictionary<string, List<int>>>(), Is.Not.Null);
+                Assert.That(
+                    resolver.GetFormatter<Dictionary<string, Tuple<long, string, Tuple<int, int, int, int>, bool, bool>>>(),
+                    Is.Not.Null);
+                Assert.That(resolver.GetFormatter<List<Tuple<string, string>>>(), Is.Not.Null);
+                Assert.That(resolver.GetFormatter<int[]>(), Is.Not.Null);
+            });
+        }
+
+        [Test]
+        public void FileAttribute_UsesLegacyContractlessMapShape()
+        {
+            var bytes = MessagePackSerializer.Serialize(
+                new FileAttribute(FileAttributeType.BitRate, 320),
+                SerializationHelper.SearchResponseOptions);
+
+            Assert.That(MessagePackSerializer.ConvertToJson(bytes), Is.EqualTo("{\"Type\":0,\"Value\":320}"));
+        }
+
+        [Test]
         public void UserListItem_RoundTrip_MessagePack()
         {
             var list = new List<UserListItem>

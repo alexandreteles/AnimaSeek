@@ -1,0 +1,64 @@
+<linker>
+  <!--
+    MessagePack 3.1.8 marks its assembly as trimmable, so ILLink analyzes dynamic fallback
+    resolvers even when the application never roots them. AnimaSeek supplies only closed generic,
+    hand-written, built-in, and source-generated formatters through SeekerMessagePackResolver.
+    The suppressed diagnostics all originate inside the package's unused reflection/Emit fallback
+    implementation. These attributes are intentionally assembly-scoped because the package source
+    is external; keep the warning-ID list explicit so a new diagnostic category still fails the build.
+  -->
+  <assembly fullname="MessagePack">
+    <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Runtime">
+      <argument>Trimming</argument>
+      <argument>IL2055</argument>
+    </attribute>
+    <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Runtime">
+      <argument>Trimming</argument>
+      <argument>IL2057</argument>
+    </attribute>
+    <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Runtime">
+      <argument>Trimming</argument>
+      <argument>IL2060</argument>
+    </attribute>
+    <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Runtime">
+      <argument>Trimming</argument>
+      <argument>IL2066</argument>
+    </attribute>
+    <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Runtime">
+      <argument>Trimming</argument>
+      <argument>IL2067</argument>
+    </attribute>
+    <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Runtime">
+      <argument>Trimming</argument>
+      <argument>IL2070</argument>
+    </attribute>
+    <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Runtime">
+      <argument>Trimming</argument>
+      <argument>IL2071</argument>
+    </attribute>
+    <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Runtime">
+      <argument>Trimming</argument>
+      <argument>IL2072</argument>
+    </attribute>
+    <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Runtime">
+      <argument>Trimming</argument>
+      <argument>IL2075</argument>
+    </attribute>
+    <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Runtime">
+      <argument>Trimming</argument>
+      <argument>IL2080</argument>
+    </attribute>
+    <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Runtime">
+      <argument>Trimming</argument>
+      <argument>IL2090</argument>
+    </attribute>
+    <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Runtime">
+      <argument>Trimming</argument>
+      <argument>IL2091</argument>
+    </attribute>
+    <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Runtime">
+      <argument>Trimming</argument>
+      <argument>IL2111</argument>
+    </attribute>
+  </assembly>
+</linker>

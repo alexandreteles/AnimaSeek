@@ -361,3 +361,5 @@ healthchecksdb
 
 #dont ignore Common/Debug which contains important utilities
 !/Common/Debug/
+# macOS
+.DS_Store

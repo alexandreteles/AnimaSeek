@@ -1,0 +1,5 @@
+interface:
+  display_name: "Inclusive Design System"
+  short_description: "A design system focused on inclusivity and accessibility, providing guidelines and components for creating user-friendly interfaces."
+  brand_color: "#65D7C1"
+  default_prompt: "Use $inclusive-design-system to create an inclusive and accessible interface with modern frontend quality."

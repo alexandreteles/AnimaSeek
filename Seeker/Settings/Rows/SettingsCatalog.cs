@@ -728,9 +728,7 @@ namespace Seeker.Settings.Rows
                 KeywordsRes = Resource.String.keywords_force_filesystem,
                 IconRes = Resource.Drawable.folder_outline,
                 MoreInfoOnClick = (h, r) => ForceFileSystemMoreInfoSheet.Show(h),
-#if !IzzySoft
                 Enabled = false,
-#endif
                 OnClick = (h, r) => h.LaunchForceFilesystemPermission(),
             });
 

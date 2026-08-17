@@ -28,8 +28,6 @@
 
 
 using System;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace Mono.Nat.Logging
 {
@@ -42,11 +40,12 @@ namespace Mono.Nat.Logging
         /// </summary>
         public static Func<string, ILogger> Factory { get; set; }
 
-        [MethodImpl (MethodImplOptions.NoInlining)]
-        internal static Logger Create ()
+        internal static Logger Create (Type declaringType)
         {
-            var callingClassName = new StackFrame (1).GetMethod ().ReflectedType.FullName;
-            var writer = Factory?.Invoke (callingClassName);
+            if (declaringType == null)
+                throw new ArgumentNullException (nameof (declaringType));
+
+            var writer = Factory?.Invoke (declaringType.FullName);
             return new Logger (writer);
         }
 

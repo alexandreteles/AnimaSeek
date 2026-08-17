@@ -84,7 +84,7 @@ namespace Seeker
             else
             {
                 //split reverse.
-                var reversedArray = this.FolderName.Split('\\').Reverse();
+                IEnumerable<string> reversedArray = Enumerable.Reverse(this.FolderName.Split('\\'));
                 return string.Join('\\', reversedArray);
             }
         }

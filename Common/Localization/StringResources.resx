@@ -1,0 +1,3070 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <!-- Generated from Seeker/Resources/values/strings.xml by scripts/convert_android_strings.py. -->
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="app_name" xml:space="preserve">
+    <value>AnimaSeek</value>
+  </data>
+  <data name="com.google.firebase.crashlytics.mapping_file_id" xml:space="preserve">
+    <value>1.0</value>
+  </data>
+  <data name="home_tab" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="transfer_tab" xml:space="preserve">
+    <value>Transfers</value>
+  </data>
+  <data name="browse_tab" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="account_tab" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="searches_tab" xml:space="preserve">
+    <value>Searches</value>
+  </data>
+  <data name="searches_tab2" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="signin" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="signin_or_create_account" xml:space="preserve">
+    <value>Sign in or create new account</value>
+  </data>
+  <data name="set_up_sharing" xml:space="preserve">
+    <value>Set up sharing</value>
+  </data>
+  <data name="manage_user_list" xml:space="preserve">
+    <value>Manage user list</value>
+  </data>
+  <data name="unread_count" xml:space="preserve">
+    <value>{0} unread</value>
+  </data>
+  <data name="section_caps_setup" xml:space="preserve">
+    <value>SETUP</value>
+  </data>
+  <data name="section_caps_communication" xml:space="preserve">
+    <value>COMMUNICATION</value>
+  </data>
+  <data name="section_caps_account" xml:space="preserve">
+    <value>ACCOUNT</value>
+  </data>
+  <data name="new_result" xml:space="preserve">
+    <value>new result</value>
+  </data>
+  <data name="new_results" xml:space="preserve">
+    <value>new results</value>
+  </data>
+  <data name="stop_service" xml:space="preserve">
+    <value>Stop service</value>
+  </data>
+  <data name="start_service" xml:space="preserve">
+    <value>Start service</value>
+  </data>
+  <data name="saerch_user_list" xml:space="preserve">
+    <value>Search user list</value>
+  </data>
+  <data name="search_room" xml:space="preserve">
+    <value>Search room</value>
+  </data>
+  <data name="search_room_" xml:space="preserve">
+    <value>Search room {0}</value>
+  </data>
+  <data name="search_user_" xml:space="preserve">
+    <value>Search user {0}</value>
+  </data>
+  <data name="wishlist_search" xml:space="preserve">
+    <value>Wishlist search</value>
+  </data>
+  <data name="no_account" xml:space="preserve">
+    <value>Don't have an account? Simply enter a unique username and one will be created for you.</value>
+  </data>
+  <data name="keep_alive_service_subtitle" xml:space="preserve">
+    <value>Allows Seeker respond to search requests (share), receive chat messages, and run wishlist searches while in background</value>
+  </data>
+  <data name="privileges_more_info" xml:space="preserve">
+    <value>Privileges help support the Soulseek Network and the central server this app depends on.
+
+They also let you skip ahead of non-privileged users in download queues.
+
+Note: donations do not go to the creator of this unofficial Android client (Seeker). I do not currently accept donations.</value>
+  </data>
+  <data name="no_messages" xml:space="preserve">
+    <value>No messages</value>
+  </data>
+  <data name="no_messages_subtitle" xml:space="preserve">
+    <value>Messages from users will appear here</value>
+  </data>
+  <data name="no_users_added" xml:space="preserve">
+    <value>No users added</value>
+  </data>
+  <data name="no_users_subtitle" xml:space="preserve">
+    <value>Add or ignore users to see them here</value>
+  </data>
+  <data name="no_browse_results" xml:space="preserve">
+    <value>No browse results</value>
+  </data>
+  <data name="no_browse_subtitle" xml:space="preserve">
+    <value>Enter a username to browse their files</value>
+  </data>
+  <data name="no_downloads" xml:space="preserve">
+    <value>No downloads</value>
+  </data>
+  <data name="no_downloads_subtitle" xml:space="preserve">
+    <value>Downloaded files will appear here</value>
+  </data>
+  <data name="no_uploads" xml:space="preserve">
+    <value>No uploads</value>
+  </data>
+  <data name="no_uploads_subtitle" xml:space="preserve">
+    <value>Uploads will appear when other users download your files</value>
+  </data>
+  <data name="no_uploads_not_sharing_subtitle" xml:space="preserve">
+    <value>You are not currently sharing any files</value>
+  </data>
+  <data name="no_searches" xml:space="preserve">
+    <value>No searches</value>
+  </data>
+  <data name="no_searches_subtitle" xml:space="preserve">
+    <value>Enter a term to search the Soulseek network</value>
+  </data>
+  <data name="searching_label" xml:space="preserve">
+    <value>Searching</value>
+  </data>
+  <data name="loading_wishlist_label" xml:space="preserve">
+    <value>Loading wishlist</value>
+  </data>
+  <data name="no_results_title" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="no_results_subtitle" xml:space="preserve">
+    <value>Nothing found for "{0}"</value>
+  </data>
+  <data name="results_hidden_title" xml:space="preserve">
+    <value>{0} results hidden by filters</value>
+  </data>
+  <data name="results_hidden_subtitle" xml:space="preserve">
+    <value>Open filters to adjust</value>
+  </data>
+  <data name="search_results_count_none" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="search_results_count" xml:space="preserve">
+    <value>{0} results</value>
+  </data>
+  <data name="search_results_count_filtered" xml:space="preserve">
+    <value>Showing {0} of {1} results</value>
+  </data>
+  <data name="wishlist_results_count" xml:space="preserve">
+    <value>{0} results</value>
+  </data>
+  <data name="wishlist_never_run" xml:space="preserve">
+    <value>Never run</value>
+  </data>
+  <data name="category_file_type" xml:space="preserve">
+    <value>File type</value>
+  </data>
+  <data name="category_keyword" xml:space="preserve">
+    <value>Keyword</value>
+  </data>
+  <data name="category_num_files" xml:space="preserve">
+    <value>Num files</value>
+  </data>
+  <data name="grouped_chips_toggle" xml:space="preserve">
+    <value>Grouped filter chips</value>
+  </data>
+  <data name="filter_sheet_close_desc" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="filter_sheet_count_filtered" xml:space="preserve">
+    <value>{0} / {1}</value>
+  </data>
+  <data name="filter_sheet_count" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="messages" xml:space="preserve">
+    <value>Messages</value>
+  </data>
+  <data name="browse_files" xml:space="preserve">
+    <value>Browse files</value>
+  </data>
+  <data name="chatroomsLoading" xml:space="preserve">
+    <value>Loading chatrooms...</value>
+  </data>
+  <data name="privateRoomCreation" xml:space="preserve">
+    <value>Requesting private room creation</value>
+  </data>
+  <data name="requesting_room_list" xml:space="preserve">
+    <value>Requesting room list</value>
+  </data>
+  <data name="requesting_user_info" xml:space="preserve">
+    <value>Requesting user's info</value>
+  </data>
+  <data name="room_list_received" xml:space="preserve">
+    <value>Room list received</value>
+  </data>
+  <data name="room_list_request_failed" xml:space="preserve">
+    <value>Failed to fetch chat room list</value>
+  </data>
+  <data name="kilobytes_per_second" xml:space="preserve">
+    <value>kb/s</value>
+  </data>
+  <data name="kilohertz" xml:space="preserve">
+    <value>kHz</value>
+  </data>
+  <data name="wishlist" xml:space="preserve">
+    <value>Wishlist</value>
+  </data>
+  <data name="user_info_bio" xml:space="preserve">
+    <value>User bio</value>
+  </data>
+  <data name="user_info_picture" xml:space="preserve">
+    <value>Picture</value>
+  </data>
+  <data name="unsaved_changes_title" xml:space="preserve">
+    <value>Discard unsaved changes?</value>
+  </data>
+  <data name="unsaved_changes_body" xml:space="preserve">
+    <value>You have unsaved changes, are you sure you want to discard them?</value>
+  </data>
+  <data name="statistics_header" xml:space="preserve">
+    <value>Statistics</value>
+  </data>
+  <data name="stat_upload_slots" xml:space="preserve">
+    <value>Upload slots</value>
+  </data>
+  <data name="stat_queued" xml:space="preserve">
+    <value>Queued</value>
+  </data>
+  <data name="stat_speed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="stat_files" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="stat_directories" xml:space="preserve">
+    <value>Directories</value>
+  </data>
+  <data name="stat_free_upload" xml:space="preserve">
+    <value>Free upload</value>
+  </data>
+  <data name="add_user" xml:space="preserve">
+    <value>Add user</value>
+  </data>
+  <data name="get_user_info" xml:space="preserve">
+    <value>Get user info</value>
+  </data>
+  <data name="quick_info" xml:space="preserve">
+    <value>Quick info</value>
+  </data>
+  <data name="filter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="all_target" xml:space="preserve">
+    <value>All users</value>
+  </data>
+  <data name="target_user_list" xml:space="preserve">
+    <value>User list</value>
+  </data>
+  <data name="target_room" xml:space="preserve">
+    <value>Room</value>
+  </data>
+  <data name="target_room_name" xml:space="preserve">
+    <value>Room name</value>
+  </data>
+  <data name="target_choose_user" xml:space="preserve">
+    <value>Choose user</value>
+  </data>
+  <data name="username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="search_target_" xml:space="preserve">
+    <value>Search target</value>
+  </data>
+  <data name="friends" xml:space="preserve">
+    <value>Friends</value>
+  </data>
+  <data name="ignored" xml:space="preserve">
+    <value>Ignored</value>
+  </data>
+  <data name="chatroom_disconnected" xml:space="preserve">
+    <value>We disconnected...</value>
+  </data>
+  <data name="chatroom_disconnected_at" xml:space="preserve">
+    <value>We disconnected: {0}</value>
+  </data>
+  <data name="chatroom_reconnected_at" xml:space="preserve">
+    <value>We reconnected: {0}</value>
+  </data>
+  <data name="chatroom_loading_ticker" xml:space="preserve">
+    <value>Loading current ticker...</value>
+  </data>
+  <data name="room_join_pending" xml:space="preserve">
+    <value>Joining "{0}"…</value>
+  </data>
+  <data name="room_join_failed" xml:space="preserve">
+    <value>Failed to join</value>
+  </data>
+  <data name="room_join_forbidden" xml:space="preserve">
+    <value>Forbidden</value>
+  </data>
+  <data name="room_statuses_empty_placeholder" xml:space="preserve">
+    <value>User activity will appear here</value>
+  </data>
+  <data name="retry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="chatroom_enter_message" xml:space="preserve">
+    <value>Enter message</value>
+  </data>
+  <data name="send_message" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="filter_chatrooms_here" xml:space="preserve">
+    <value>Filter here</value>
+  </data>
+  <data name="enter_listening_port" xml:space="preserve">
+    <value>Enter port to listen on</value>
+  </data>
+  <data name="create_chatroom_private" xml:space="preserve">
+    <value>Make private</value>
+  </data>
+  <data name="search_here" xml:space="preserve">
+    <value>Search here</value>
+  </data>
+  <data name="seeker_needs_dl_dir" xml:space="preserve">
+    <value>Choose download location</value>
+  </data>
+  <data name="seeker_needs_dl_dir_content" xml:space="preserve">
+    <value>Select a folder where Seeker will save downloaded files</value>
+  </data>
+  <data name="seeker_needs_dl_dir_error" xml:space="preserve">
+    <value>A download folder is required to save files</value>
+  </data>
+  <data name="seeker_needs_dl_dir_choose_settings" xml:space="preserve">
+    <value>Please set a download directory in Settings.</value>
+  </data>
+  <data name="seeker_cannot_access_files" xml:space="preserve">
+    <value>Cannot access filesystem. You must select a download directory, either in the login page or in settings.</value>
+  </data>
+  <data name="size_column" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="download_folder" xml:space="preserve">
+    <value>Download folder</value>
+  </data>
+  <data name="download_selected" xml:space="preserve">
+    <value>Download selected</value>
+  </data>
+  <data name="close_download_diag" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="add_about_me" xml:space="preserve">
+    <value>Tap to add an about me</value>
+  </data>
+  <data name="select_image" xml:space="preserve">
+    <value>Select image</value>
+  </data>
+  <data name="clear_image" xml:space="preserve">
+    <value>Clear image</value>
+  </data>
+  <data name="no_image_chosen" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="inviteuser" xml:space="preserve">
+    <value>Invite user</value>
+  </data>
+  <data name="give_up_room" xml:space="preserve">
+    <value>Give up room</value>
+  </data>
+  <data name="give_up_membership" xml:space="preserve">
+    <value>Give up membership</value>
+  </data>
+  <data name="logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="ConnectingToServer" xml:space="preserve">
+    <value>Connecting to server</value>
+  </data>
+  <data name="PleaseWait_" xml:space="preserve">
+    <value>Please wait...</value>
+  </data>
+  <data name="choose_a_download_folder" xml:space="preserve">
+    <value>Select download folder</value>
+  </data>
+  <data name="settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="search_result_style" xml:space="preserve">
+    <value>Result style</value>
+  </data>
+  <data name="search_result_style_style_label" xml:space="preserve">
+    <value>Style</value>
+  </data>
+  <data name="search_result_style_simple" xml:space="preserve">
+    <value>Simple</value>
+  </data>
+  <data name="search_result_style_modern" xml:space="preserve">
+    <value>Modern</value>
+  </data>
+  <data name="search_result_style_compact" xml:space="preserve">
+    <value>Compact</value>
+  </data>
+  <data name="search_result_style_filetype_position_label" xml:space="preserve">
+    <value>File type position</value>
+  </data>
+  <data name="search_result_style_filetype_bottom" xml:space="preserve">
+    <value>Bottom</value>
+  </data>
+  <data name="search_result_style_filetype_top" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="search_result_style_expandable" xml:space="preserve">
+    <value>Expandable</value>
+  </data>
+  <data name="search_result_style_off" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="search_result_style_on" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="expand_all" xml:space="preserve">
+    <value>Expand all</value>
+  </data>
+  <data name="collapse_all" xml:space="preserve">
+    <value>Collapse all</value>
+  </data>
+  <data name="new_search_tab" xml:space="preserve">
+    <value>New search</value>
+  </data>
+  <data name="search_tabs_header" xml:space="preserve">
+    <value>SEARCH TABS</value>
+  </data>
+  <data name="wishlist_header" xml:space="preserve">
+    <value>WISHLIST</value>
+  </data>
+  <data name="wishlist_empty_header" xml:space="preserve">
+    <value>WISHLIST (EMPTY)</value>
+  </data>
+  <data name="filter_search_results_here" xml:space="preserve">
+    <value>Filter results</value>
+  </data>
+  <data name="persist_it" xml:space="preserve">
+    <value>Sticky</value>
+  </data>
+  <data name="filter_format_label" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="filter_any" xml:space="preserve">
+    <value>Any</value>
+  </data>
+  <data name="filter_format_lossless" xml:space="preserve">
+    <value>Lossless</value>
+  </data>
+  <data name="filter_format_lossy" xml:space="preserve">
+    <value>Lossy</value>
+  </data>
+  <data name="filter_min_bitrate_label" xml:space="preserve">
+    <value>Min bitrate</value>
+  </data>
+  <data name="type_chatroom_ticker_message" xml:space="preserve">
+    <value>Ticker message</value>
+  </data>
+  <data name="section_downloads" xml:space="preserve">
+    <value>Downloads</value>
+  </data>
+  <data name="section_search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="section_general" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="section_appearance" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="section_sharing" xml:space="preserve">
+    <value>Sharing</value>
+  </data>
+  <data name="section_network" xml:space="preserve">
+    <value>Network</value>
+  </data>
+  <data name="section_account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="max_search_results" xml:space="preserve">
+    <value>Max search results</value>
+  </data>
+  <data name="only_show_free_slots" xml:space="preserve">
+    <value>Only show results of users with free slots</value>
+  </data>
+  <data name="start_service_on_startup" xml:space="preserve">
+    <value>Start service on startup</value>
+  </data>
+  <data name="allow_private_room_invitations" xml:space="preserve">
+    <value>Allow private room invitations</value>
+  </data>
+  <data name="show_bottom_notifs_complete" xml:space="preserve">
+    <value>Notify on file complete</value>
+  </data>
+  <data name="show_notifs_on_folder_complete" xml:space="preserve">
+    <value>Notify on folder complete</value>
+  </data>
+  <data name="remember_search_history" xml:space="preserve">
+    <value>Remember search history</value>
+  </data>
+  <data name="clear_search_history" xml:space="preserve">
+    <value>Clear search history</value>
+  </data>
+  <data name="file_backed_downloads" xml:space="preserve">
+    <value>File backed downloads</value>
+  </data>
+  <data name="night_mode_options" xml:space="preserve">
+    <value>Night mode</value>
+  </data>
+  <data name="enable_sharing" xml:space="preserve">
+    <value>Enable sharing</value>
+  </data>
+  <data name="browse_yourself" xml:space="preserve">
+    <value>Browse self</value>
+  </data>
+  <data name="enable_listening" xml:space="preserve">
+    <value>Enable listening</value>
+  </data>
+  <data name="change_port" xml:space="preserve">
+    <value>Change port</value>
+  </data>
+  <data name="check_your_port_status" xml:space="preserve">
+    <value>Check status</value>
+  </data>
+  <data name="use_pnp_for_port_forwarding" xml:space="preserve">
+    <value>UPnP port forwarding</value>
+  </data>
+  <data name="edit_your_user_info" xml:space="preserve">
+    <value>Edit user info</value>
+  </data>
+  <data name="restore_default_settings" xml:space="preserve">
+    <value>Restore default settings</value>
+  </data>
+  <data name="restore_default_settings_body" xml:space="preserve">
+    <value>This will reset all settings to their defaults. This can't be undone.</value>
+  </data>
+  <data name="restore_defaults_subtitle" xml:space="preserve">
+    <value>Resets every setting to factory state</value>
+  </data>
+  <data name="force_filesystem_subtitle" xml:space="preserve">
+    <value>Android's standard folder permissions don't always persist. If Seeker keeps re-prompting for Download or Shared Folder access, this will grant persisted full-storage access via system settings.
+
+The Play Store version cannot request this permission — requires F-droid (IzzyOnDroid) or GitHub release version.</value>
+  </data>
+  <data name="get_fdroid_build" xml:space="preserve">
+    <value>Get F-Droid (IzzyOnDroid) build</value>
+  </data>
+  <data name="get_github_build" xml:space="preserve">
+    <value>Get GitHub release build</value>
+  </data>
+  <data name="user_has_no_bio" xml:space="preserve">
+    <value>User has no bio.</value>
+  </data>
+  <data name="user_has_no_pic" xml:space="preserve">
+    <value>User has no picture.</value>
+  </data>
+  <data name="user_picture_failed_to_load" xml:space="preserve">
+    <value>Failed to load user picture.</value>
+  </data>
+  <data name="no_pic_set" xml:space="preserve">
+    <value>No picture is set</value>
+  </data>
+  <data name="select_pic" xml:space="preserve">
+    <value>Select picture</value>
+  </data>
+  <data name="success_set_pic" xml:space="preserve">
+    <value>Successfully set picture</value>
+  </data>
+  <data name="error_no_file_manager_image" xml:space="preserve">
+    <value>ERROR - No file manager installed that is capable of choosing an image. Please install one.</value>
+  </data>
+  <data name="error_no_file_manager_dir" xml:space="preserve">
+    <value>ERROR - No file manager installed that is capable of choosing a directory. Please install one.</value>
+  </data>
+  <data name="error_no_file_manager_dir_manage_storage" xml:space="preserve">
+    <value>ERROR - No file manager installed that is capable of choosing a directory. Please install one. If your device does not implement OPEN_DOCUMENT_TREE intent, please install Seeker from Fdroid (IzzyOnDroid Repo) which has the Manage External Storage permission.</value>
+  </data>
+  <data name="error_image_doesnt_exist" xml:space="preserve">
+    <value>Image does not exist</value>
+  </data>
+  <data name="error_image_too_large" xml:space="preserve">
+    <value>Image is too large. Please choose a smaller image. ( &lt; 5MB).</value>
+  </data>
+  <data name="no_room_tickers" xml:space="preserve">
+    <value>No room tickers yet...</value>
+  </data>
+  <data name="loading_tickers" xml:space="preserve">
+    <value>Loading tickers…</value>
+  </data>
+  <data name="user_list_empty" xml:space="preserve">
+    <value>User list is empty. Please add a user to user list.</value>
+  </data>
+  <data name="no_user" xml:space="preserve">
+    <value>No user is selected</value>
+  </data>
+  <data name="no_room" xml:space="preserve">
+    <value>No room is selected</value>
+  </data>
+  <data name="no_search_results" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="no_search_text" xml:space="preserve">
+    <value>Must type text to search</value>
+  </data>
+  <data name="no_wish_text" xml:space="preserve">
+    <value>Must type text for wishlist search</value>
+  </data>
+  <data name="search_error_unspecified" xml:space="preserve">
+    <value>Search error.</value>
+  </data>
+  <data name="we_are_already_logging_in" xml:space="preserve">
+    <value>We are already logging in</value>
+  </data>
+  <data name="nothing_to_download" xml:space="preserve">
+    <value>Nothing to download</value>
+  </data>
+  <data name="download_is_starting" xml:space="preserve">
+    <value>Download starting...</value>
+  </data>
+  <data name="directory_is_empty" xml:space="preserve">
+    <value>This directory is empty</value>
+  </data>
+  <data name="nothing_selected" xml:space="preserve">
+    <value>Nothing selected</value>
+  </data>
+  <data name="nothing_selected_extra" xml:space="preserve">
+    <value>Nothing selected - tap to select</value>
+  </data>
+  <data name="failed_to_connect" xml:space="preserve">
+    <value>Failed to connect</value>
+  </data>
+  <data name="cannot_download_from_self" xml:space="preserve">
+    <value>Cannot download from yourself</value>
+  </data>
+  <data name="must_type_a_username_to_browse" xml:space="preserve">
+    <value>Must type user to browse</value>
+  </data>
+  <data name="must_type_a_username_to_message" xml:space="preserve">
+    <value>Must type user to message</value>
+  </data>
+  <data name="must_type_a_username_to_invite" xml:space="preserve">
+    <value>Must type user to invite</value>
+  </data>
+  <data name="must_type_a_username_to_add" xml:space="preserve">
+    <value>Must type user to add</value>
+  </data>
+  <data name="must_type_ticker_text" xml:space="preserve">
+    <value>Must type ticker text</value>
+  </data>
+  <data name="must_type_chatroom_name" xml:space="preserve">
+    <value>Must type a chatroom name</value>
+  </data>
+  <data name="must_type_text_to_send" xml:space="preserve">
+    <value>Must type text to send</value>
+  </data>
+  <data name="error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="error_" xml:space="preserve">
+    <value>Error:</value>
+  </data>
+  <data name="error_duplicate" xml:space="preserve">
+    <value>Error: Duplicate request detected</value>
+  </data>
+  <data name="error_browse_at_location" xml:space="preserve">
+    <value>Error getting user directories at specified location</value>
+  </data>
+  <data name="room_data_still_loading" xml:space="preserve">
+    <value>Too fast! Still retrieving room data...</value>
+  </data>
+  <data name="must_be_logged_to_browse" xml:space="preserve">
+    <value>Must be logged in to browse a user</value>
+  </data>
+  <data name="must_be_logged_to_get_room_list" xml:space="preserve">
+    <value>Must be logged in to get chatroom list</value>
+  </data>
+  <data name="must_be_logged_to_request_user_info" xml:space="preserve">
+    <value>Must be logged in to request user info</value>
+  </data>
+  <data name="must_be_logged_to_create_room" xml:space="preserve">
+    <value>Must be logged in to create chatroom</value>
+  </data>
+  <data name="must_be_logged_to_add_or_remove_user" xml:space="preserve">
+    <value>Must be logged in to add or remove user</value>
+  </data>
+  <data name="must_be_logged_to_set_ticker" xml:space="preserve">
+    <value>Must be logged in to set ticker</value>
+  </data>
+  <data name="must_be_logged_to_send_message" xml:space="preserve">
+    <value>Must be logged in to send message</value>
+  </data>
+  <data name="must_be_logged_to_toggle_priv_invites" xml:space="preserve">
+    <value>Must be logged in to toggle allow private invites</value>
+  </data>
+  <data name="must_be_logged_in_to_check_privileges" xml:space="preserve">
+    <value>Must be logged in to check privileges</value>
+  </data>
+  <data name="must_be_logged_in_to_get_privileges" xml:space="preserve">
+    <value>Must be logged in to get privileges</value>
+  </data>
+  <data name="checking_priv_" xml:space="preserve">
+    <value>Checking privileges...</value>
+  </data>
+  <data name="already_added_user_" xml:space="preserve">
+    <value>Already added user: {0}</value>
+  </data>
+  <data name="must_be_logged_to_search" xml:space="preserve">
+    <value>Must log in before searching</value>
+  </data>
+  <data name="create_and_refresh" xml:space="preserve">
+    <value>Created room, now refreshing room list</value>
+  </data>
+  <data name="setting_ticker" xml:space="preserve">
+    <value>Setting ticker...</value>
+  </data>
+  <data name="failed_to_set_ticker" xml:space="preserve">
+    <value>Failed to set ticker</value>
+  </data>
+  <data name="successfully_set_ticker" xml:space="preserve">
+    <value>Successfully set ticker</value>
+  </data>
+  <data name="folder_request_timed_out" xml:space="preserve">
+    <value>Folder request timed out</value>
+  </data>
+  <data name="folder_request_failed" xml:space="preserve">
+    <value>Folder request failed</value>
+  </data>
+  <data name="folder_request_already_have" xml:space="preserve">
+    <value>We already have the complete folder</value>
+  </data>
+  <data name="saved" xml:space="preserve">
+    <value>Saved</value>
+  </data>
+  <data name="no_changes_to_save" xml:space="preserve">
+    <value>No changes to save</value>
+  </data>
+  <data name="request_user_error_empty" xml:space="preserve">
+    <value>Username cannot be empty</value>
+  </data>
+  <data name="temporary_disconnected" xml:space="preserve">
+    <value>We got temporarily disconnected.. reconnecting now</value>
+  </data>
+  <data name="failed_to_undo" xml:space="preserve">
+    <value>Failure to undo</value>
+  </data>
+  <data name="add_user_title" xml:space="preserve">
+    <value>Add user(s)</value>
+  </data>
+  <data name="ignore_user_title" xml:space="preserve">
+    <value>Ignore user(s)</value>
+  </data>
+  <data name="not_sharing" xml:space="preserve">
+    <value>You are not sharing any files</value>
+  </data>
+  <data name="failed_to_parse_shares_post" xml:space="preserve">
+    <value>Your shares were not successfully parsed</value>
+  </data>
+  <data name="error_reading_dir" xml:space="preserve">
+    <value>Error reading directory</value>
+  </data>
+  <data name="error_not_a_dir" xml:space="preserve">
+    <value>Error: Not a directory</value>
+  </data>
+  <data name="successfully_changed_dl_dir" xml:space="preserve">
+    <value>Successfully changed download directory to "{0}"</value>
+  </data>
+  <data name="follow_system" xml:space="preserve">
+    <value>Follow system</value>
+  </data>
+  <data name="always_light" xml:space="preserve">
+    <value>Always light</value>
+  </data>
+  <data name="always_dark" xml:space="preserve">
+    <value>Always dark</value>
+  </data>
+  <data name="theme_purple" xml:space="preserve">
+    <value>Purple</value>
+  </data>
+  <data name="theme_grey" xml:space="preserve">
+    <value>Grey</value>
+  </data>
+  <data name="theme_blue" xml:space="preserve">
+    <value>Blue</value>
+  </data>
+  <data name="theme_red" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="queue_length_" xml:space="preserve">
+    <value>Queue length</value>
+  </data>
+  <data name="upload_slots_" xml:space="preserve">
+    <value>Free upload slots</value>
+  </data>
+  <data name="today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="pending_" xml:space="preserve">
+    <value>Pending...</value>
+  </data>
+  <data name="failed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="must_be_logged_to_drop_private" xml:space="preserve">
+    <value>Must be logged in to drop {0} of private room</value>
+  </data>
+  <data name="failed_to_remove" xml:space="preserve">
+    <value>Failed to remove {0}</value>
+  </data>
+  <data name="successfully_removed" xml:space="preserve">
+    <value>Successfully removed {0}</value>
+  </data>
+  <data name="dropping_MEMBERSHIP_of_ROOMNAME" xml:space="preserve">
+    <value>Dropping {0} of {1}</value>
+  </data>
+  <data name="ownership" xml:space="preserve">
+    <value>ownership</value>
+  </data>
+  <data name="membership" xml:space="preserve">
+    <value>membership</value>
+  </data>
+  <data name="startup_room_off" xml:space="preserve">
+    <value>{0} is no longer set to join on startup</value>
+  </data>
+  <data name="startup_room_on" xml:space="preserve">
+    <value>{0} is now set to join on startup</value>
+  </data>
+  <data name="notif_room_off" xml:space="preserve">
+    <value>Notifications turned off for: {0}</value>
+  </data>
+  <data name="notif_room_on" xml:space="preserve">
+    <value>Notifications turned on for: {0}</value>
+  </data>
+  <data name="new_room_message_received" xml:space="preserve">
+    <value>New message in room {0}</value>
+  </data>
+  <data name="removing_mod" xml:space="preserve">
+    <value>Removing user as moderator in {0}</value>
+  </data>
+  <data name="adding_mod" xml:space="preserve">
+    <value>Adding user as moderator in {0}</value>
+  </data>
+  <data name="inviting_user_to" xml:space="preserve">
+    <value>Inviting user to {0}</value>
+  </data>
+  <data name="removing_user_from" xml:space="preserve">
+    <value>Removing user from {0}</value>
+  </data>
+  <data name="leaving_room" xml:space="preserve">
+    <value>Leaving room: {0}</value>
+  </data>
+  <data name="adding_user_" xml:space="preserve">
+    <value>Adding user: {0}</value>
+  </data>
+  <data name="error_adding_user_timeout" xml:space="preserve">
+    <value>Error adding user: timeout</value>
+  </data>
+  <data name="error_adding_user_not_found" xml:space="preserve">
+    <value>Error adding user: user not found</value>
+  </data>
+  <data name="failed_setting_priv_invites" xml:space="preserve">
+    <value>Failed to set allow private invites to: {0}</value>
+  </data>
+  <data name="network_error_setting_listener" xml:space="preserve">
+    <value>Network error setting listener to {0}</value>
+  </data>
+  <data name="network_error_setting_listener_port" xml:space="preserve">
+    <value>Network error changing listener to {0}</value>
+  </data>
+  <data name="allowed" xml:space="preserve">
+    <value>Allowed</value>
+  </data>
+  <data name="denied" xml:space="preserve">
+    <value>Denied</value>
+  </data>
+  <data name="get_folder" xml:space="preserve">
+    <value>Get folder</value>
+  </data>
+  <data name="success_added_user" xml:space="preserve">
+    <value>Successfully added user</value>
+  </data>
+  <data name="success_added_mod" xml:space="preserve">
+    <value>Successfully added moderator</value>
+  </data>
+  <data name="failed_added_mod" xml:space="preserve">
+    <value>Failed to add moderator</value>
+  </data>
+  <data name="success_invite_user" xml:space="preserve">
+    <value>Successfully invited user</value>
+  </data>
+  <data name="failed_invite_user" xml:space="preserve">
+    <value>Failed to invite user</value>
+  </data>
+  <data name="success_remove_mod" xml:space="preserve">
+    <value>Successfully removed moderator</value>
+  </data>
+  <data name="failed_remove_mod" xml:space="preserve">
+    <value>Failed to remove moderator</value>
+  </data>
+  <data name="success_removed_user" xml:space="preserve">
+    <value>Successfully removed user</value>
+  </data>
+  <data name="failed_removed_user" xml:space="preserve">
+    <value>Failed to remove user</value>
+  </data>
+  <data name="wishlist_tab_error" xml:space="preserve">
+    <value>Desired wishlist tab no longer exists</value>
+  </data>
+  <data name="wishlist_next_run_hours_minutes" xml:space="preserve">
+    <value>next run in {0} hr {1} min</value>
+  </data>
+  <data name="wishlist_next_run_minutes" xml:space="preserve">
+    <value>next run in {0} min</value>
+  </data>
+  <data name="wishlist_next_run_imminent" xml:space="preserve">
+    <value>next run any moment</value>
+  </data>
+  <data name="wishlist_max_results_reached" xml:space="preserve">
+    <value>max results reached</value>
+  </data>
+  <data name="perform_search_first" xml:space="preserve">
+    <value>Must perform a search first to add to wishlist</value>
+  </data>
+  <data name="added_to_wishlist" xml:space="preserve">
+    <value>Added search query "{0}" to wishlist</value>
+  </data>
+  <data name="wishlist_tab_target" xml:space="preserve">
+    <value>Cannot change target for wishlist search</value>
+  </data>
+  <data name="search_tab_error" xml:space="preserve">
+    <value>Desired search tab no longer exists</value>
+  </data>
+  <data name="error_sharing" xml:space="preserve">
+    <value>Error parsing files, could not set shared directory</value>
+  </data>
+  <data name="success_sharing" xml:space="preserve">
+    <value>Sharing successfully set up</value>
+  </data>
+  <data name="sharing_off" xml:space="preserve">
+    <value>Sharing is off</value>
+  </data>
+  <data name="sharing_currently_parsing" xml:space="preserve">
+    <value>Currently parsing files...</value>
+  </data>
+  <data name="sharing_disabled_failure_parsing" xml:space="preserve">
+    <value>Sharing disabled. Failed to parse shares.</value>
+  </data>
+  <data name="sharing_disabled_share_not_set" xml:space="preserve">
+    <value>Sharing disabled. Share directory is not set.</value>
+  </data>
+  <data name="sharing_disabled_error" xml:space="preserve">
+    <value>Error: Sharing disabled.</value>
+  </data>
+  <data name="change_target" xml:space="preserve">
+    <value>Change target</value>
+  </data>
+  <data name="change_result_style" xml:space="preserve">
+    <value>Change result style</value>
+  </data>
+  <data name="add_to_wish" xml:space="preserve">
+    <value>Add to wishlist</value>
+  </data>
+  <data name="remove_from_ignored" xml:space="preserve">
+    <value>Remove from ignored</value>
+  </data>
+  <data name="failed_to_send_message" xml:space="preserve">
+    <value>Failed to send message</value>
+  </data>
+  <data name="empty_message_error" xml:space="preserve">
+    <value>Cannot send an empty message</value>
+  </data>
+  <data name="browse_user_contacting" xml:space="preserve">
+    <value>Contacting user for directory list. Will appear in browse tab when complete.</value>
+  </data>
+  <data name="browse_user_timeout" xml:space="preserve">
+    <value>User directory request timed out</value>
+  </data>
+  <data name="browse_user_nodirectconnection" xml:space="preserve">
+    <value>User directory request failed - Cannot establish direct connection to peer</value>
+  </data>
+  <data name="browse_user_wefailedtoparse" xml:space="preserve">
+    <value>Failed to parse the browse response</value>
+  </data>
+  <data name="browse_response_received" xml:space="preserve">
+    <value>Browse response received</value>
+  </data>
+  <data name="browse_none" xml:space="preserve">
+    <value>User is not sharing any directories</value>
+  </data>
+  <data name="browse_onlylocked" xml:space="preserve">
+    <value>User is only sharing locked directories</value>
+  </data>
+  <data name="kicked_due_to_other_client" xml:space="preserve">
+    <value>Disconnecting... is another client using this username?</value>
+  </data>
+  <data name="port_already_in_use" xml:space="preserve">
+    <value>Failed to set up listener. Port likely already in use.</value>
+  </data>
+  <data name="dns_failed" xml:space="preserve">
+    <value>DNS lookup of server failed. Falling back on hardcoded IP succeeded.</value>
+  </data>
+  <data name="bad_user_pass" xml:space="preserve">
+    <value>Bad username or password</value>
+  </data>
+  <data name="invalid_username" xml:space="preserve">
+    <value>Invalid username</value>
+  </data>
+  <data name="invalid_password" xml:space="preserve">
+    <value>Invalid password</value>
+  </data>
+  <data name="user_too_long" xml:space="preserve">
+    <value>Username must be under 30 characters</value>
+  </data>
+  <data name="user_invalid_char" xml:space="preserve">
+    <value>Username cannot contain special characters</value>
+  </data>
+  <data name="network_unreachable" xml:space="preserve">
+    <value>Network is unreachable</value>
+  </data>
+  <data name="cannot_login" xml:space="preserve">
+    <value>Cannot login</value>
+  </data>
+  <data name="no_empty_user_pass" xml:space="preserve">
+    <value>Username and password cannot be empty</value>
+  </data>
+  <data name="dns_failed_2" xml:space="preserve">
+    <value>Failed to resolve soulseek server ip address.</value>
+  </data>
+  <data name="added_to_ignore" xml:space="preserve">
+    <value>Added user "{0}" to ignore list</value>
+  </data>
+  <data name="already_added_to_ignore" xml:space="preserve">
+    <value>User "{0}" already added to ignore list</value>
+  </data>
+  <data name="failed_to_establish_connection_to_peer" xml:space="preserve">
+    <value>Failed to establish connection to {0}</value>
+  </data>
+  <data name="user_info_received" xml:space="preserve">
+    <value>User info from {0} received</value>
+  </data>
+  <data name="user_info_failed_conn" xml:space="preserve">
+    <value>Failed to get info for user: {0}. Could not establish connection.</value>
+  </data>
+  <data name="user_info_failed_offline" xml:space="preserve">
+    <value>Failed to get info for user: {0}. User is offline.</value>
+  </data>
+  <data name="user_info_failed_timeout" xml:space="preserve">
+    <value>Failed to get info for user: {0}. Connection timed out.</value>
+  </data>
+  <data name="deleted_message_history_with" xml:space="preserve">
+    <value>Deleted message history with {0}</value>
+  </data>
+  <data name="logged_in_as" xml:space="preserve">
+    <value>Logged in as</value>
+  </data>
+  <data name="status_connected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="status_connecting" xml:space="preserve">
+    <value>Connecting</value>
+  </data>
+  <data name="status_disconnected" xml:space="preserve">
+    <value>Disconnected</value>
+  </data>
+  <data name="status_disconnecting" xml:space="preserve">
+    <value>Disconnecting</value>
+  </data>
+  <data name="failed_to_establish_direct_or_indirect" xml:space="preserve">
+    <value>Failed to establish a direct or indirect message connection to user</value>
+  </data>
+  <data name="remote_conn_closed" xml:space="preserve">
+    <value>Read error: remote connection closed</value>
+  </data>
+  <data name="network_down" xml:space="preserve">
+    <value>Network subsystem is down</value>
+  </data>
+  <data name="reported_as_failed" xml:space="preserve">
+    <value>Error: Transfer reported as failed by the uploader</value>
+  </data>
+  <data name="error_no_space" xml:space="preserve">
+    <value>Error: No space left on device.</value>
+  </data>
+  <data name="error_unspecified" xml:space="preserve">
+    <value>The task did not complete due to unhandled exception</value>
+  </data>
+  <data name="timeout_peer" xml:space="preserve">
+    <value>Timeout talking to peer</value>
+  </data>
+  <data name="transfer_rejected" xml:space="preserve">
+    <value>Transfer request rejected</value>
+  </data>
+  <data name="transfer_rejected_file_not_shared" xml:space="preserve">
+    <value>Transfer request rejected. Reason: file not shared</value>
+  </data>
+  <data name="delete_messages" xml:space="preserve">
+    <value>Delete messages</value>
+  </data>
+  <data name="delete_all_messages" xml:space="preserve">
+    <value>Delete all messages</value>
+  </data>
+  <data name="deleted_all_messages" xml:space="preserve">
+    <value>Deleted all message history</value>
+  </data>
+  <data name="deleted_all_no_messages" xml:space="preserve">
+    <value>No messages to delete!</value>
+  </data>
+  <data name="public_room" xml:space="preserve">
+    <value>Public</value>
+  </data>
+  <data name="private_room" xml:space="preserve">
+    <value>Private</value>
+  </data>
+  <data name="owned" xml:space="preserve">
+    <value>Owned</value>
+  </data>
+  <data name="joined" xml:space="preserve">
+    <value>Joined</value>
+  </data>
+  <data name="owner" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="mod" xml:space="preserve">
+    <value>Mod</value>
+  </data>
+  <data name="set_ticker" xml:space="preserve">
+    <value>Set ticker</value>
+  </data>
+  <data name="setticker" xml:space="preserve">
+    <value>Set ticker</value>
+  </data>
+  <data name="chatrooms" xml:space="preserve">
+    <value>Chatrooms</value>
+  </data>
+  <data name="create_chatroom_" xml:space="preserve">
+    <value>Create chatroom</value>
+  </data>
+  <data name="edit_info" xml:space="preserve">
+    <value>Edit info</value>
+  </data>
+  <data name="okay" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="go" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="view" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="send" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="invite" xml:space="preserve">
+    <value>Invite</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="report" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="create_chatroom" xml:space="preserve">
+    <value>Create room</value>
+  </data>
+  <data name="refresh_room_list" xml:space="preserve">
+    <value>Refresh room list</value>
+  </data>
+  <data name="away" xml:space="preserve">
+    <value>Away</value>
+  </data>
+  <data name="online" xml:space="preserve">
+    <value>Online</value>
+  </data>
+  <data name="offline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="auto_join" xml:space="preserve">
+    <value>Auto join</value>
+  </data>
+  <data name="notification" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="copy_text" xml:space="preserve">
+    <value>Copy text</value>
+  </data>
+  <data name="this_message" xml:space="preserve">
+    <value>This message</value>
+  </data>
+  <data name="ignore_user" xml:space="preserve">
+    <value>Ignore user</value>
+  </data>
+  <data name="ignore_users" xml:space="preserve">
+    <value>Ignore users</value>
+  </data>
+  <data name="remove_user" xml:space="preserve">
+    <value>Remove user</value>
+  </data>
+  <data name="remove_mod_priv" xml:space="preserve">
+    <value>Remove moderator privilege</value>
+  </data>
+  <data name="add_mod_priv" xml:space="preserve">
+    <value>Add moderator privilege</value>
+  </data>
+  <data name="browse_user" xml:space="preserve">
+    <value>Browse user</value>
+  </data>
+  <data name="browse_at_location" xml:space="preserve">
+    <value>Browse at location</value>
+  </data>
+  <data name="search_user_files" xml:space="preserve">
+    <value>Search user's files</value>
+  </data>
+  <data name="add_to_user_list" xml:space="preserve">
+    <value>Add to user list</value>
+  </data>
+  <data name="msg_user" xml:space="preserve">
+    <value>Message user</value>
+  </data>
+  <data name="mark_all_as_read" xml:space="preserve">
+    <value>Mark all as read</value>
+  </data>
+  <data name="mark_as_read" xml:space="preserve">
+    <value>Mark as read</value>
+  </data>
+  <data name="copy_image" xml:space="preserve">
+    <value>Copy image</value>
+  </data>
+  <data name="save_image" xml:space="preserve">
+    <value>Save image</value>
+  </data>
+  <data name="success_save" xml:space="preserve">
+    <value>User picture successfully saved.</value>
+  </data>
+  <data name="select_folder" xml:space="preserve">
+    <value>Select folder</value>
+  </data>
+  <data name="current_location_" xml:space="preserve">
+    <value>Current location:</value>
+  </data>
+  <data name="upnp_off" xml:space="preserve">
+    <value>UPnP is off</value>
+  </data>
+  <data name="listener_off" xml:space="preserve">
+    <value>Listener is off</value>
+  </data>
+  <data name="upnp_not_ran" xml:space="preserve">
+    <value>UPnP has not been run</value>
+  </data>
+  <data name="upnp_currently_running" xml:space="preserve">
+    <value>UPnP is currently running</value>
+  </data>
+  <data name="no_upnp_devices_found" xml:space="preserve">
+    <value>No UPnP compatible devices found</value>
+  </data>
+  <data name="upnp_wifi_only" xml:space="preserve">
+    <value>UPnP is for Wi-Fi only</value>
+  </data>
+  <data name="upnp_no_wifi_conn" xml:space="preserve">
+    <value>No Wi-Fi connection</value>
+  </data>
+  <data name="failed_to_set" xml:space="preserve">
+    <value>Failed to set mapping on UPnP device</value>
+  </data>
+  <data name="upnp_success" xml:space="preserve">
+    <value>UPnP successfully forwarded port</value>
+  </data>
+  <data name="upnp_last_success" xml:space="preserve">
+    <value>UPnP was last ran successfully</value>
+  </data>
+  <data name="attempting_to_find_and_open" xml:space="preserve">
+    <value>Attempting to find and open port via UPnP</value>
+  </data>
+  <data name="upnp_search_finished" xml:space="preserve">
+    <value>UPnP search finished</value>
+  </data>
+  <data name="completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="in_progress" xml:space="preserve">
+    <value>In progress</value>
+  </data>
+  <data name="not_started" xml:space="preserve">
+    <value>Not started</value>
+  </data>
+  <data name="paused" xml:space="preserve">
+    <value>Paused</value>
+  </data>
+  <data name="in_queue" xml:space="preserve">
+    <value>In queue</value>
+  </data>
+  <data name="unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="retry_dl" xml:space="preserve">
+    <value>Retry download</value>
+  </data>
+  <data name="clear_from_list" xml:space="preserve">
+    <value>Clear from list</value>
+  </data>
+  <data name="cancel_and_clear" xml:space="preserve">
+    <value>Cancel download and clear</value>
+  </data>
+  <data name="resume_dl" xml:space="preserve">
+    <value>Resume download</value>
+  </data>
+  <data name="refresh_queue_pos" xml:space="preserve">
+    <value>Refresh queue position</value>
+  </data>
+  <data name="play_file" xml:space="preserve">
+    <value>Open file</value>
+  </data>
+  <data name="chosen_transfer_doesnt_exist" xml:space="preserve">
+    <value>Chosen transfer item does not exist anymore.</value>
+  </data>
+  <data name="position_is_still_" xml:space="preserve">
+    <value>Position in queue is still: {0}</value>
+  </data>
+  <data name="failed_to_play" xml:space="preserve">
+    <value>Failed to play file in default player</value>
+  </data>
+  <data name="download_in_progress" xml:space="preserve">
+    <value>Downloads in progress</value>
+  </data>
+  <data name="transfers_in_progress" xml:space="preserve">
+    <value>Transfers in progress...</value>
+  </data>
+  <data name="seeker_running" xml:space="preserve">
+    <value>Seeker is running</value>
+  </data>
+  <data name="seeker_running_content" xml:space="preserve">
+    <value>Seeker is currently running in background</value>
+  </data>
+  <data name="yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="seconds_left" xml:space="preserve">
+    <value>{0} seconds</value>
+  </data>
+  <data name="second_left" xml:space="preserve">
+    <value>{0} second</value>
+  </data>
+  <data name="minutes_left" xml:space="preserve">
+    <value>{0} minutes</value>
+  </data>
+  <data name="minute_left" xml:space="preserve">
+    <value>{0} minute</value>
+  </data>
+  <data name="hours_left" xml:space="preserve">
+    <value>{0} hours</value>
+  </data>
+  <data name="hour_left" xml:space="preserve">
+    <value>{0} hour</value>
+  </data>
+  <data name="days_left" xml:space="preserve">
+    <value>{0} days</value>
+  </data>
+  <data name="day_left" xml:space="preserve">
+    <value>{0} day</value>
+  </data>
+  <data name="priv_failed" xml:space="preserve">
+    <value>Failed to get privileges</value>
+  </data>
+  <data name="timeout" xml:space="preserve">
+    <value>Timeout</value>
+  </data>
+  <data name="priv_success" xml:space="preserve">
+    <value>Successfully updated privileges</value>
+  </data>
+  <data name="status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="view_users" xml:space="preserve">
+    <value>View users</value>
+  </data>
+  <data name="view_self" xml:space="preserve">
+    <value>View self</value>
+  </data>
+  <data name="view_all_tickers" xml:space="preserve">
+    <value>View all tickers</value>
+  </data>
+  <data name="all_tickers" xml:space="preserve">
+    <value>All tickers</value>
+  </data>
+  <data name="members" xml:space="preserve">
+    <value>Members</value>
+  </data>
+  <data name="sort_users_by_desc" xml:space="preserve">
+    <value>Sort users</value>
+  </data>
+  <data name="search_users_desc" xml:space="preserve">
+    <value>Search users</value>
+  </data>
+  <data name="back_desc" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="resume_all" xml:space="preserve">
+    <value>Resume all</value>
+  </data>
+  <data name="pause_all" xml:space="preserve">
+    <value>Pause all</value>
+  </data>
+  <data name="retry_all_failed" xml:space="preserve">
+    <value>Retry all failed</value>
+  </data>
+  <data name="cancel_and_clear_all" xml:space="preserve">
+    <value>Cancel and clear all</value>
+  </data>
+  <data name="clear_all_complete" xml:space="preserve">
+    <value>Clear all complete</value>
+  </data>
+  <data name="file" xml:space="preserve">
+    <value>file</value>
+  </data>
+  <data name="files" xml:space="preserve">
+    <value>files</value>
+  </data>
+  <data name="from_directory" xml:space="preserve">
+    <value>From directory</value>
+  </data>
+  <data name="from_directories" xml:space="preserve">
+    <value>From directories</value>
+  </data>
+  <data name="upload_f_string" xml:space="preserve">
+    <value>Uploaded {0} {1} to user: {2}</value>
+  </data>
+  <data name="about_title" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="give_privileges" xml:space="preserve">
+    <value>Give privileges</value>
+  </data>
+  <data name="error_days_entered_no_parse" xml:space="preserve">
+    <value>Days entered must be a whole number.</value>
+  </data>
+  <data name="error_days_entered_not_positive" xml:space="preserve">
+    <value>Days entered must be a positive number.</value>
+  </data>
+  <data name="error_insufficient_days" xml:space="preserve">
+    <value>You do not have {0} days to give.</value>
+  </data>
+  <data name="give_to_" xml:space="preserve">
+    <value>Give to {0}</value>
+  </data>
+  <data name="error_give_priv" xml:space="preserve">
+    <value>Give privileges failed</value>
+  </data>
+  <data name="give_priv_success" xml:space="preserve">
+    <value>Successfully gave {0} days of privileges to {1}.</value>
+  </data>
+  <data name="sending__" xml:space="preserve">
+    <value>Sending...</value>
+  </data>
+  <data name="give_hint" xml:space="preserve">
+    <value># of days</value>
+  </data>
+  <data name="user_note" xml:space="preserve">
+    <value>User note</value>
+  </data>
+  <data name="edit_note" xml:space="preserve">
+    <value>Edit note</value>
+  </data>
+  <data name="add_note" xml:space="preserve">
+    <value>Add note</value>
+  </data>
+  <data name="note_title" xml:space="preserve">
+    <value>{0}'s note</value>
+  </data>
+  <data name="more_options" xml:space="preserve">
+    <value>More options</value>
+  </data>
+  <data name="remove_from_user_list" xml:space="preserve">
+    <value>Remove from user list</value>
+  </data>
+  <data name="filter_is_on" xml:space="preserve">
+    <value>Filter is on</value>
+  </data>
+  <data name="filter_is_on_body" xml:space="preserve">
+    <value>Would you like to download the full folder or just filtered items?</value>
+  </data>
+  <data name="all" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="just_filtered" xml:space="preserve">
+    <value>Just filtered</value>
+  </data>
+  <data name="item_total_singular" xml:space="preserve">
+    <value>{0} item total</value>
+  </data>
+  <data name="item_total_plural" xml:space="preserve">
+    <value>{0} items total</value>
+  </data>
+  <data name="subfolders_warning" xml:space="preserve">
+    <value>This folder contains subfolders, would you like to download all files in those subfolders as well ({0}) or only the files in the current folder ({1})?</value>
+  </data>
+  <data name="subfolders_warning_queue_paused" xml:space="preserve">
+    <value>This folder contains subfolders, would you like to queue all files in those subfolders as well ({0}) or only the files in the current folder ({1})?</value>
+  </data>
+  <data name="current_folder_only" xml:space="preserve">
+    <value>Current folder only</value>
+  </data>
+  <data name="must_be_logged_in_to_give_privileges" xml:space="preserve">
+    <value>Must be logged in to give privileges</value>
+  </data>
+  <data name="about_body" xml:space="preserve">
+    <value>Seeker is a free and open source Soulseek client for Android. It will never have ads or paid features.</value>
+  </data>
+  <data name="about_link_source_title" xml:space="preserve">
+    <value>Source code</value>
+  </data>
+  <data name="about_link_translate_title" xml:space="preserve">
+    <value>Help translate</value>
+  </data>
+  <data name="must_be_logged_in_to_get_dir_contents" xml:space="preserve">
+    <value>Must be logged in to get directory contents</value>
+  </data>
+  <data name="note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="removed_user_from_ignored_list" xml:space="preserve">
+    <value>Removed user "{0}" from ignore list</value>
+  </data>
+  <data name="removed_user" xml:space="preserve">
+    <value>Removed user: "{0}"</value>
+  </data>
+  <data name="successfully_changed_incomplete_dir" xml:space="preserve">
+    <value>Successfully changed incomplete directory to "{0}"</value>
+  </data>
+  <data name="auto_clear_complete" xml:space="preserve">
+    <value>Auto-clear complete downloads</value>
+  </data>
+  <data name="auto_clear_complete_uploads" xml:space="preserve">
+    <value>Auto-clear complete uploads</value>
+  </data>
+  <data name="download_remaining" xml:space="preserve">
+    <value>{0} download remaining</value>
+  </data>
+  <data name="downloads_remaining" xml:space="preserve">
+    <value>{0} downloads remaining</value>
+  </data>
+  <data name="upload_remaining" xml:space="preserve">
+    <value>{0} upload remaining</value>
+  </data>
+  <data name="uploads_remaining" xml:space="preserve">
+    <value>{0} uploads remaining</value>
+  </data>
+  <data name="uploads_in_progress" xml:space="preserve">
+    <value>Uploads in progress</value>
+  </data>
+  <data name="shutdown" xml:space="preserve">
+    <value>Shutdown</value>
+  </data>
+  <data name="set_online_alert" xml:space="preserve">
+    <value>Set online alert</value>
+  </data>
+  <data name="remove_online_alert" xml:space="preserve">
+    <value>Remove online alert</value>
+  </data>
+  <data name="user_X_is_now_online" xml:space="preserve">
+    <value>User {0} is now online</value>
+  </data>
+  <data name="publicRoomCreation" xml:space="preserve">
+    <value>Requesting public room creation</value>
+  </data>
+  <data name="failed_user_offline" xml:space="preserve">
+    <value>Failed - user offline</value>
+  </data>
+  <data name="failed_denied" xml:space="preserve">
+    <value>Failed - denied</value>
+  </data>
+  <data name="re_requesting" xml:space="preserve">
+    <value>Re-requesting</value>
+  </data>
+  <data name="diagnostics_more_info" xml:space="preserve">
+    <value>This will save diagnostic information to a text file named "seeker_diagnostics.txt" which will be located in the root of the selected download folder.
+
+This can be useful to send to the dev for the purposes of troubleshooting issues. If the issues are of a networking nature, one may have to restart the app after turning this option on for full results.</value>
+  </data>
+  <data name="folder_X_from_user_Y_finished" xml:space="preserve">
+    <value>{0} from {1} successfully completed.</value>
+  </data>
+  <data name="takes_effect_on_next_startup" xml:space="preserve">
+    <value>This will take effect on next startup</value>
+  </data>
+  <data name="sort_results_by" xml:space="preserve">
+    <value>Sort by</value>
+  </data>
+  <data name="next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="prev" xml:space="preserve">
+    <value>Prev</value>
+  </data>
+  <data name="finish" xml:space="preserve">
+    <value>Finish</value>
+  </data>
+  <data name="Uploads" xml:space="preserve">
+    <value>Uploads</value>
+  </data>
+  <data name="Downloads" xml:space="preserve">
+    <value>Downloads</value>
+  </data>
+  <data name="You" xml:space="preserve">
+    <value>You</value>
+  </data>
+  <data name="sendmessage_" xml:space="preserve">
+    <value>Send message...</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>Availability</value>
+  </data>
+  <data name="Speed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="FolderName" xml:space="preserve">
+    <value>Folder name</value>
+  </data>
+  <data name="SetAsDefault" xml:space="preserve">
+    <value>Set as default</value>
+  </data>
+  <data name="Check" xml:space="preserve">
+    <value>Check</value>
+  </data>
+  <data name="Keywords" xml:space="preserve">
+    <value>Keywords</value>
+  </data>
+  <data name="Configure" xml:space="preserve">
+    <value>Configure</value>
+  </data>
+  <data name="Reselect" xml:space="preserve">
+    <value>Reselect</value>
+  </data>
+  <data name="RemoveFolder" xml:space="preserve">
+    <value>Remove folder</value>
+  </data>
+  <data name="FolderError" xml:space="preserve">
+    <value>Folder error</value>
+  </data>
+  <data name="ErrorForFolder" xml:space="preserve">
+    <value>Error for folder:</value>
+  </data>
+  <data name="ErrorDownloadDirNotProperlySet" xml:space="preserve">
+    <value>Error: the download directory is not properly set.</value>
+  </data>
+  <data name="CopySelectedURLs" xml:space="preserve">
+    <value>Copy selected URLs</value>
+  </data>
+  <data name="CopyURL" xml:space="preserve">
+    <value>Copy URL</value>
+  </data>
+  <data name="CopyFolderURL" xml:space="preserve">
+    <value>Copy folder URL</value>
+  </data>
+  <data name="LinkCopied" xml:space="preserve">
+    <value>Link copied</value>
+  </data>
+  <data name="LinksCopied" xml:space="preserve">
+    <value>Links copied</value>
+  </data>
+  <data name="ShowFolderInfo" xml:space="preserve">
+    <value>Show folder info</value>
+  </data>
+  <data name="ShowSelectedInfo" xml:space="preserve">
+    <value>Show selected info</value>
+  </data>
+  <data name="NothingToCopy" xml:space="preserve">
+    <value>Nothing to copy</value>
+  </data>
+  <data name="ThisFolderContainsSubfolders" xml:space="preserve">
+    <value>This folder contains subfolders</value>
+  </data>
+  <data name="QueuedForDownload" xml:space="preserve">
+    <value>Queued for download</value>
+  </data>
+  <data name="QueueFolderAsPaused" xml:space="preserve">
+    <value>Queued folder as paused</value>
+  </data>
+  <data name="Length" xml:space="preserve">
+    <value>Length</value>
+  </data>
+  <data name="NumFiles" xml:space="preserve">
+    <value>Num files</value>
+  </data>
+  <data name="NumSubfolders" xml:space="preserve">
+    <value>Num subfolders</value>
+  </data>
+  <data name="HideTickerView" xml:space="preserve">
+    <value>Hide ticker view</value>
+  </data>
+  <data name="ShowTickerView" xml:space="preserve">
+    <value>Show ticker view</value>
+  </data>
+  <data name="HideStatusView" xml:space="preserve">
+    <value>Hide status view</value>
+  </data>
+  <data name="ShowStatusView" xml:space="preserve">
+    <value>Show status view</value>
+  </data>
+  <data name="theUserJoined" xml:space="preserve">
+    <value>joined</value>
+  </data>
+  <data name="theUserLeft" xml:space="preserve">
+    <value>left</value>
+  </data>
+  <data name="theUserWentAway" xml:space="preserve">
+    <value>went away</value>
+  </data>
+  <data name="theUserCameBack" xml:space="preserve">
+    <value>came back</value>
+  </data>
+  <data name="messageWillSendOnReConnect" xml:space="preserve">
+    <value>Message will send on connection re-establishment</value>
+  </data>
+  <data name="SortUsersBy" xml:space="preserve">
+    <value>Sort users by</value>
+  </data>
+  <data name="FilterUsers" xml:space="preserve">
+    <value>Filter users...</value>
+  </data>
+  <data name="Total_" xml:space="preserve">
+    <value>Total:</value>
+  </data>
+  <data name="CannotBrowseUsernameOffline" xml:space="preserve">
+    <value>Cannot browse {0}, user is offline.</value>
+  </data>
+  <data name="FailedToBrowseUsernameUnspecifiedError" xml:space="preserve">
+    <value>Failed to browse {0} due to unspecified error.</value>
+  </data>
+  <data name="BrowseOnlyEmptyDir" xml:space="preserve">
+    <value>User, {0}, is sharing only an empty directory.</value>
+  </data>
+  <data name="GetFolderDoesntWorkForLockedShares" xml:space="preserve">
+    <value>Get folder does not work for locked shares. Must use Browse or Browse at location instead.</value>
+  </data>
+  <data name="ImportWizard" xml:space="preserve">
+    <value>Import wizard</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="SuccessfullyParsed" xml:space="preserve">
+    <value>Successfully parsed! Tap next to proceed</value>
+  </data>
+  <data name="FailedToParseContactDev" xml:space="preserve">
+    <value>Failed to parse file. Please ensure file is valid. Contact developer for more help.</value>
+  </data>
+  <data name="FailedToParseReasonContactDev" xml:space="preserve">
+    <value>Failed to parse file. {0}. Contact developer for more help.</value>
+  </data>
+  <data name="NoSuitableFileManager" xml:space="preserve">
+    <value>No suitable file manager found</value>
+  </data>
+  <data name="SuccessfullyImported" xml:space="preserve">
+    <value>Successfully imported client data</value>
+  </data>
+  <data name="ImportUserNotes" xml:space="preserve">
+    <value>Import user notes</value>
+  </data>
+  <data name="ImportFriends" xml:space="preserve">
+    <value>Import user list</value>
+  </data>
+  <data name="ImportIgnored" xml:space="preserve">
+    <value>Import ignored list</value>
+  </data>
+  <data name="ImportWishlist" xml:space="preserve">
+    <value>Import wishlist</value>
+  </data>
+  <data name="ImportFriendsAlreadyPresent" xml:space="preserve">
+    <value>Already present in user list:</value>
+  </data>
+  <data name="ImportIgnoredAlreadyPresent" xml:space="preserve">
+    <value>Already present in ignored list:</value>
+  </data>
+  <data name="ImportWishlistAlreadyPresent" xml:space="preserve">
+    <value>Already present in wishlist:</value>
+  </data>
+  <data name="FolderFinishedDownloading" xml:space="preserve">
+    <value>Folder finished downloading</value>
+  </data>
+  <data name="FinishedDownloading" xml:space="preserve">
+    <value>finished downloading</value>
+  </data>
+  <data name="PermissionsIssueShared" xml:space="preserve">
+    <value>Permissions issue opening shared folder. Please go into settings and reselect shared folder.</value>
+  </data>
+  <data name="SharedFolderIssuesAllFailed" xml:space="preserve">
+    <value>Issue accessing shared folders. Tap folders for more info.</value>
+  </data>
+  <data name="UserXIsOffline" xml:space="preserve">
+    <value>User {0} is offline</value>
+  </data>
+  <data name="CannotConnectUserX" xml:space="preserve">
+    <value>Cannot connect to user {0}</value>
+  </data>
+  <data name="TimeoutQueueUserX" xml:space="preserve">
+    <value>Timeout getting queue position from {0}</value>
+  </data>
+  <data name="PermissionErrorShared" xml:space="preserve">
+    <value>Permission error, cannot write (please reselect).</value>
+  </data>
+  <data name="FolderNotAccessible" xml:space="preserve">
+    <value>Folder is not accessible (please reselect).</value>
+  </data>
+  <data name="UnknownErrorShared" xml:space="preserve">
+    <value>Unknown error. See dev.</value>
+  </data>
+  <data name="MessagesWithUser" xml:space="preserve">
+    <value>Messages with {0}</value>
+  </data>
+  <data name="DateAddedAsc" xml:space="preserve">
+    <value>Date added (asc)</value>
+  </data>
+  <data name="DateAddedDesc" xml:space="preserve">
+    <value>Date added (desc)</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="OnlineStatus" xml:space="preserve">
+    <value>Online status</value>
+  </data>
+  <data name="NoUsersFound" xml:space="preserve">
+    <value>No users found</value>
+  </data>
+  <data name="NothingToImport" xml:space="preserve">
+    <value>Nothing to import</value>
+  </data>
+  <data name="NothingNewToImport" xml:space="preserve">
+    <value>Nothing new to import</value>
+  </data>
+  <data name="ImportUserNotesOverwriteNote" xml:space="preserve">
+    <value>* denotes that the user has a current note which will be overwritten if selected.</value>
+  </data>
+  <data name="ImportClientData" xml:space="preserve">
+    <value>Import client data</value>
+  </data>
+  <data name="ImportWizardIntro" xml:space="preserve">
+    <value>Friends, ignored users, wishlist and notes — choose what to keep on the next screens.</value>
+  </data>
+  <data name="WorksWithExportsFrom" xml:space="preserve">
+    <value>Works with exports from</value>
+  </data>
+  <data name="ImportPathQT" xml:space="preserve">
+    <value>Options › Extras › Export Client Configuration Data</value>
+  </data>
+  <data name="ImportPathNicotine" xml:space="preserve">
+    <value>Preferences › Export</value>
+  </data>
+  <data name="ImportPathSeeker" xml:space="preserve">
+    <value>Settings › Export Client Data</value>
+  </data>
+  <data name="ChooseExportFile" xml:space="preserve">
+    <value>Choose export file</value>
+  </data>
+  <data name="CurrentDownloadFolder_" xml:space="preserve">
+    <value>Download folder</value>
+  </data>
+  <data name="CreateCompleteAndIncomplete" xml:space="preserve">
+    <value>Create Soulseek Complete and Soulseek Incomplete directories</value>
+  </data>
+  <data name="CreateUsernameSubfolders" xml:space="preserve">
+    <value>Create username subfolders</value>
+  </data>
+  <data name="DoNotCreateSubfoldersForSingleDownloads" xml:space="preserve">
+    <value>Skip subfolders for single files</value>
+  </data>
+  <data name="ShowSmartFilters" xml:space="preserve">
+    <value>Show smart filters</value>
+  </data>
+  <data name="ShowPrivateLockedSearch" xml:space="preserve">
+    <value>Show private (locked) files in search results</value>
+  </data>
+  <data name="ShowPrivateLockedBrowse" xml:space="preserve">
+    <value>Show private (locked) files in browse response</value>
+  </data>
+  <data name="RememberRecent" xml:space="preserve">
+    <value>Remember recent users</value>
+  </data>
+  <data name="ClearRecentUsers" xml:space="preserve">
+    <value>Clear recent users</value>
+  </data>
+  <data name="AutoRetryFailedOfflineOnline" xml:space="preserve">
+    <value>Auto-retry failed downloads when user goes back online</value>
+  </data>
+  <data name="AwayOnInactivity" xml:space="preserve">
+    <value>Set status to away when inactive</value>
+  </data>
+  <data name="DayVarient_" xml:space="preserve">
+    <value>Day theme</value>
+  </data>
+  <data name="NightVarient_" xml:space="preserve">
+    <value>Night theme</value>
+  </data>
+  <data name="NoSharedAdd" xml:space="preserve">
+    <value>No shared folders</value>
+  </data>
+  <data name="RescanShares" xml:space="preserve">
+    <value>Rescan shares</value>
+  </data>
+  <data name="add_folder" xml:space="preserve">
+    <value>Add folder</value>
+  </data>
+  <data name="PauseSharingIfMetered" xml:space="preserve">
+    <value>Pause sharing on metered (mobile) connection</value>
+  </data>
+  <data name="OnlyShareOnVpn" xml:space="preserve">
+    <value>Only share when VPN is active</value>
+  </data>
+  <data name="sharing_disabled_no_vpn" xml:space="preserve">
+    <value>Sharing disabled. No active VPN.</value>
+  </data>
+  <data name="LimitDownloadSpeed" xml:space="preserve">
+    <value>Limit download speed</value>
+  </data>
+  <data name="LimitUploadSpeed" xml:space="preserve">
+    <value>Limit upload speed</value>
+  </data>
+  <data name="LimitConcurrentDownloads" xml:space="preserve">
+    <value>Limit concurrent downloads</value>
+  </data>
+  <data name="EnableDiagnostics" xml:space="preserve">
+    <value>Enable diagnostics</value>
+  </data>
+  <data name="ImportExternalClientData" xml:space="preserve">
+    <value>Import external client data</value>
+  </data>
+  <data name="LockedUserListOnly" xml:space="preserve">
+    <value>Locked (only user list can download)</value>
+  </data>
+  <data name="HiddenUserListOnly" xml:space="preserve">
+    <value>Hidden (only user list can view)</value>
+  </data>
+  <data name="OverrideFolderName" xml:space="preserve">
+    <value>Override folder name</value>
+  </data>
+  <data name="CustomFolderName" xml:space="preserve">
+    <value>Custom folder name</value>
+  </data>
+  <data name="QueueSelectedAsPaused" xml:space="preserve">
+    <value>Queue selected as paused</value>
+  </data>
+  <data name="UserOptions" xml:space="preserve">
+    <value>User options</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SortOrder" xml:space="preserve">
+    <value>Sort order</value>
+  </data>
+  <data name="AddUserToIgnored" xml:space="preserve">
+    <value>Add user to ignored</value>
+  </data>
+  <data name="ClearAllCompleteAndAborted" xml:space="preserve">
+    <value>Clear all complete and aborted</value>
+  </data>
+  <data name="AbortAll" xml:space="preserve">
+    <value>Abort all</value>
+  </data>
+  <data name="BatchSelect" xml:space="preserve">
+    <value>Batch select</value>
+  </data>
+  <data name="ShowSize" xml:space="preserve">
+    <value>Show size</value>
+  </data>
+  <data name="ShowSpeed" xml:space="preserve">
+    <value>Show speed</value>
+  </data>
+  <data name="ResumeSelected" xml:space="preserve">
+    <value>Resume selected</value>
+  </data>
+  <data name="PauseSelected" xml:space="preserve">
+    <value>Pause selected</value>
+  </data>
+  <data name="RetryFailed" xml:space="preserve">
+    <value>Retry failed</value>
+  </data>
+  <data name="InvertSelection" xml:space="preserve">
+    <value>Invert selection</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Select all</value>
+  </data>
+  <data name="ConfigureSmartFilters" xml:space="preserve">
+    <value>Configure Smart Filters</value>
+  </data>
+  <data name="NotSet" xml:space="preserve">
+    <value>Not set</value>
+  </data>
+  <data name="AppLocalStorage" xml:space="preserve">
+    <value>App local storage</value>
+  </data>
+  <data name="NotInUse" xml:space="preserve">
+    <value>Not in use</value>
+  </data>
+  <data name="IncompleteFolderEmpty" xml:space="preserve">
+    <value>Incomplete folder is empty</value>
+  </data>
+  <data name="NoEligibleToClear" xml:space="preserve">
+    <value>No eligible items to clear</value>
+  </data>
+  <data name="WaitForParsing" xml:space="preserve">
+    <value>Wait for parsing to complete.</value>
+  </data>
+  <data name="ErrorAlreadyAdded" xml:space="preserve">
+    <value>Error: directory already added.</value>
+  </data>
+  <data name="UploadFolderOptions" xml:space="preserve">
+    <value>Upload folder options</value>
+  </data>
+  <data name="CannotChangeNameNotUnique" xml:space="preserve">
+    <value>Cannot change name. Not unique.</value>
+  </data>
+  <data name="AlreadyParsing" xml:space="preserve">
+    <value>Already parsing</value>
+  </data>
+  <data name="DirectoryNotSet" xml:space="preserve">
+    <value>Directory not set</value>
+  </data>
+  <data name="FailedGettingAccess" xml:space="preserve">
+    <value>Failed getting access to directory</value>
+  </data>
+  <data name="AdditionalFiles" xml:space="preserve">
+    <value>{0} additional files since last scan.</value>
+  </data>
+  <data name="OneAdditionalFile" xml:space="preserve">
+    <value>1 additional file since last scan.</value>
+  </data>
+  <data name="NoMediaStore" xml:space="preserve">
+    <value>No access to media store. Parsing will be unoptimized.</value>
+  </data>
+  <data name="NoPermissionsForDir" xml:space="preserve">
+    <value>Cannot set directory without proper permissions</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="MustBeLoggedInToImport" xml:space="preserve">
+    <value>Must be logged in and connected to import data.</value>
+  </data>
+  <data name="MustBeLoggedInToRetryDL" xml:space="preserve">
+    <value>Must be logged in and connected to retry download.</value>
+  </data>
+  <data name="FailedDownloadDirectoryNotSet" xml:space="preserve">
+    <value>Failed: Download directory not properly set.</value>
+  </data>
+  <data name="CopyLink" xml:space="preserve">
+    <value>Copy link</value>
+  </data>
+  <data name="DownloadFile" xml:space="preserve">
+    <value>Download file</value>
+  </data>
+  <data name="IgnoreUnshareUser" xml:space="preserve">
+    <value>Ignore (unshare) user</value>
+  </data>
+  <data name="RetryFailedFiles" xml:space="preserve">
+    <value>Retry failed files</value>
+  </data>
+  <data name="ResumeFolder" xml:space="preserve">
+    <value>Resume folder</value>
+  </data>
+  <data name="PauseFolder" xml:space="preserve">
+    <value>Pause folder</value>
+  </data>
+  <data name="AbortUpload" xml:space="preserve">
+    <value>Abort upload</value>
+  </data>
+  <data name="AbortUploads" xml:space="preserve">
+    <value>Abort uploads</value>
+  </data>
+  <data name="AbortandClearUpload" xml:space="preserve">
+    <value>Abort and clear upload</value>
+  </data>
+  <data name="AbortandClearUploads" xml:space="preserve">
+    <value>Abort and clear uploads</value>
+  </data>
+  <data name="HideSmartFilters" xml:space="preserve">
+    <value>Hide Smart Filters</value>
+  </data>
+  <data name="UserIsOffline" xml:space="preserve">
+    <value>User is offline</value>
+  </data>
+  <data name="Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="TimedOut" xml:space="preserve">
+    <value>Timed out</value>
+  </data>
+  <data name="CannotConnect" xml:space="preserve">
+    <value>Cannot connect</value>
+  </data>
+  <data name="Aborted" xml:space="preserve">
+    <value>Aborted</value>
+  </data>
+  <data name="SetLanguage" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Automatic" xml:space="preserve">
+    <value>Automatic</value>
+  </data>
+  <data name="ManuallySetIncompleteFolder" xml:space="preserve">
+    <value>Override incomplete folder location</value>
+  </data>
+  <data name="CurrentIncompleteFolder" xml:space="preserve">
+    <value>Incomplete folder</value>
+  </data>
+  <data name="ClearFolder" xml:space="preserve">
+    <value>Clear folder</value>
+  </data>
+  <data name="HideSize" xml:space="preserve">
+    <value>Hide size</value>
+  </data>
+  <data name="HideSpeed" xml:space="preserve">
+    <value>Hide speed</value>
+  </data>
+  <data name="Num_Selected" xml:space="preserve">
+    <value>{0} selected</value>
+  </data>
+  <data name="DeleteSelected" xml:space="preserve">
+    <value>Delete selected</value>
+  </data>
+  <data name="deleted_selected_message_histories" xml:space="preserve">
+    <value>Deleted {0} conversation(s)</value>
+  </data>
+  <data name="ExportClientData" xml:space="preserve">
+    <value>Export client data</value>
+  </data>
+  <data name="successfully_exported" xml:space="preserve">
+    <value>Successfully exported Seeker client data.</value>
+  </data>
+  <data name="ForceFilesystemPermission" xml:space="preserve">
+    <value>Force filesystem permissions</value>
+  </data>
+  <data name="permission_already_successfully_granted" xml:space="preserve">
+    <value>Permission has already been successfully granted</value>
+  </data>
+  <data name="permission_successfully_granted" xml:space="preserve">
+    <value>Permission successfully granted</value>
+  </data>
+  <data name="permission_failed" xml:space="preserve">
+    <value>Failed to grant permission</value>
+  </data>
+  <data name="bitrate" xml:space="preserve">
+    <value>Bitrate</value>
+  </data>
+  <data name="setUpSharing" xml:space="preserve">
+    <value>Set up sharing</value>
+  </data>
+  <data name="change_password" xml:space="preserve">
+    <value>Change password</value>
+  </data>
+  <data name="new_password" xml:space="preserve">
+    <value>New password</value>
+  </data>
+  <data name="cannot_be_empty" xml:space="preserve">
+    <value>Cannot be empty</value>
+  </data>
+  <data name="must_be_logged_in_to_change_password" xml:space="preserve">
+    <value>Must be logged in to change password</value>
+  </data>
+  <data name="failed_to_change_password" xml:space="preserve">
+    <value>Failed to change password</value>
+  </data>
+  <data name="password_successfully_updated" xml:space="preserve">
+    <value>Password successfully updated</value>
+  </data>
+  <data name="error_dialog_content" xml:space="preserve">
+    <value>Seeker has encountered an issue. 
+
+Please consider sending a report to the developer. 
+
+Any information about the steps / conditions leading up to the issue is much appreciated.</value>
+  </data>
+  <data name="folder_request_user_returned_empty_response" xml:space="preserve">
+    <value>User returned an empty response for this folder</value>
+  </data>
+  <data name="just_now" xml:space="preserve">
+    <value>just now</value>
+  </data>
+  <data name="min_ago" xml:space="preserve">
+    <value>min ago</value>
+  </data>
+  <data name="hr_ago" xml:space="preserve">
+    <value>hr ago</value>
+  </data>
+  <data name="yesterday" xml:space="preserve">
+    <value>yesterday</value>
+  </data>
+  <data name="days_ago" xml:space="preserve">
+    <value>days ago</value>
+  </data>
+  <data name="Privileges" xml:space="preserve">
+    <value>Privileges</value>
+  </data>
+  <data name="search_settings" xml:space="preserve">
+    <value>Search settings</value>
+  </data>
+  <data name="no_matching_settings" xml:space="preserve">
+    <value>No matching settings</value>
+  </data>
+  <data name="invalid_number" xml:space="preserve">
+    <value>Enter a valid number</value>
+  </data>
+  <data name="value_must_be_between" xml:space="preserve">
+    <value>Value must be between {0} and {1}</value>
+  </data>
+  <data name="speed_limit_enable" xml:space="preserve">
+    <value>Enable limit</value>
+  </data>
+  <data name="speed_limit_per_transfer" xml:space="preserve">
+    <value>Per transfer</value>
+  </data>
+  <data name="speed_limit_off" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="speed_limit_kbs_total" xml:space="preserve">
+    <value>{0} KB/s · total</value>
+  </data>
+  <data name="speed_limit_kbs_per_transfer" xml:space="preserve">
+    <value>{0} KB/s · per transfer</value>
+  </data>
+  <data name="folder_file_count_one" xml:space="preserve">
+    <value>1 file</value>
+  </data>
+  <data name="folder_file_count" xml:space="preserve">
+    <value>{0} files</value>
+  </data>
+  <data name="shared_summary_folders_files" xml:space="preserve">
+    <value>{0} folders · {1} files</value>
+  </data>
+  <data name="edit_folder" xml:space="preserve">
+    <value>Edit folder</value>
+  </data>
+  <data name="subfolder" xml:space="preserve">
+    <value>Subfolder</value>
+  </data>
+  <data name="folder_hidden" xml:space="preserve">
+    <value>Hidden</value>
+  </data>
+  <data name="folder_locked" xml:space="preserve">
+    <value>Locked</value>
+  </data>
+  <data name="Donate" xml:space="preserve">
+    <value>Donate</value>
+  </data>
+  <data name="sharing_parsing_count" xml:space="preserve">
+    <value>Currently parsing ({0} files)</value>
+  </data>
+  <data name="sharing_parsing_finishing" xml:space="preserve">
+    <value>Currently parsing (finishing up)</value>
+  </data>
+  <data name="setting_subtitle_username_subfolders" xml:space="preserve">
+    <value>Group downloads by sharer</value>
+  </data>
+  <data name="setting_subtitle_file_backed" xml:space="preserve">
+    <value>Recommended · allows pausing / resuming downloads · less memory intensive</value>
+  </data>
+  <data name="setting_subtitle_import_client_data" xml:space="preserve">
+    <value>Import data from SoulseekQT, Nicotine+</value>
+  </data>
+  <data name="setting_subtitle_export_client_data" xml:space="preserve">
+    <value>Export user list, ignore list, wishlist to JSON · for backup or migration</value>
+  </data>
+  <data name="setting_subtitle_listening" xml:space="preserve">
+    <value>Allows connecting to users with closed ports</value>
+  </data>
+  <data name="keywords_download_folder" xml:space="preserve">
+    <value>location directory save destination</value>
+  </data>
+  <data name="keywords_incomplete_folder" xml:space="preserve">
+    <value>location directory partial</value>
+  </data>
+  <data name="keywords_override_incomplete" xml:space="preserve">
+    <value>location directory partial</value>
+  </data>
+  <data name="keywords_auto_clear_downloads" xml:space="preserve">
+    <value>remove delete transfers</value>
+  </data>
+  <data name="keywords_max_results" xml:space="preserve">
+    <value>results limit count</value>
+  </data>
+  <data name="keywords_locked_search" xml:space="preserve">
+    <value>private hide files</value>
+  </data>
+  <data name="keywords_locked_browse" xml:space="preserve">
+    <value>private hide files</value>
+  </data>
+  <data name="keywords_remember_search_history" xml:space="preserve">
+    <value>recent past</value>
+  </data>
+  <data name="keywords_notif_folder_complete" xml:space="preserve">
+    <value>notification download</value>
+  </data>
+  <data name="keywords_notif_toast" xml:space="preserve">
+    <value>notification download</value>
+  </data>
+  <data name="keywords_remember_recent_users" xml:space="preserve">
+    <value>history past</value>
+  </data>
+  <data name="keywords_auto_away" xml:space="preserve">
+    <value>inactive idle</value>
+  </data>
+  <data name="keywords_night_mode" xml:space="preserve">
+    <value>dark light theme night day</value>
+  </data>
+  <data name="keywords_day_variant" xml:space="preserve">
+    <value>theme color appearance</value>
+  </data>
+  <data name="keywords_night_variant" xml:space="preserve">
+    <value>theme color appearance</value>
+  </data>
+  <data name="keywords_enable_sharing" xml:space="preserve">
+    <value>upload share</value>
+  </data>
+  <data name="keywords_auto_clear_uploads" xml:space="preserve">
+    <value>remove delete transfers</value>
+  </data>
+  <data name="keywords_manage_shared" xml:space="preserve">
+    <value>folders directories upload sharing</value>
+  </data>
+  <data name="keywords_port" xml:space="preserve">
+    <value>listening</value>
+  </data>
+  <data name="keywords_upnp" xml:space="preserve">
+    <value>router port forwarding nat</value>
+  </data>
+  <data name="keywords_download_speed" xml:space="preserve">
+    <value>limit bandwidth throttle</value>
+  </data>
+  <data name="keywords_upload_speed" xml:space="preserve">
+    <value>limit bandwidth throttle</value>
+  </data>
+  <data name="keywords_max_concurrent" xml:space="preserve">
+    <value>throttle bandwidth parallel limit</value>
+  </data>
+  <data name="keywords_privileges" xml:space="preserve">
+    <value>donate</value>
+  </data>
+  <data name="keywords_diagnostics" xml:space="preserve">
+    <value>log debug bug</value>
+  </data>
+  <data name="keywords_force_filesystem" xml:space="preserve">
+    <value>storage permission</value>
+  </data>
+  <data name="keywords_edit_user_info" xml:space="preserve">
+    <value>profile bio</value>
+  </data>
+  <data name="keywords_restore_defaults" xml:space="preserve">
+    <value>reset factory</value>
+  </data>
+  <data name="IosUiSettingsTitle" xml:space="preserve"><value>Settings</value></data>
+  <data name="IosUiSettingsSearchPlaceholder" xml:space="preserve"><value>Search Settings</value></data>
+  <data name="IosUiNoMatchingSettings" xml:space="preserve"><value>No Matching Settings</value></data>
+  <data name="IosUiNoMatchingSettingsDetail" xml:space="preserve"><value>Try another title, description, or keyword.</value></data>
+  <data name="IosUiDownloadsSection" xml:space="preserve"><value>Downloads</value></data>
+  <data name="IosUiTransferSpeedsSection" xml:space="preserve"><value>Transfer Speeds</value></data>
+  <data name="IosUiSearchSection" xml:space="preserve"><value>Search and Browse</value></data>
+  <data name="IosUiSocialSection" xml:space="preserve"><value>Messages and Rooms</value></data>
+  <data name="IosUiSharingSection" xml:space="preserve"><value>Sharing</value></data>
+  <data name="IosUiConnectionSection" xml:space="preserve"><value>Connection</value></data>
+  <data name="IosUiSupportSection" xml:space="preserve"><value>Data and Support</value></data>
+  <data name="IosUiCreateUserFolders" xml:space="preserve"><value>Create Username Folders</value></data>
+  <data name="IosUiCreateUserFoldersDetail" xml:space="preserve"><value>Group downloaded files inside a folder named for the sharing user.</value></data>
+  <data name="IosUiSkipSingleFolder" xml:space="preserve"><value>Skip Folder for One File</value></data>
+  <data name="IosUiSkipSingleFolderDetail" xml:space="preserve"><value>Save a single selected file directly in its destination.</value></data>
+  <data name="IosUiAutoClearDownloads" xml:space="preserve"><value>Clear Completed Downloads</value></data>
+  <data name="IosUiAutoClearDownloadsDetail" xml:space="preserve"><value>Remove completed download rows automatically. Files remain in Documents.</value></data>
+  <data name="IosUiAutoClearUploads" xml:space="preserve"><value>Clear Completed Uploads</value></data>
+  <data name="IosUiAutoClearUploadsDetail" xml:space="preserve"><value>Remove completed upload rows automatically.</value></data>
+  <data name="IosUiRetryOnline" xml:space="preserve"><value>Retry When Back Online</value></data>
+  <data name="IosUiRetryOnlineDetail" xml:space="preserve"><value>Retry eligible downloads after the app reconnects in the foreground.</value></data>
+  <data name="IosUiKeepAwake" xml:space="preserve"><value>Keep Screen Awake During Transfers</value></data>
+  <data name="IosUiKeepAwakeDetail" xml:space="preserve"><value>Prevent display sleep only while the app is active and transfers are running.</value></data>
+  <data name="IosUiFolderNotifications" xml:space="preserve"><value>Folder Completion Notifications</value></data>
+  <data name="IosUiFolderNotificationsDetail" xml:space="preserve"><value>Notify when every file in a download folder finishes.</value></data>
+  <data name="IosUiBackgroundTransfers" xml:space="preserve"><value>Background Transfers</value></data>
+  <data name="IosUiBackgroundTransfersValue" xml:space="preserve"><value>Limited by iOS</value></data>
+  <data name="IosUiBackgroundTransfersDetail" xml:space="preserve"><value>Active transfers may continue for a limited time after AnimaSeek leaves the foreground. Queued or stalled work can pause; reopen the app to reconnect and resume eligible downloads. Uploads may wait for the peer to request them again.</value></data>
+  <data name="IosUiDownloadSpeedLimit" xml:space="preserve"><value>Download Speed Limit</value></data>
+  <data name="IosUiDownloadSpeedLimitDetail" xml:space="preserve"><value>Limit download bandwidth immediately, either for each download or across all active downloads.</value></data>
+  <data name="IosUiUploadSpeedLimit" xml:space="preserve"><value>Upload Speed Limit</value></data>
+  <data name="IosUiUploadSpeedLimitDetail" xml:space="preserve"><value>Limit upload bandwidth immediately, either for each upload or across all active uploads.</value></data>
+  <data name="IosUiSpeedLimitEnableDetail" xml:space="preserve"><value>Turn this governor on or off without changing the saved rate.</value></data>
+  <data name="IosUiSpeedLimitScope" xml:space="preserve"><value>Limit Applies To</value></data>
+  <data name="IosUiSpeedLimitScopeDetail" xml:space="preserve"><value>Choose whether every transfer gets this rate or all active transfers share it.</value></data>
+  <data name="IosUiPerTransfer" xml:space="preserve"><value>Each Transfer</value></data>
+  <data name="IosUiPerTransferDetail" xml:space="preserve"><value>Every active transfer may use up to the configured rate.</value></data>
+  <data name="IosUiAcrossAllTransfers" xml:space="preserve"><value>All Transfers Combined</value></data>
+  <data name="IosUiAcrossAllTransfersDetail" xml:space="preserve"><value>Active transfers share the configured total rate.</value></data>
+  <data name="IosUiSpeedLimitRate" xml:space="preserve"><value>Speed Limit</value></data>
+  <data name="IosUiSpeedLimitRateDetail" xml:space="preserve"><value>Enter a positive whole-number rate in kilobytes per second.</value></data>
+  <data name="IosUiSpeedLimitRatePlaceholder" xml:space="preserve"><value>Rate</value></data>
+  <data name="IosUiKilobytesPerSecond" xml:space="preserve"><value>Kilobytes per second (KB/s)</value></data>
+  <data name="IosUiSpeedLimitRange" xml:space="preserve"><value>Enter a whole number from {0} to {1} KB/s. The saved limit applies immediately to active and future transfers.</value></data>
+  <data name="IosUiSpeedLimitInvalid" xml:space="preserve"><value>Enter a whole-number speed from {0} to {1} KB/s.</value></data>
+  <data name="IosUiResultLimit" xml:space="preserve"><value>Maximum Search Results</value></data>
+  <data name="IosUiRememberSearches" xml:space="preserve"><value>Remember Search History</value></data>
+  <data name="IosUiRememberSearchesDetail" xml:space="preserve"><value>Keep recent queries on this device.</value></data>
+  <data name="IosUiRememberUsers" xml:space="preserve"><value>Remember Recent Users</value></data>
+  <data name="IosUiRememberUsersDetail" xml:space="preserve"><value>Keep recent user names available for faster navigation.</value></data>
+  <data name="IosUiFreeSlotsOnly" xml:space="preserve"><value>Prefer Free Upload Slots</value></data>
+  <data name="IosUiFreeSlotsOnlyDetail" xml:space="preserve"><value>Show results only from users currently reporting a free slot.</value></data>
+  <data name="IosUiHideLockedSearch" xml:space="preserve"><value>Hide Locked Search Results</value></data>
+  <data name="IosUiHideLockedBrowse" xml:space="preserve"><value>Hide Locked Browse Files</value></data>
+  <data name="IosUiExpandResults" xml:space="preserve"><value>Expand Result Groups</value></data>
+  <data name="IosUiExpandResultsDetail" xml:space="preserve"><value>Open grouped search results by default.</value></data>
+  <data name="IosUiPrivateInvitations" xml:space="preserve"><value>Private Room Invitations</value></data>
+  <data name="IosUiPrivateInvitationsDetail" xml:space="preserve"><value>Allow invitations to private rooms while connected.</value></data>
+  <data name="IosUiShowRoomStatus" xml:space="preserve"><value>Show Room Status Events</value></data>
+  <data name="IosUiShowRoomStatusDetail" xml:space="preserve"><value>Include join, leave, online, and away events in room details.</value></data>
+  <data name="IosUiShowTickers" xml:space="preserve"><value>Show Room Tickers</value></data>
+  <data name="IosUiShowTickersDetail" xml:space="preserve"><value>Display member ticker messages in joined rooms.</value></data>
+  <data name="IosUiNotifications" xml:space="preserve"><value>Notification Permission</value></data>
+  <data name="IosUiNotificationsDetail" xml:space="preserve"><value>Ask iOS for permission to deliver message and completion notifications.</value></data>
+  <data name="IosUiNotificationsChecking" xml:space="preserve"><value>Checking…</value></data>
+  <data name="IosUiNotificationsCheckingDetail" xml:space="preserve"><value>Reading the current notification permission from iOS.</value></data>
+  <data name="IosUiNotificationsUnavailable" xml:space="preserve"><value>Status Unavailable</value></data>
+  <data name="IosUiNotificationsUnavailableDetail" xml:space="preserve"><value>iOS returned an unrecognized notification permission state. Reopen Settings to refresh it.</value></data>
+  <data name="IosUiNotificationsNotDetermined" xml:space="preserve"><value>Not Determined</value></data>
+  <data name="IosUiNotificationsNotDeterminedDetail" xml:space="preserve"><value>iOS has not asked yet. Select this row to choose whether AnimaSeek may deliver message and completion notifications.</value></data>
+  <data name="IosUiNotificationsDenied" xml:space="preserve"><value>Denied</value></data>
+  <data name="IosUiNotificationsDeniedDetail" xml:space="preserve"><value>iOS is blocking notifications. You can change this permission in the iOS Settings app.</value></data>
+  <data name="IosUiNotificationsAuthorized" xml:space="preserve"><value>Authorized</value></data>
+  <data name="IosUiNotificationsAuthorizedDetail" xml:space="preserve"><value>iOS allows AnimaSeek notifications. Alert styles and sounds remain under your control in the iOS Settings app.</value></data>
+  <data name="IosUiNotificationsProvisional" xml:space="preserve"><value>Provisional — Delivering Quietly</value></data>
+  <data name="IosUiNotificationsProvisionalDetail" xml:space="preserve"><value>iOS may deliver notifications quietly without a prominent alert. You can change this in the iOS Settings app.</value></data>
+  <data name="IosUiNotificationsEphemeral" xml:space="preserve"><value>Temporarily Authorized</value></data>
+  <data name="IosUiNotificationsEphemeralDetail" xml:space="preserve"><value>iOS has temporarily allowed notifications for this session.</value></data>
+  <data name="IosUiNotificationsAuthorizedFeedback" xml:space="preserve"><value>Notifications are authorized.</value></data>
+  <data name="IosUiNotificationsProvisionalFeedback" xml:space="preserve"><value>Notifications are provisionally authorized and may be delivered quietly.</value></data>
+  <data name="IosUiNotificationsEphemeralFeedback" xml:space="preserve"><value>Notifications are temporarily authorized.</value></data>
+  <data name="IosUiNotificationsNotDeterminedFeedback" xml:space="preserve"><value>iOS has not recorded a notification choice.</value></data>
+  <data name="IosUiNotificationsUnknownFeedback" xml:space="preserve"><value>The current notification permission could not be read. Reopen Settings to try again.</value></data>
+  <data name="IosUiSharingEnabled" xml:space="preserve"><value>Share Documents</value></data>
+  <data name="IosUiSharingEnabledDetail" xml:space="preserve"><value>Make eligible files in the app's Documents folder visible to Soulseek peers.</value></data>
+  <data name="IosUiDocumentsLocation" xml:space="preserve"><value>Shared and Downloaded Files</value></data>
+  <data name="IosUiDocumentsLocationValue" xml:space="preserve"><value>Files › On My iPhone › AnimaSeek</value></data>
+  <data name="IosUiDocumentsLocationDetail" xml:space="preserve"><value>iOS manages this Files-visible Documents location. Open or share individual files from Transfers.</value></data>
+  <data name="IosUiAllowMetered" xml:space="preserve"><value>Allow Uploads on Metered Networks</value></data>
+  <data name="IosUiRequireVpn" xml:space="preserve"><value>Require VPN for Sharing</value></data>
+  <data name="IosUiRescanShares" xml:space="preserve"><value>Rescan Shared Files</value></data>
+  <data name="IosUiRescanSharesDetail" xml:space="preserve"><value>Rebuild the Documents index and publish its current counts.</value></data>
+  <data name="IosUiBrowseYourShares" xml:space="preserve"><value>Browse Your Shares</value></data>
+  <data name="IosUiListener" xml:space="preserve"><value>Incoming Listener</value></data>
+  <data name="IosUiListenerDetail" xml:space="preserve"><value>Accept direct peer connections while AnimaSeek is active.</value></data>
+  <data name="IosUiListenerPort" xml:space="preserve"><value>Listener Port</value></data>
+  <data name="IosUiListenerPortDetail" xml:space="preserve"><value>Port used for direct peer connections while AnimaSeek is active.</value></data>
+  <data name="IosUiNatPmp" xml:space="preserve"><value>Automatic NAT-PMP Mapping</value></data>
+  <data name="IosUiNatPmpDetail" xml:space="preserve"><value>Ask a compatible local router to map the listener port while the app is active.</value></data>
+  <data name="IosUiConcurrentDownloads" xml:space="preserve"><value>Limit Concurrent Downloads</value></data>
+  <data name="IosUiConcurrentDownloadsDetail" xml:space="preserve"><value>Restrict how many downloads may run at once.</value></data>
+  <data name="IosUiConcurrentCount" xml:space="preserve"><value>Concurrent Download Count</value></data>
+  <data name="IosUiImportSettings" xml:space="preserve"><value>Import Client Data</value></data>
+  <data name="IosUiImportSettingsDetail" xml:space="preserve"><value>Review friends, ignored users, wishlist entries, and notes before merging.</value></data>
+  <data name="IosUiDiagnostics" xml:space="preserve"><value>Diagnostics</value></data>
+  <data name="IosUiDiagnosticsDetail" xml:space="preserve"><value>Inspect connection state, versions, sharing counts, and exportable logs.</value></data>
+  <data name="IosUiAbout" xml:space="preserve"><value>About AnimaSeek</value></data>
+  <data name="IosUiLegal" xml:space="preserve"><value>Legal Notices</value></data>
+  <data name="IosUiRestoreDefaults" xml:space="preserve"><value>Restore Applicable Defaults</value></data>
+  <data name="IosUiRestoreDefaultsDetail" xml:space="preserve"><value>Reset the settings shown here. Account credentials and downloaded files are not removed.</value></data>
+  <data name="IosUiRestoreDefaultsConfirm" xml:space="preserve"><value>Restore the applicable AnimaSeek settings to their defaults?</value></data>
+  <data name="IosUiRestoreDefaultsAction" xml:space="preserve"><value>Restore Defaults</value></data>
+  <data name="IosUiCancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="IosUiRetry" xml:space="preserve"><value>Try Again</value></data>
+  <data name="IosUiSave" xml:space="preserve"><value>Save</value></data>
+  <data name="IosUiDone" xml:space="preserve"><value>Done</value></data>
+  <data name="IosUiDelete" xml:space="preserve"><value>Delete</value></data>
+  <data name="IosUiUndo" xml:space="preserve"><value>Undo</value></data>
+  <data name="IosUiSend" xml:space="preserve"><value>Send</value></data>
+  <data name="IosUiAdd" xml:space="preserve"><value>Add</value></data>
+  <data name="IosUiClose" xml:space="preserve"><value>Close</value></data>
+  <data name="IosUiWorking" xml:space="preserve"><value>Working…</value></data>
+  <data name="IosUiSaved" xml:space="preserve"><value>Saved</value></data>
+  <data name="IosUiActionFailed" xml:space="preserve"><value>The change could not be completed. Your previous setting is still active.</value></data>
+  <data name="IosUiPermissionDenied" xml:space="preserve"><value>Notifications remain off. You can allow them later in iOS Settings.</value></data>
+  <data name="IosUiReconnectRequired" xml:space="preserve"><value>Reconnect required</value></data>
+  <data name="IosUiImportTitle" xml:space="preserve"><value>Import Client Data</value></data>
+  <data name="IosUiImportIntro" xml:space="preserve"><value>Choose an export file, review its categories, then merge only what you want. Nothing changes before you confirm.</value></data>
+  <data name="IosUiChooseFile" xml:space="preserve"><value>Choose Export File</value></data>
+  <data name="IosUiParsingImport" xml:space="preserve"><value>Reading the selected file…</value></data>
+  <data name="IosUiImportReview" xml:space="preserve"><value>Review Import</value></data>
+  <data name="IosUiImportSourceFormat" xml:space="preserve"><value>Source: {0}</value></data>
+  <data name="IosUiImportCategoryCount" xml:space="preserve"><value>{0} entries, {1} already present</value></data>
+  <data name="IosUiMergeSelected" xml:space="preserve"><value>Merge Selected Data</value></data>
+  <data name="IosUiImporting" xml:space="preserve"><value>Merging selected data…</value></data>
+  <data name="IosUiImportComplete" xml:space="preserve"><value>Import Complete</value></data>
+  <data name="IosUiImportCompleteDetail" xml:space="preserve"><value>Added {0} friends, {1} ignored users, {2} wishlist entries, and {3} notes.</value></data>
+  <data name="IosUiImportWatchWarning" xml:space="preserve"><value>{0} friend subscription updates will retry after reconnecting.</value></data>
+  <data name="IosUiImportFailed" xml:space="preserve"><value>This file could not be imported. Choose a supported, unmodified export file and try again.</value></data>
+  <data name="IosUiImportNothingNewDetail" xml:space="preserve"><value>Every supported entry in this file is already on this device. Nothing was changed.</value></data>
+  <data name="IosUiReviewExistingData" xml:space="preserve"><value>Review Existing Data</value></data>
+  <data name="IosUiChooseAnotherFile" xml:space="preserve"><value>Choose Another File</value></data>
+  <data name="IosUiMessagesTitle" xml:space="preserve"><value>Messages</value></data>
+  <data name="IosUiComposeMessage" xml:space="preserve"><value>New Message</value></data>
+  <data name="IosUiUsername" xml:space="preserve"><value>Username</value></data>
+  <data name="IosUiMessagePlaceholder" xml:space="preserve"><value>Message</value></data>
+  <data name="IosUiOpenConversation" xml:space="preserve"><value>Open Conversation</value></data>
+  <data name="IosUiMarkAllRead" xml:space="preserve"><value>Mark All Read</value></data>
+  <data name="IosUiNoMessages" xml:space="preserve"><value>No Messages Yet</value></data>
+  <data name="IosUiNoMessagesDetail" xml:space="preserve"><value>Start a conversation with a Soulseek user. Incoming messages will appear here.</value></data>
+  <data name="IosUiConversationSummary" xml:space="preserve"><value>{0}, {1}, {2}</value></data>
+  <data name="IosUiUnreadCount" xml:space="preserve"><value>{0} unread</value></data>
+  <data name="IosUiRead" xml:space="preserve"><value>Read</value></data>
+  <data name="IosUiUnread" xml:space="preserve"><value>Unread</value></data>
+  <data name="IosUiConversationDeleted" xml:space="preserve"><value>Conversation deleted</value></data>
+  <data name="IosUiDeleteConversationConfirm" xml:space="preserve"><value>Delete this conversation from this device?</value></data>
+  <data name="IosUiEmptyConversation" xml:space="preserve"><value>No Messages in This Conversation</value></data>
+  <data name="IosUiEmptyConversationDetail" xml:space="preserve"><value>Write a message below to start the conversation.</value></data>
+  <data name="IosUiMessageSending" xml:space="preserve"><value>Sending</value></data>
+  <data name="IosUiMessageFailed" xml:space="preserve"><value>Not sent</value></data>
+  <data name="IosUiCopyMessage" xml:space="preserve"><value>Copy Message</value></data>
+  <data name="IosUiViewProfile" xml:space="preserve"><value>View Profile</value></data>
+  <data name="IosUiBrowseUser" xml:space="preserve"><value>Browse User</value></data>
+  <data name="IosUiSearchUser" xml:space="preserve"><value>Search This User</value></data>
+  <data name="IosUiChatroomsTitle" xml:space="preserve"><value>Chatrooms</value></data>
+  <data name="IosUiRoomSearchPlaceholder" xml:space="preserve"><value>Filter Rooms</value></data>
+  <data name="IosUiRefreshRooms" xml:space="preserve"><value>Refresh Rooms</value></data>
+  <data name="IosUiCreateRoom" xml:space="preserve"><value>Create Room</value></data>
+  <data name="IosUiRoomName" xml:space="preserve"><value>Room Name</value></data>
+  <data name="IosUiPrivateRoom" xml:space="preserve"><value>Private Room</value></data>
+  <data name="IosUiPublicRooms" xml:space="preserve"><value>Public Rooms</value></data>
+  <data name="IosUiPrivateRooms" xml:space="preserve"><value>Private Rooms</value></data>
+  <data name="IosUiJoinedRooms" xml:space="preserve"><value>Joined and Recent</value></data>
+  <data name="IosUiNoRooms" xml:space="preserve"><value>No Rooms Available</value></data>
+  <data name="IosUiNoRoomsDetail" xml:space="preserve"><value>Refresh after connecting, or create a room by name.</value></data>
+  <data name="IosUiNoRoomsMatch" xml:space="preserve"><value>No Rooms Match</value></data>
+  <data name="IosUiRoomCount" xml:space="preserve"><value>{0} users</value></data>
+  <data name="IosUiRoomJoined" xml:space="preserve"><value>Joined</value></data>
+  <data name="IosUiRoomNotJoined" xml:space="preserve"><value>Not joined</value></data>
+  <data name="IosUiRoomJoining" xml:space="preserve"><value>Joining…</value></data>
+  <data name="IosUiRoomDisconnected" xml:space="preserve"><value>Disconnected</value></data>
+  <data name="IosUiRoomJoinFailed" xml:space="preserve"><value>Could Not Join Room</value></data>
+  <data name="IosUiRoomJoinFailedDetail" xml:space="preserve"><value>Check your connection and try joining again.</value></data>
+  <data name="IosUiJoinRoom" xml:space="preserve"><value>Join Room</value></data>
+  <data name="IosUiLeaveRoom" xml:space="preserve"><value>Leave Room</value></data>
+  <data name="IosUiLeaveRoomConfirm" xml:space="preserve"><value>Leave this room and stop joining it automatically?</value></data>
+  <data name="IosUiRoomUsers" xml:space="preserve"><value>Room Users</value></data>
+  <data name="IosUiRoomTickers" xml:space="preserve"><value>Room Tickers</value></data>
+  <data name="IosUiAutoJoinRoom" xml:space="preserve"><value>Join Automatically</value></data>
+  <data name="IosUiRoomNotifications" xml:space="preserve"><value>Room Notifications</value></data>
+  <data name="IosUiSetTicker" xml:space="preserve"><value>Set My Ticker</value></data>
+  <data name="IosUiTickerPlaceholder" xml:space="preserve"><value>Ticker message; leave empty to clear</value></data>
+  <data name="IosUiScrollLatest" xml:space="preserve"><value>Scroll to Latest</value></data>
+  <data name="IosUiNoRoomMessages" xml:space="preserve"><value>No Room Messages Yet</value></data>
+  <data name="IosUiNoRoomMessagesDetail" xml:space="preserve"><value>Join the room to read and send messages.</value></data>
+  <data name="IosUiNoRoomUsers" xml:space="preserve"><value>No Room Users Available</value></data>
+  <data name="IosUiNoTickers" xml:space="preserve"><value>No Tickers</value></data>
+  <data name="IosUiNoTickersDetail" xml:space="preserve"><value>No room member has set a ticker message.</value></data>
+  <data name="IosUiUsersTitle" xml:space="preserve"><value>Users</value></data>
+  <data name="IosUiFriends" xml:space="preserve"><value>Friends</value></data>
+  <data name="IosUiIgnoredUsers" xml:space="preserve"><value>Ignored Users</value></data>
+  <data name="IosUiAddFriend" xml:space="preserve"><value>Add Friend</value></data>
+  <data name="IosUiIgnoreUser" xml:space="preserve"><value>Ignore User</value></data>
+  <data name="IosUiRemoveFriend" xml:space="preserve"><value>Remove Friend</value></data>
+  <data name="IosUiStopIgnoring" xml:space="preserve"><value>Stop Ignoring</value></data>
+  <data name="IosUiOnlineAlert" xml:space="preserve"><value>Alert When Online</value></data>
+  <data name="IosUiEditNote" xml:space="preserve"><value>Edit Note</value></data>
+  <data name="IosUiUserNotePlaceholder" xml:space="preserve"><value>Private note stored on this device</value></data>
+  <data name="IosUiNoUsers" xml:space="preserve"><value>No Saved Users</value></data>
+  <data name="IosUiNoUsersDetail" xml:space="preserve"><value>Add friends or ignored users by username. You can change either list later.</value></data>
+  <data name="IosUiPresenceOnline" xml:space="preserve"><value>Online</value></data>
+  <data name="IosUiPresenceAway" xml:space="preserve"><value>Away</value></data>
+  <data name="IosUiPresenceOffline" xml:space="preserve"><value>Offline</value></data>
+  <data name="IosUiPresenceUnknown" xml:space="preserve"><value>Status unknown</value></data>
+  <data name="IosUiUserDoesNotExist" xml:space="preserve"><value>Account not found</value></data>
+  <data name="IosUiUserSummary" xml:space="preserve"><value>{0}; {1}</value></data>
+  <data name="IosUiProfileTitle" xml:space="preserve"><value>User Profile</value></data>
+  <data name="IosUiLoadingProfile" xml:space="preserve"><value>Loading profile…</value></data>
+  <data name="IosUiProfileFailed" xml:space="preserve"><value>Profile Unavailable</value></data>
+  <data name="IosUiProfileFailedDetail" xml:space="preserve"><value>This user's profile could not be loaded. Check the connection and try again.</value></data>
+  <data name="IosUiNoProfileImage" xml:space="preserve"><value>No profile image</value></data>
+  <data name="IosUiProfileBiography" xml:space="preserve"><value>About</value></data>
+  <data name="IosUiProfileStatistics" xml:space="preserve"><value>Sharing Statistics</value></data>
+  <data name="IosUiProfileFiles" xml:space="preserve"><value>{0} files in {1} folders</value></data>
+  <data name="IosUiProfileSpeed" xml:space="preserve"><value>Average speed: {0}</value></data>
+  <data name="IosUiProfileUploads" xml:space="preserve"><value>Uploads: {0}</value></data>
+  <data name="IosUiProfileQueue" xml:space="preserve"><value>Queue length: {0}</value></data>
+  <data name="IosUiProfileSlots" xml:space="preserve"><value>{0} upload slots; {1}</value></data>
+  <data name="IosUiFreeSlot" xml:space="preserve"><value>free slot available</value></data>
+  <data name="IosUiNoFreeSlot" xml:space="preserve"><value>no free slot</value></data>
+  <data name="IosUiSendMessage" xml:space="preserve"><value>Send Message</value></data>
+  <data name="IosUiDiagnosticsTitle" xml:space="preserve"><value>Diagnostics</value></data>
+  <data name="IosUiAppVersion" xml:space="preserve"><value>App Version</value></data>
+  <data name="IosUiConnectionStatus" xml:space="preserve"><value>Connection Status</value></data>
+  <data name="IosUiConnected" xml:space="preserve"><value>Connected</value></data>
+  <data name="IosUiNotConnected" xml:space="preserve"><value>Not connected</value></data>
+  <data name="IosUiShareStatus" xml:space="preserve"><value>Shared Documents</value></data>
+  <data name="IosUiShareCounts" xml:space="preserve"><value>{0} files in {1} folders</value></data>
+  <data name="IosUiPortMapping" xml:space="preserve"><value>NAT-PMP Mapping</value></data>
+  <data name="IosUiRefreshDiagnostics" xml:space="preserve"><value>Refresh Diagnostics</value></data>
+  <data name="IosUiShareLogs" xml:space="preserve"><value>Share Diagnostic Log</value></data>
+  <data name="IosUiShareLogsDetail" xml:space="preserve"><value>Uses the iOS share sheet. The exported log contains timestamps, severity, one-way event signatures, and exception types—not usernames, messages, queries, or file paths.</value></data>
+  <data name="IosUiLogUnavailable" xml:space="preserve"><value>No diagnostic log is available yet.</value></data>
+  <data name="IosUiUnknown" xml:space="preserve"><value>Unknown</value></data>
+  <data name="IosUiBytesPerSecond" xml:space="preserve"><value>{0}/s</value></data>
+  <data name="IosUiAccessibilitySwitchValue" xml:space="preserve"><value>{0}. {1}</value></data>
+  <data name="IosUiOn" xml:space="preserve"><value>On</value></data>
+  <data name="IosUiOff" xml:space="preserve"><value>Off</value></data>
+  <data name="IosUiSelectAll" xml:space="preserve"><value>Select All</value></data>
+  <data name="IosUiDeselectAll" xml:space="preserve"><value>Deselect All</value></data>
+  <data name="IosUiSelectedCount" xml:space="preserve"><value>{0} of {1} selected</value></data>
+  <data name="IosUiEnterValue" xml:space="preserve"><value>Enter Value</value></data>
+  <data name="IosUiValueRange" xml:space="preserve"><value>Enter a number from {0} through {1}.</value></data>
+  <data name="IosUiInvalidValue" xml:space="preserve"><value>That value is outside the supported range.</value></data>
+  <data name="IosUiSettingChanged" xml:space="preserve"><value>Setting changed</value></data>
+  <data name="IosUiDismiss" xml:space="preserve"><value>Dismiss</value></data>
+  <data name="IosUiNatDisabled" xml:space="preserve"><value>Disabled</value></data>
+  <data name="IosUiNatWaitingSession" xml:space="preserve"><value>Waiting for a connected session</value></data>
+  <data name="IosUiNatWaitingNetwork" xml:space="preserve"><value>Waiting for a suitable local network</value></data>
+  <data name="IosUiNatDiscovering" xml:space="preserve"><value>Discovering a compatible router</value></data>
+  <data name="IosUiNatCreating" xml:space="preserve"><value>Requesting a port mapping</value></data>
+  <data name="IosUiNatMapped" xml:space="preserve"><value>Mapped private port {0} to public port {1}</value></data>
+  <data name="IosUiNatUnavailable" xml:space="preserve"><value>Unavailable; relay paths remain usable</value></data>
+  <data name="IosUiNatSuspended" xml:space="preserve"><value>Paused while the app is in the background</value></data>
+  <data name="IosNotificationReply" xml:space="preserve"><value>Reply</value></data>
+  <data name="IosNotificationSend" xml:space="preserve"><value>Send</value></data>
+  <data name="IosNotificationMessagePlaceholder" xml:space="preserve"><value>Message</value></data>
+  <data name="IosNotificationMarkRead" xml:space="preserve"><value>Mark as Read</value></data>
+  <data name="IosNotificationMessageFrom" xml:space="preserve"><value>Message from {0}</value></data>
+  <data name="IosNotificationReplySending" xml:space="preserve"><value>Sending reply to {0}</value></data>
+  <data name="IosNotificationReplySent" xml:space="preserve"><value>Reply sent to {0}</value></data>
+  <data name="IosNotificationReplyFailed" xml:space="preserve"><value>Reply not sent to {0}</value></data>
+  <data name="IosNotificationReplyFailedBody" xml:space="preserve"><value>Open the conversation to try again.</value></data>
+  <data name="IosNotificationReplyFailedReason" xml:space="preserve"><value>{0} Open the conversation to try again.</value></data>
+  <data name="IosNotificationRoomMessage" xml:space="preserve"><value>{0} · {1}</value></data>
+  <data name="IosNotificationWishlistTitle" xml:space="preserve"><value>Wishlist Results</value></data>
+  <data name="IosNotificationWishlistBodySingle" xml:space="preserve"><value>{0} new result for “{1}”.</value></data>
+  <data name="IosNotificationWishlistBodyPlural" xml:space="preserve"><value>{0} new results for “{1}”.</value></data>
+  <data name="IosNotificationDownloadComplete" xml:space="preserve"><value>Download Complete</value></data>
+  <data name="IosNotificationFolderCompleteBody" xml:space="preserve"><value>{0} from {1} finished downloading.</value></data>
+  <data name="IosNotificationUserOnline" xml:space="preserve"><value>User Online</value></data>
+  <data name="IosNotificationUserOnlineBody" xml:space="preserve"><value>{0} is online.</value></data>
+  <data name="IosNotificationDownload" xml:space="preserve"><value>Download</value></data>
+  <data name="IosNotificationUpload" xml:space="preserve"><value>Upload</value></data>
+  <data name="IosNotificationTransferTitle" xml:space="preserve"><value>{0}: {1}</value></data>
+  <data name="IosNotificationActivityUpdated" xml:space="preserve"><value>Activity updated.</value></data>
+  <data name="IosNotificationTransferring" xml:space="preserve"><value>Transferring</value></data>
+  <data name="IosNotificationCompleted" xml:space="preserve"><value>Completed</value></data>
+  <data name="IosNotificationFailed" xml:space="preserve"><value>Failed</value></data>
+  <data name="IosNotificationCanceled" xml:space="preserve"><value>Canceled</value></data>
+  <data name="IosNotificationPaused" xml:space="preserve"><value>Paused</value></data>
+  <data name="IosNotificationQueued" xml:space="preserve"><value>Queued</value></data>
+  <data name="IosNotificationTransferBodyProgress" xml:space="preserve"><value>{0} · {1:0}% · {2}</value></data>
+  <data name="IosNotificationTransferBody" xml:space="preserve"><value>{0} · {1}</value></data>
+  <data name="IosUiSignInToContinue" xml:space="preserve"><value>Sign in to continue.</value></data>
+  <data name="IosUiReconnectFailed" xml:space="preserve"><value>Could not reconnect.</value></data>
+  <data name="IosUiMoreActions" xml:space="preserve"><value>More Actions</value></data>
+  <data name="IosUiEdit" xml:space="preserve"><value>Edit</value></data>
+  <data name="IosUiSelectedMessages" xml:space="preserve"><value>{0} conversations selected</value></data>
+  <data name="IosUiDeleteSelectedConversations" xml:space="preserve"><value>Delete Selected Conversations</value></data>
+  <data name="IosUiNewConversationDetail" xml:space="preserve"><value>Enter a Soulseek username to open a conversation.</value></data>
+  <data name="IosUiMessageSendFailed" xml:space="preserve"><value>The message was not sent. Check the connection, then try again.</value></data>
+  <data name="IosUiDeleteConversation" xml:space="preserve"><value>Delete Conversation</value></data>
+  <data name="IosUiConversationActions" xml:space="preserve"><value>Conversation Actions</value></data>
+  <data name="IosBackgroundDownloading" xml:space="preserve"><value>Downloading</value></data>
+  <data name="IosBackgroundUploading" xml:space="preserve"><value>Uploading</value></data>
+  <data name="IosBackgroundTransferring" xml:space="preserve"><value>Transferring</value></data>
+  <data name="IosBackgroundTransferTitleSingle" xml:space="preserve"><value>{0} {1} file</value></data>
+  <data name="IosBackgroundTransferTitlePlural" xml:space="preserve"><value>{0} {1} files</value></data>
+  <data name="IosBackgroundTransferProgressSingle" xml:space="preserve"><value>{0:0}% · {1} active transfer</value></data>
+  <data name="IosBackgroundTransferProgressPlural" xml:space="preserve"><value>{0:0}% · {1} active transfers</value></data>
+  <data name="IosBackgroundContinuationDeclined" xml:space="preserve"><value>iOS declined background transfers. Downloads pause when you leave AnimaSeek and resume when you return.</value></data>
+  <data name="IosBackgroundContinuationSimulator" xml:space="preserve"><value>The iOS Simulator does not allow background transfers. Downloads pause when you leave AnimaSeek; test background transfers on a device.</value></data>
+  <data name="IosUiBackgroundTransfers" xml:space="preserve"><value>Background Transfers</value></data>
+  <data name="IosUiBackgroundTransfersUnknown" xml:space="preserve"><value>Not requested yet</value></data>
+  <data name="IosUiBackgroundTransfersAvailable" xml:space="preserve"><value>Granted by iOS</value></data>
+  <data name="IosUiBackgroundTransfersDeclined" xml:space="preserve"><value>Declined by iOS · transfers pause when the app leaves the foreground</value></data>
+  <data name="IosUiBackgroundTransfersUnavailable" xml:space="preserve"><value>Unavailable on this system · transfers pause when the app leaves the foreground</value></data>
+  <data name="IosUiSelectedCountCompact" xml:space="preserve"><value>{0}/{1}</value></data>
+  <data name="IosUiOpenInFiles" xml:space="preserve"><value>Opens the Files app</value></data>
+  <data name="IosUiOpenInFilesFailed" xml:space="preserve"><value>The Files app could not be opened.</value></data>
+  <data name="IosUiFeatureUnavailable" xml:space="preserve"><value>Destination Unavailable</value></data>
+  <data name="IosUiFeatureUnavailableDetail" xml:space="preserve"><value>This destination is not available in the current application state.</value></data>
+  <data name="IosUiUnreadItems" xml:space="preserve"><value>{0} unread items</value></data>
+  <data name="IosUiAppLogoAccessibilityLabel" xml:space="preserve"><value>AnimaSeek logo</value></data>
+  <data name="IosUiAboutBody" xml:space="preserve"><value>AnimaSeek is a free, open-source, native iPhone client for the Soulseek network. It has no ads or paid features.</value></data>
+  <data name="IosUiVersionFormat" xml:space="preserve"><value>Version {0} ({1})</value></data>
+  <data name="IosUiNoticesAndLicenses" xml:space="preserve"><value>Notices and Licenses</value></data>
+  <data name="IosUiLegalFooter" xml:space="preserve"><value>These notices accompany the exact components bundled with this version of AnimaSeek.</value></data>
+  <data name="IosUiModifiedLibraryNoticeTitle" xml:space="preserve"><value>Modified Soulseek.NET Library</value></data>
+  <data name="IosUiModifiedLibraryNoticeSummary" xml:space="preserve"><value>Required modified-library identity statement</value></data>
+  <data name="IosUiOpenFullNotice" xml:space="preserve"><value>Open the complete bundled text</value></data>
+  <data name="IosUiConnectingDetail" xml:space="preserve"><value>AnimaSeek is establishing a secure session with the Soulseek server.</value></data>
+  <data name="IosUiConnectingAs" xml:space="preserve"><value>Signing in as {0}. You can cancel and try another account.</value></data>
+  <data name="IosUiConnectionReadyDetail" xml:space="preserve"><value>Search, transfers, browsing, messages, and rooms are available.</value></data>
+  <data name="IosUiDisconnectedDetail" xml:space="preserve"><value>AnimaSeek is offline. Local files, settings, About, and legal information remain available.</value></data>
+  <data name="IosUiReconnect" xml:space="preserve"><value>Reconnect</value></data>
+  <data name="IosUiReconnecting" xml:space="preserve"><value>Reconnecting</value></data>
+  <data name="IosUiReconnectingAs" xml:space="preserve"><value>Restoring the Soulseek session for {0}. You can cancel and sign in with another account.</value></data>
+  <data name="IosUiComposeSuggestions" xml:space="preserve"><value>Enter a username. Saved people include: {0}.</value></data>
+  <data name="IosUiMarkSelectedRead" xml:space="preserve"><value>Mark Selected Read</value></data>
+  <data name="IosUiMarkedSelectedRead" xml:space="preserve"><value>Selected conversations marked read.</value></data>
+  <data name="IosUiMessagesOffline" xml:space="preserve"><value>Messages Are Offline</value></data>
+  <data name="IosUiMessagesOfflineDetail" xml:space="preserve"><value>Saved conversations remain available. Reconnect from Home to send or receive new messages.</value></data>
+  <data name="IosUiLoadingMessages" xml:space="preserve"><value>Loading Messages…</value></data>
+  <data name="IosUiMessagesRefreshFailed" xml:space="preserve"><value>Messages Could Not Be Refreshed</value></data>
+  <data name="IosUiMessagesRefreshFailedDetail" xml:space="preserve"><value>Saved conversations remain available. Try again to refresh this list.</value></data>
+  <data name="IosUiSelectedUserActions" xml:space="preserve"><value>Actions for Selected User</value></data>
+  <data name="IosUiSearchPeoplePlaceholder" xml:space="preserve"><value>Search or enter a username</value></data>
+  <data name="IosUiSavedOrRecentUser" xml:space="preserve"><value>Saved or recent user</value></data>
+  <data name="IosUiEnteredUsername" xml:space="preserve"><value>Open entered username</value></data>
+  <data name="IosUiNoSavedPeople" xml:space="preserve"><value>No Saved or Recent Users</value></data>
+  <data name="IosUiSearchPeopleToCompose" xml:space="preserve"><value>Enter any Soulseek username in the search field to start a conversation.</value></data>
+  <data name="IosUiSentByYou" xml:space="preserve"><value>You</value></data>
+  <data name="IosUiReceivedFromUser" xml:space="preserve"><value>{0}</value></data>
+  <data name="IosUiOutgoingMessageAccessibility" xml:space="preserve"><value>Sent by you: {0}</value></data>
+  <data name="IosUiIncomingMessageAccessibility" xml:space="preserve"><value>From {0}: {1}</value></data>
+  <data name="IosUiJumpToLatest" xml:space="preserve"><value>Jump to Latest</value></data>
+  <data name="IosUiCommunity" xml:space="preserve"><value>Community</value></data>
+  <data name="IosUiFilesAndSharing" xml:space="preserve"><value>Files and Sharing</value></data>
+  <data name="IosUiSharedDocuments" xml:space="preserve"><value>Shared Documents</value></data>
+  <data name="IosUiMessagesDetail" xml:space="preserve"><value>Private conversations and unread messages</value></data>
+  <data name="IosUiChatroomsDetail" xml:space="preserve"><value>Joined, recent, public, and private rooms</value></data>
+  <data name="IosUiUsersDetail" xml:space="preserve"><value>Friends, ignored users, notes, and online alerts</value></data>
+  <data name="IosUiSettingsDetail" xml:space="preserve"><value>Downloads, search, notifications, sharing, and diagnostics</value></data>
+  <data name="IosUiAboutDetail" xml:space="preserve"><value>Version, project identity, and source code</value></data>
+  <data name="IosUiLegalDetail" xml:space="preserve"><value>Modified-library notice and bundled licenses</value></data>
+  <data name="IosUiShowPassword" xml:space="preserve"><value>Show password</value></data>
+  <data name="IosUiHidePassword" xml:space="preserve"><value>Hide password</value></data>
+  <data name="IosUiSignOutTitle" xml:space="preserve"><value>Sign Out?</value></data>
+  <data name="IosUiSignOutMessage" xml:space="preserve"><value>Your saved credentials will be removed. Local downloads, transfers, history, and settings stay on this iPhone.</value></data>
+  <data name="IosUiSignedOutAnnouncement" xml:space="preserve"><value>Signed out. Enter a username and password to continue.</value></data>
+  <data name="IosUiConnectedAnnouncement" xml:space="preserve"><value>Connected to Soulseek.</value></data>
+  <data name="IosUiDisconnectedAnnouncement" xml:space="preserve"><value>Disconnected. Reconnect when you are ready.</value></data>
+  <data name="IosUiRoomCreateDetail" xml:space="preserve"><value>Enter a room name and choose whether membership is private.</value></data>
+  <data name="IosUiRoomsRefreshFailed" xml:space="preserve"><value>Rooms could not be refreshed. Check the connection and try again.</value></data>
+  <data name="IosUiRoomMessageFailed" xml:space="preserve"><value>The room message was not sent. Check the connection and try again.</value></data>
+  <data name="IosUiRoomOptions" xml:space="preserve"><value>Room Options</value></data>
+  <data name="IosUiSearchThisRoom" xml:space="preserve"><value>Search This Room</value></data>
+  <data name="IosUiInviteMember" xml:space="preserve"><value>Invite Member</value></data>
+  <data name="IosUiInviteMemberDetail" xml:space="preserve"><value>Enter the username to invite to this private room.</value></data>
+  <data name="IosUiRemoveMember" xml:space="preserve"><value>Remove from Room</value></data>
+  <data name="IosUiMakeModerator" xml:space="preserve"><value>Make Moderator</value></data>
+  <data name="IosUiRemoveModerator" xml:space="preserve"><value>Remove Moderator</value></data>
+  <data name="IosUiDropMembership" xml:space="preserve"><value>Leave Private Room Permanently</value></data>
+  <data name="IosUiDropMembershipConfirm" xml:space="preserve"><value>Remove your membership from this private room? You will need another invitation to return.</value></data>
+  <data name="IosUiDropOwnership" xml:space="preserve"><value>Relinquish Room Ownership</value></data>
+  <data name="IosUiDropOwnershipConfirm" xml:space="preserve"><value>Relinquish ownership of this private room? This cannot be undone here.</value></data>
+  <data name="IosUiRoomOwner" xml:space="preserve"><value>Owner</value></data>
+  <data name="IosUiRoomModerator" xml:space="preserve"><value>Moderator</value></data>
+  <data name="IosUiRoomMember" xml:space="preserve"><value>Member</value></data>
+  <data name="IosUiRoomActivity" xml:space="preserve"><value>Room Activity</value></data>
+  <data name="IosUiRoomActivitySummary" xml:space="preserve"><value>{0} {1}</value></data>
+  <data name="IosUiNoRoomActivity" xml:space="preserve"><value>No recent room activity</value></data>
+  <data name="IosUiTickerByUser" xml:space="preserve"><value>{0}: {1}</value></data>
+  <data name="IosUiUserActions" xml:space="preserve"><value>User Actions</value></data>
+  <data name="IosUiAddUserDetail" xml:space="preserve"><value>Enter a Soulseek username and choose a list.</value></data>
+  <data name="IosUiOperationFailed" xml:space="preserve"><value>The action could not be completed. Check the connection and try again.</value></data>
+  <data name="IosUiNoBiography" xml:space="preserve"><value>No profile description provided.</value></data>
+  <data name="IosUiProfileImage" xml:space="preserve"><value>Profile image for {0}</value></data>
+  <data name="IosUiProfileActions" xml:space="preserve"><value>Profile Actions</value></data>
+  <data name="IosUiBytesPerSecondValue" xml:space="preserve"><value>{0:N0} bytes per second</value></data>
+  <data name="IosUiAverageSpeed" xml:space="preserve"><value>Average Speed</value></data>
+  <data name="IosUiUploadCount" xml:space="preserve"><value>Uploads</value></data>
+  <data name="IosUiQueueLength" xml:space="preserve"><value>Queue Length</value></data>
+  <data name="IosUiUploadSlots" xml:space="preserve"><value>Upload Slots</value></data>
+  <data name="IosUiShowRoomActivity" xml:space="preserve"><value>Show Room Activity</value></data>
+  <data name="IosUiShowRoomTickers" xml:space="preserve"><value>Show Ticker Summary</value></data>
+  <data name="IosUiRoomUserJoined" xml:space="preserve"><value>{0} joined the room</value></data>
+  <data name="IosUiRoomUserLeft" xml:space="preserve"><value>{0} left the room</value></data>
+  <data name="IosUiRoomUserAway" xml:space="preserve"><value>{0} is away</value></data>
+  <data name="IosUiRoomUserOnline" xml:space="preserve"><value>{0} is online</value></data>
+  <data name="IosUiRoomUserOffline" xml:space="preserve"><value>{0} is offline</value></data>
+  <data name="IosUiTickerSummary" xml:space="preserve"><value>Ticker Summary</value></data>
+  <data name="IosUiPercentComplete" xml:space="preserve"><value>{0}% complete</value></data>
+  <data name="IosUiSearchPlaceholder" xml:space="preserve"><value>Search Soulseek</value></data>
+  <data name="IosUiSearchNow" xml:space="preserve"><value>Search</value></data>
+  <data name="IosUiSearchTarget" xml:space="preserve"><value>Search Target</value></data>
+  <data name="IosUiSearchNetwork" xml:space="preserve"><value>Entire Network</value></data>
+  <data name="IosUiSearchChosenUser" xml:space="preserve"><value>One User</value></data>
+  <data name="IosUiSearchScopeRoom" xml:space="preserve"><value>One Room</value></data>
+  <data name="IosUiSearchUserList" xml:space="preserve"><value>User List</value></data>
+  <data name="IosUiSearchUserListEmpty" xml:space="preserve"><value>Add at least one friend before searching your user list.</value></data>
+  <data name="IosUiSearchWishlistTarget" xml:space="preserve"><value>Wishlist Search</value></data>
+  <data name="IosUiSearchTargetSubject" xml:space="preserve"><value>Username, room, or comma-separated users</value></data>
+  <data name="IosUiSearchTargetUserSummary" xml:space="preserve"><value>User: {0}</value></data>
+  <data name="IosUiSearchTargetRoomSummary" xml:space="preserve"><value>Room: {0}</value></data>
+  <data name="IosUiSearchLoading" xml:space="preserve"><value>Searching…</value></data>
+  <data name="IosUiSearchLoadingDetail" xml:space="preserve"><value>Results appear as peers respond. You can cancel at any time.</value></data>
+  <data name="IosUiNoSearches" xml:space="preserve"><value>Start a Search</value></data>
+  <data name="IosUiNoSearchesDetail" xml:space="preserve"><value>Search the network, reopen a recent query, or browse your wishlists.</value></data>
+  <data name="IosUiNoSearchResults" xml:space="preserve"><value>No Results</value></data>
+  <data name="IosUiNoSearchResultsDetail" xml:space="preserve"><value>Try a broader query or a different search target.</value></data>
+  <data name="IosUiSearchFilteredEmpty" xml:space="preserve"><value>All Results Are Filtered</value></data>
+  <data name="IosUiSearchFilteredEmptyDetail" xml:space="preserve"><value>{0} files were received. Change or clear a filter to show them.</value></data>
+  <data name="IosUiSearchOffline" xml:space="preserve"><value>Search Is Offline</value></data>
+  <data name="IosUiSearchFailed" xml:space="preserve"><value>Search Failed</value></data>
+  <data name="IosUiSearchTimedOut" xml:space="preserve"><value>Search Timed Out</value></data>
+  <data name="IosUiSearchTimedOutDetail" xml:space="preserve"><value>No peer response arrived before the search deadline. Check the connection or try again.</value></data>
+  <data name="IosUiSearchResponseLimitReached" xml:space="preserve"><value>Showing results from the first {0} peer responses because the configured response limit was reached.</value></data>
+  <data name="IosUiSearchCanceled" xml:space="preserve"><value>Search Canceled</value></data>
+  <data name="IosUiSearchFailedDetail" xml:space="preserve"><value>The search could not be completed. Check the connection, then try again.</value></data>
+  <data name="IosUiSearchTargetInvalid" xml:space="preserve"><value>Choose a valid user or room before starting this targeted search.</value></data>
+  <data name="IosUiSearchHistory" xml:space="preserve"><value>Recent Searches</value></data>
+  <data name="IosUiClearHistory" xml:space="preserve"><value>Clear Search History</value></data>
+  <data name="IosUiExpandFolder" xml:space="preserve"><value>Show Files</value></data>
+  <data name="IosUiCollapseFolder" xml:space="preserve"><value>Hide Files</value></data>
+  <data name="IosUiWishlists" xml:space="preserve"><value>Wishlists</value></data>
+  <data name="IosUiAddWishlist" xml:space="preserve"><value>Add Wishlist</value></data>
+  <data name="IosUiEditWishlist" xml:space="preserve"><value>Edit Wishlist</value></data>
+  <data name="IosUiDeleteWishlist" xml:space="preserve"><value>Delete Wishlist</value></data>
+  <data name="IosUiWishlistQuery" xml:space="preserve"><value>Wishlist query</value></data>
+  <data name="IosUiWishlistDuplicate" xml:space="preserve"><value>This wishlist query already exists.</value></data>
+  <data name="IosUiWishlistMissing" xml:space="preserve"><value>This wishlist no longer exists.</value></data>
+  <data name="IosUiWishlistMetadata" xml:space="preserve"><value>{0} peer results · {1} unseen</value></data>
+  <data name="IosUiWishlistStoredMetadata" xml:space="preserve"><value>{0} stored peer results · last run {1}</value></data>
+  <data name="IosUiWishlistNextRun" xml:space="preserve"><value>next check {0}</value></data>
+  <data name="IosUiWishlistScheduleUnavailable" xml:space="preserve"><value>waiting for the server schedule</value></data>
+  <data name="IosUiOpenResults" xml:space="preserve"><value>Open Results</value></data>
+  <data name="IosUiNever" xml:space="preserve"><value>Never</value></data>
+  <data name="IosUiNoWishlists" xml:space="preserve"><value>No Wishlists</value></data>
+  <data name="IosUiNoWishlistsDetail" xml:space="preserve"><value>Add a query to have Soulseek check it at the server-provided interval.</value></data>
+  <data name="IosUiDeleteConfirm" xml:space="preserve"><value>This removes the item and its stored results from this device.</value></data>
+  <data name="IosUiSearchFilters" xml:space="preserve"><value>Search Filters</value></data>
+  <data name="IosUiFiltersCount" xml:space="preserve"><value>Filters ({0})</value></data>
+  <data name="IosUiFilters" xml:space="preserve"><value>Filters</value></data>
+  <data name="IosUiSearchAllFilters" xml:space="preserve"><value>All Filters…</value></data>
+  <data name="IosUiSearchNetworkChip" xml:space="preserve"><value>Network</value></data>
+  <data name="IosUiSearchStop" xml:space="preserve"><value>Stop Search</value></data>
+  <data name="IosUiSortResults" xml:space="preserve"><value>Sort Results</value></data>
+  <data name="IosUiSortAvailability" xml:space="preserve"><value>Availability</value></data>
+  <data name="IosUiSortSpeed" xml:space="preserve"><value>Upload Speed</value></data>
+  <data name="IosUiSortFolder" xml:space="preserve"><value>Folder Name</value></data>
+  <data name="IosUiSortBitrate" xml:space="preserve"><value>Bitrate</value></data>
+  <data name="IosUiFilterText" xml:space="preserve"><value>Filter filenames, paths, or users</value></data>
+  <data name="IosUiIncludeTerms" xml:space="preserve"><value>Must include every term</value></data>
+  <data name="IosUiExcludeTerms" xml:space="preserve"><value>Must exclude any term</value></data>
+  <data name="IosUiExcludeText" xml:space="preserve"><value>Words to exclude</value></data>
+  <data name="IosUiCurrentSort" xml:space="preserve"><value>Current sort: {0}</value></data>
+  <data name="IosUiCurrentChoice" xml:space="preserve"><value>Current: {0}</value></data>
+  <data name="IosUiSearchConfigurationSummary" xml:space="preserve"><value>Target: {0} · Sort: {1} · Filters: {2}</value></data>
+  <data name="IosUiOnlyFreeSlots" xml:space="preserve"><value>Only Free Upload Slots</value></data>
+  <data name="IosUiHideLocked" xml:space="preserve"><value>Hide Locked Files</value></data>
+  <data name="IosUiFormat" xml:space="preserve"><value>Format</value></data>
+  <data name="IosUiFormatAny" xml:space="preserve"><value>Any Format</value></data>
+  <data name="IosUiFormatLossless" xml:space="preserve"><value>Lossless</value></data>
+  <data name="IosUiFormatLossy" xml:space="preserve"><value>Lossy</value></data>
+  <data name="IosUiCategory" xml:space="preserve"><value>File Category</value></data>
+  <data name="IosUiCurrentCategory" xml:space="preserve"><value>Current category: {0}</value></data>
+  <data name="IosUiCategoryAny" xml:space="preserve"><value>Any Category</value></data>
+  <data name="IosUiCategoryAudio" xml:space="preserve"><value>Audio</value></data>
+  <data name="IosUiCategoryVideo" xml:space="preserve"><value>Video</value></data>
+  <data name="IosUiCategoryImage" xml:space="preserve"><value>Images</value></data>
+  <data name="IosUiCategoryDocument" xml:space="preserve"><value>Documents</value></data>
+  <data name="IosUiCategoryArchive" xml:space="preserve"><value>Archives</value></data>
+  <data name="IosUiCategoryOther" xml:space="preserve"><value>Other Files</value></data>
+  <data name="IosUiMinimumBitrate" xml:space="preserve"><value>Minimum bitrate</value></data>
+  <data name="IosUiApplyFilters" xml:space="preserve"><value>Apply Filters</value></data>
+  <data name="IosUiClearFilters" xml:space="preserve"><value>Clear Filters</value></data>
+  <data name="IosUiSearchQueue" xml:space="preserve"><value>queue {0}</value></data>
+  <data name="IosUiSearchFolderMetadata" xml:space="preserve"><value>{0} · {1} files · {2} · {3}</value></data>
+  <data name="IosUiSearchFileMetadata" xml:space="preserve"><value>{0} · {1}</value></data>
+  <data name="IosUiBitrate" xml:space="preserve"><value>{0} kbps</value></data>
+  <data name="IosUiBitrateUnknown" xml:space="preserve"><value>bitrate unknown</value></data>
+  <data name="IosUiSearchResultCount" xml:space="preserve"><value>{0} of {1} files · {2} peers</value></data>
+  <data name="IosUiDownload" xml:space="preserve"><value>Download</value></data>
+  <data name="IosUiQueuePaused" xml:space="preserve"><value>Add Paused</value></data>
+  <data name="IosUiDownloadFolder" xml:space="preserve"><value>Download Folder</value></data>
+  <data name="IosUiDownloadFolderSummary" xml:space="preserve"><value>{0} files · {1}</value></data>
+  <data name="IosUiBrowseLocation" xml:space="preserve"><value>Browse at Location</value></data>
+  <data name="IosUiCopyLink" xml:space="preserve"><value>Copy Soulseek Link</value></data>
+  <data name="IosUiShareLink" xml:space="preserve"><value>Share Soulseek Link</value></data>
+  <data name="IosUiResultActions" xml:space="preserve"><value>Result Actions</value></data>
+  <data name="IosUiQueuedDownload" xml:space="preserve"><value>Added to Downloads</value></data>
+  <data name="IosUiQueuedPausedDownload" xml:space="preserve"><value>Added to Downloads in a paused state</value></data>
+  <data name="IosUiDownloadFailedDetail" xml:space="preserve"><value>The selection could not be added to Downloads. It may already be queued, unavailable, or owned by the signed-in account.</value></data>
+  <data name="IosUiCouldNotCompleteAction" xml:space="preserve"><value>Could Not Complete Action</value></data>
+  <data name="IosUiTransfersDownloads" xml:space="preserve"><value>Downloads</value></data>
+  <data name="IosUiTransfersUploads" xml:space="preserve"><value>Uploads</value></data>
+  <data name="IosUiTransfersGrouped" xml:space="preserve"><value>Group by Folder</value></data>
+  <data name="IosUiTransfersIndividual" xml:space="preserve"><value>Individual Files</value></data>
+  <data name="IosUiNoTransfers" xml:space="preserve"><value>No Transfers</value></data>
+  <data name="IosUiNoTransfersDetail" xml:space="preserve"><value>Downloads you accept and uploads requested by peers will appear here.</value></data>
+  <data name="IosUiTransferFolderActive" xml:space="preserve"><value>{0} of {1} active</value></data>
+  <data name="IosUiTransferFolderFailed" xml:space="preserve"><value>{0} of {1} need attention</value></data>
+  <data name="IosUiTransferFolderWaiting" xml:space="preserve"><value>{0} of {1} remaining</value></data>
+  <data name="IosUiTransferFolderMetadata" xml:space="preserve"><value>{0} files · {1}</value></data>
+  <data name="IosUiUploadWaitingForPeer" xml:space="preserve"><value>Waiting for peer to request again</value></data>
+  <data name="IosUiTransferActions" xml:space="preserve"><value>Transfer Actions</value></data>
+  <data name="IosUiPauseTransfer" xml:space="preserve"><value>Pause</value></data>
+  <data name="IosUiClearTransfer" xml:space="preserve"><value>Clear</value></data>
+  <data name="IosUiClearTransferConfirm" xml:space="preserve"><value>Clear this transfer row? Completed files remain in Files.</value></data>
+  <data name="IosUiClearFolderConfirm" xml:space="preserve"><value>Clear eligible rows in this folder? Completed files remain in Files.</value></data>
+  <data name="IosUiRetryTransfer" xml:space="preserve"><value>Retry</value></data>
+  <data name="IosUiOpenFile" xml:space="preserve"><value>Open in Another App</value></data>
+  <data name="IosUiShareFile" xml:space="preserve"><value>Share File</value></data>
+  <data name="IosUiNoAppCanOpenFile" xml:space="preserve"><value>No installed app can open this file type. You can still share or save the file.</value></data>
+  <data name="IosUiBrowseUsernamePlaceholder" xml:space="preserve"><value>Soulseek username</value></data>
+  <data name="IosUiBrowseGo" xml:space="preserve"><value>Browse</value></data>
+  <data name="IosUiBrowseRecentUsers" xml:space="preserve"><value>Recent Users</value></data>
+  <data name="IosUiBrowseStart" xml:space="preserve"><value>Browse a User’s Files</value></data>
+  <data name="IosUiBrowseStartDetail" xml:space="preserve"><value>Enter a Soulseek username or choose a recently browsed user.</value></data>
+  <data name="IosUiBrowseContacting" xml:space="preserve"><value>Contacting User…</value></data>
+  <data name="IosUiBrowseContactingDetail" xml:space="preserve"><value>A direct peer connection may take a moment. You can cancel.</value></data>
+  <data name="IosUiBrowseEmpty" xml:space="preserve"><value>No Shared Files</value></data>
+  <data name="IosUiBrowseEmptyDetail" xml:space="preserve"><value>This user returned an empty share list.</value></data>
+  <data name="IosUiBrowseOffline" xml:space="preserve"><value>Browsing Is Offline</value></data>
+  <data name="IosUiBrowseFailed" xml:space="preserve"><value>Could Not Browse User</value></data>
+  <data name="IosUiBrowseDirectFailed" xml:space="preserve"><value>Direct Connection Failed</value></data>
+  <data name="IosUiBrowseTimedOutDetail" xml:space="preserve"><value>The user did not return a share list before the request timed out. Try again later.</value></data>
+  <data name="IosUiBrowseDirectFailedDetail" xml:space="preserve"><value>A direct peer connection could not be established. The user may be offline or unreachable.</value></data>
+  <data name="IosUiBrowseParseFailed" xml:space="preserve"><value>Share List Could Not Be Read</value></data>
+  <data name="IosUiBrowseParseFailedDetail" xml:space="preserve"><value>The returned share list was malformed or unsupported. No download was started.</value></data>
+  <data name="IosUiBrowseCanceled" xml:space="preserve"><value>Browse Canceled</value></data>
+  <data name="IosUiBrowseCanceledDetail" xml:space="preserve"><value>The user request was canceled. Enter a username or try again.</value></data>
+  <data name="IosUiBrowseFailedDetail" xml:space="preserve"><value>The share list could not be loaded. Check the connection and try again.</value></data>
+  <data name="IosUiBrowseFilteredEmptyDetail" xml:space="preserve"><value>{0} items are hidden by this folder filter.</value></data>
+  <data name="IosUiBrowseFolderMetadata" xml:space="preserve"><value>{0} files · {1}</value></data>
+  <data name="IosUiBrowseFileMetadata" xml:space="preserve"><value>{0} · {1}</value></data>
+  <data name="IosUiBrowseFilter" xml:space="preserve"><value>Filter This Folder</value></data>
+  <data name="IosUiDownloadRecursively" xml:space="preserve"><value>Include Subfolders</value></data>
+  <data name="IosUiDownloadThisFolder" xml:space="preserve"><value>Download This Folder</value></data>
+  <data name="IosUiDownloadFolderOnly" xml:space="preserve"><value>Download Files in This Folder Only</value></data>
+  <data name="IosUiFolderActions" xml:space="preserve"><value>Folder Actions</value></data>
+  <data name="IosUiSoulseekLinkTitle" xml:space="preserve"><value>Soulseek Link</value></data>
+  <data name="IosUiSoulseekLinkDetail" xml:space="preserve"><value>{0} · {1}</value></data>
+  <data name="IosUiLinkCopied" xml:space="preserve"><value>Soulseek link copied.</value></data>
+  <data name="IosUiLegalSoulseekLicense" xml:space="preserve"><value>Soulseek.NET License</value></data>
+  <data name="IosUiLegalSoulseekNotice" xml:space="preserve"><value>Soulseek.NET Notice</value></data>
+  <data name="IosUiLegalThirdParty" xml:space="preserve"><value>Third-Party Notices</value></data>
+  <data name="IosUiLegalDotNetLicense" xml:space="preserve"><value>.NET Runtime License</value></data>
+  <data name="IosUiLegalDotNetNotices" xml:space="preserve"><value>.NET Runtime Notices</value></data>
+  <data name="IosUiLegalMicrosoftIos" xml:space="preserve"><value>Microsoft.iOS License</value></data>
+  <data name="IosUiLegalStringToolsLicense" xml:space="preserve"><value>Microsoft .NET String Tools License</value></data>
+  <data name="IosUiLegalStringToolsNotices" xml:space="preserve"><value>Microsoft .NET String Tools Notices</value></data>
+  <data name="IosUiLegalProvenance" xml:space="preserve"><value>License Provenance</value></data>
+  <data name="IosUiSelection" xml:space="preserve"><value>Selection</value></data>
+  <data name="IosUiBatchActions" xml:space="preserve"><value>Batch Actions</value></data>
+  <data name="IosUiSelectionScopeAllTransfers" xml:space="preserve"><value>{0} transfers in this view</value></data>
+  <data name="IosUiInvertSelection" xml:space="preserve"><value>Invert Selection</value></data>
+  <data name="IosUiResumeTransfer" xml:space="preserve"><value>Resume</value></data>
+  <data name="IosUiBatchActionEligibility" xml:space="preserve"><value>{0} ({1} of {2} eligible)</value></data>
+  <data name="IosUiClearBatchConfirm" xml:space="preserve"><value>Clear {0} eligible rows from {1} selected transfers? Completed files remain in Files.</value></data>
+  <data name="IosUiBatchActionResult" xml:space="preserve"><value>{0} of {1} eligible actions accepted across {2} selected transfers.</value></data>
+  <data name="IosUiActionUnavailable" xml:space="preserve"><value>This action is no longer available for the transfer’s current state.</value></data>
+  <data name="IosUiSelectionScopeBrowse" xml:space="preserve"><value>{0} visible · {1} in this folder</value></data>
+  <data name="IosUiSelectFiltered" xml:space="preserve"><value>Select Filtered Items</value></data>
+  <data name="IosUiSelectAllInFolder" xml:space="preserve"><value>Select All in This Folder</value></data>
+  <data name="IosUiInvertFiltered" xml:space="preserve"><value>Invert Filtered Items</value></data>
+  <data name="IosUiInvertAllInFolder" xml:space="preserve"><value>Invert All in This Folder</value></data>
+  <data name="IosUiBrowseBatchSelection" xml:space="preserve"><value>{0} items selected. Selected folders include their represented descendants.</value></data>
+  <data name="IosUiBrowseBatchQueued" xml:space="preserve"><value>{0} of {1} files accepted from {2} selected items.</value></data>
+  <data name="IosUiBrowseTargetUnavailable" xml:space="preserve"><value>The requested file or folder is no longer present in this user’s current share list.</value></data>
+  <data name="IosUiAccountDetail" xml:space="preserve"><value>Edit your profile, change your password, manage privileges, or export portable data.</value></data>
+  <data name="IosUiClearSelection" xml:space="preserve"><value>Clear Selection</value></data>
+  <data name="IosUiSearchBatchQueued" xml:space="preserve"><value>{0} of {1} selected files were accepted.</value></data>
+  <data name="IosUiRefresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="IosUiDownloadScope" xml:space="preserve"><value>Download Scope</value></data>
+  <data name="IosUiDownloadScopeDetail" xml:space="preserve"><value>Choose whether to include hidden filter matches and files in subfolders.</value></data>
+  <data name="IosUiDownloadFilteredFiles" xml:space="preserve"><value>Filtered Files in This Folder</value></data>
+  <data name="IosUiDownloadAllFiles" xml:space="preserve"><value>All Files in This Folder</value></data>
+  <data name="IosUiDownloadRecursiveFiltered" xml:space="preserve"><value>Filtered Files, Including Subfolders</value></data>
+  <data name="IosUiDownloadRecursiveAll" xml:space="preserve"><value>All Files, Including Subfolders</value></data>
+  <data name="IosUiAccountTitle" xml:space="preserve"><value>Account</value></data>
+  <data name="IosUiAccountProfile" xml:space="preserve"><value>Public Profile</value></data>
+  <data name="IosUiAccountBiography" xml:space="preserve"><value>Profile Biography</value></data>
+  <data name="IosUiAccountBiographyHelp" xml:space="preserve"><value>This text is visible to people who request your Soulseek profile.</value></data>
+  <data name="IosUiAccountBiographyLimit" xml:space="preserve"><value>Profile biographies can contain up to 2,000 characters.</value></data>
+  <data name="IosUiAccountImageHelp" xml:space="preserve"><value>Choose an image from Files, up to 5 MB. Your profile is shared with Soulseek peers.</value></data>
+  <data name="IosUiAccountChooseImage" xml:space="preserve"><value>Choose Image from Files</value></data>
+  <data name="IosUiAccountClearImage" xml:space="preserve"><value>Clear Image</value></data>
+  <data name="IosUiAccountData" xml:space="preserve"><value>Portable Data</value></data>
+  <data name="IosUiAccountSession" xml:space="preserve"><value>Session</value></data>
+  <data name="IosUiSaveProfile" xml:space="preserve"><value>Save Profile</value></data>
+  <data name="IosUiViewMyProfile" xml:space="preserve"><value>View My Profile</value></data>
+  <data name="IosUiChangePassword" xml:space="preserve"><value>Change Password</value></data>
+  <data name="IosUiChangePasswordHelp" xml:space="preserve"><value>Choose a new password and confirm it before sending the change to Soulseek.</value></data>
+  <data name="IosUiChangePasswordPrompt" xml:space="preserve"><value>Enter the new password twice. It will be stored only after Soulseek accepts the change.</value></data>
+  <data name="IosUiNewPassword" xml:space="preserve"><value>New password</value></data>
+  <data name="IosUiConfirmPassword" xml:space="preserve"><value>Confirm new password</value></data>
+  <data name="IosUiChangingPassword" xml:space="preserve"><value>Changing password…</value></data>
+  <data name="IosUiPasswordChanged" xml:space="preserve"><value>Password changed.</value></data>
+  <data name="IosUiPasswordChangeFailed" xml:space="preserve"><value>The password was not changed. Check the connection and try again.</value></data>
+  <data name="IosUiPasswordsDoNotMatch" xml:space="preserve"><value>Enter the same non-empty password in both fields.</value></data>
+  <data name="IosUiPrivileges" xml:space="preserve"><value>Privileges</value></data>
+  <data name="IosUiPrivilegesNotChecked" xml:space="preserve"><value>Check with Soulseek to see your remaining privilege time.</value></data>
+  <data name="IosUiCheckPrivileges" xml:space="preserve"><value>Check Remaining Time</value></data>
+  <data name="IosUiCheckingPrivileges" xml:space="preserve"><value>Checking privileges…</value></data>
+  <data name="IosUiGivePrivileges" xml:space="preserve"><value>Give Privilege Days</value></data>
+  <data name="IosUiGivePrivilegesPrompt" xml:space="preserve"><value>You have {0} whole days available to give.</value></data>
+  <data name="IosUiPrivilegeDays" xml:space="preserve"><value>Days</value></data>
+  <data name="IosUiGive" xml:space="preserve"><value>Give</value></data>
+  <data name="IosUiGivingPrivileges" xml:space="preserve"><value>Giving privilege days…</value></data>
+  <data name="IosUiPrivilegesFailed" xml:space="preserve"><value>Privilege time could not be checked. Check the connection and try again.</value></data>
+  <data name="IosUiPrivilegesInvalid" xml:space="preserve"><value>Enter a username and a whole number from 1 through {0}.</value></data>
+  <data name="IosUiPrivilegesGiven" xml:space="preserve"><value>Gave {0} privilege days to {1}.</value></data>
+  <data name="IosUiPrivilegesGrantFailed" xml:space="preserve"><value>Privilege days were not sent. Check the connection and try again.</value></data>
+  <data name="IosUiPrivilegesRemaining" xml:space="preserve"><value>{0} whole days available to give ({1} seconds remaining).</value></data>
+  <data name="IosUiNoPrivilegesRemaining" xml:space="preserve"><value>No transferable privilege days remain.</value></data>
+  <data name="IosUiDonateToSoulseek" xml:space="preserve"><value>Donate to Soulseek</value></data>
+  <data name="IosUiPrivilegesDonateHelp" xml:space="preserve"><value>Privileges are tied to Soulseek donations. Donating on the Soulseek website adds privilege time to this account.</value></data>
+  <data name="IosUiPrivilegesValueNone" xml:space="preserve"><value>None</value></data>
+  <data name="IosUiPrivilegesValueOneDay" xml:space="preserve"><value>1 day</value></data>
+  <data name="IosUiPrivilegesValueDays" xml:space="preserve"><value>{0} days</value></data>
+  <data name="IosUiPrivilegesValueUnderDay" xml:space="preserve"><value>Under 1 day</value></data>
+  <data name="IosUiDonateOpensBrowserHint" xml:space="preserve"><value>Opens the Soulseek donation page in your browser.</value></data>
+  <data name="IosUiExportData" xml:space="preserve"><value>Export Portable Data</value></data>
+  <data name="IosUiExportDataHelp" xml:space="preserve"><value>Export friends, ignored users, wishlists, and notes. Passwords and downloaded files are not included.</value></data>
+  <data name="IosUiExportingData" xml:space="preserve"><value>Preparing portable data…</value></data>
+  <data name="IosUiExportReady" xml:space="preserve"><value>Portable data is ready to share or save.</value></data>
+  <data name="IosUiExportFailed" xml:space="preserve"><value>Portable data could not be created. Try again.</value></data>
+  <data name="IosUiLoadingAccount" xml:space="preserve"><value>Loading account…</value></data>
+  <data name="IosUiAccountLoadFailed" xml:space="preserve"><value>Account details could not be loaded. Try reopening this screen.</value></data>
+  <data name="IosUiReadingImage" xml:space="preserve"><value>Reading image…</value></data>
+  <data name="IosUiImageReady" xml:space="preserve"><value>Image ready. Save the profile to publish it.</value></data>
+  <data name="IosUiImageInvalid" xml:space="preserve"><value>Choose a supported image from Files that is no larger than 5 MB.</value></data>
+  <data name="IosUiImageWillClear" xml:space="preserve"><value>The image will be removed when you save.</value></data>
+  <data name="IosUiSavingProfile" xml:space="preserve"><value>Saving profile…</value></data>
+  <data name="IosUiProfileSaved" xml:space="preserve"><value>Profile saved.</value></data>
+  <data name="IosUiProfileSaveFailed" xml:space="preserve"><value>The profile could not be saved. Your previous profile is still available.</value></data>
+  <data name="IosUiDiscardProfileTitle" xml:space="preserve"><value>Discard Profile Changes?</value></data>
+  <data name="IosUiDiscardProfileMessage" xml:space="preserve"><value>Your unsaved biography and image changes will be lost.</value></data>
+  <data name="IosUiKeepEditing" xml:space="preserve"><value>Keep Editing</value></data>
+  <data name="IosUiDiscardChanges" xml:space="preserve"><value>Discard Changes</value></data>
+  <data name="IosUiUnsavedChangesHint" xml:space="preserve"><value>Shows a confirmation before discarding unsaved changes.</value></data>
+  <data name="IosUiOwnProfileImage" xml:space="preserve"><value>Your profile image</value></data>
+  <data name="IosUiImportCategorySelectionCount" xml:space="preserve"><value>{0} of {1} new selected; {2} already present; {3} total</value></data>
+  <data name="IosUiImportItemSelectionAccessibilityValue" xml:space="preserve"><value>{0} of {1} selected. {2}.</value></data>
+  <data name="IosUiImportCategorySelectionHint" xml:space="preserve"><value>Selects or clears every new item in this category. Open the row to choose individual items.</value></data>
+  <data name="IosUiSelectAllMixed" xml:space="preserve"><value>Select All (Some Selected)</value></data>
+  <data name="IosUiSelectAllSelectionLabel" xml:space="preserve"><value>Change selection for all items</value></data>
+  <data name="IosUiMergeSelectedCount" xml:space="preserve"><value>Merge Selected ({0})</value></data>
+  <data name="IosUiSelectedItemCount" xml:space="preserve"><value>{0} of {1} new items selected</value></data>
+  <data name="IosUiSelectionNone" xml:space="preserve"><value>None selected</value></data>
+  <data name="IosUiSelectionSome" xml:space="preserve"><value>Some selected</value></data>
+  <data name="IosUiSelectionAll" xml:space="preserve"><value>All selected</value></data>
+  <data name="IosUiAlreadyPresent" xml:space="preserve"><value>Already present</value></data>
+  <data name="IosUiImportAlreadyReviewing" xml:space="preserve"><value>This file is already open for review.</value></data>
+</root>

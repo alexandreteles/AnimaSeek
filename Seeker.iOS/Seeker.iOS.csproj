@@ -1,0 +1,62 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-ios</TargetFramework>
+    <RootNamespace>AnimaSeek.iOS</RootNamespace>
+    <AssemblyName>AnimaSeek</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>true</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <SupportedOSPlatformVersion>26.0</SupportedOSPlatformVersion>
+    <Configurations>Debug;Debug Mock;Release;Release Mock</Configurations>
+    <ApplicationTitle>AnimaSeek</ApplicationTitle>
+    <ApplicationId>com.animaseek.app</ApplicationId>
+    <ApplicationDisplayVersion>3.7.4</ApplicationDisplayVersion>
+    <ApplicationVersion>136</ApplicationVersion>
+    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(Configuration.Contains('Mock'))">
+    <DefineConstants>$(DefineConstants);MOCK</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(Configuration.Contains('Release'))">
+    <Optimize>true</Optimize>
+    <TrimMode>full</TrimMode>
+    <!-- Enforce the same strict linker gate locally that CI passes via -p: flags,
+         so local Release builds cannot drift from the release pipeline. -->
+    <MtouchLink>Full</MtouchLink>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\Seeker\Mono.Nat-master\Mono.Nat\Mono.Nat.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Keep first-party linker diagnostics strict while explicitly accepting the reviewed
+         diagnostic families emitted by the third-party MessagePack assembly.
+         NOTE: _ILLinkSuppressions is an underscore-prefixed (internal, unsupported) SDK item;
+         SDK 10.0.302's ILLink.targets consumes it as an ILLink "link-attributes" XML argument.
+         It may break without notice on SDK updates. The path is anchored to the project
+         directory because the item is consumed relative to the ILLink working directory. -->
+    <_ILLinkSuppressions Include="$(MSBuildProjectDirectory)/MessagePack.TrimSuppressions.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Soulseek.NET's GPLv3 Section 7 Additional Terms require the complete license and
+         modified-version notice to accompany every executable distribution. -->
+    <BundleResource Include="..\Seeker\Soulseek.NET-master\LICENSE" LogicalName="LICENSE" />
+    <BundleResource Include="..\Seeker\Soulseek.NET-master\NOTICE" LogicalName="NOTICE" />
+    <BundleResource Include="..\THIRD-PARTY-NOTICES" LogicalName="THIRD-PARTY-NOTICES" />
+    <!-- Preserve the exact notices shipped by the pinned .NET, Microsoft.iOS, and build-runtime packages. -->
+    <BundleResource Include="..\licenses\*" LogicalName="%(Filename)%(Extension)" />
+    <!-- The launch storyboard cannot resolve asset-catalog images in this toolchain, so the splash
+         lockup ships as loose bundle files (copies of the catalog's dark stacked lockup). -->
+    <BundleResource Include="Resources\LaunchSplash@2x.png" LogicalName="LaunchSplash@2x.png" />
+    <BundleResource Include="Resources\LaunchSplash@3x.png" LogicalName="LaunchSplash@3x.png" />
+  </ItemGroup>
+
+</Project>

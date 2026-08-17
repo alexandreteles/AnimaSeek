@@ -3,150 +3,164 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
+using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
+using System.Xml;
+using System.Xml.Linq;
 using MessagePack;
-using MessagePack.Formatters;
-using MessagePack.Resolvers;
 using Soulseek;
 
 namespace Seeker
 {
     public class SerializationHelper
     {
+        private static readonly MessagePackSerializerOptions AotMessagePackOptions =
+            new(SeekerMessagePackResolver.Instance);
 
-        private static readonly bool useBinarySerializer = false;
+        /// <summary>Gets the AOT-safe options for browse response payloads.</summary>
+        public static MessagePackSerializerOptions BrowseResponseOptions => AotMessagePackOptions;
 
-        public static MessagePackSerializerOptions BrowseResponseOptions
-        {
-            get
-            {
-                var browseResponseResolver = MessagePack.Resolvers.CompositeResolver.Create(
-                    new IMessagePackFormatter[]
-                    {
-                        new BrowseResponseFormatter(),
-                        new DirectoryItemFormatter(),
-                        new FileItemFormatter(),
-                        MessagePack.Formatters.TypelessFormatter.Instance
+        /// <summary>Gets the AOT-safe options for search response payloads.</summary>
+        public static MessagePackSerializerOptions SearchResponseOptions => AotMessagePackOptions;
 
-                    },
-                    new IFormatterResolver[]
-                    {
-                        ContractlessStandardResolver.Instance
-                    });
-                return MessagePackSerializerOptions.Standard.WithResolver(browseResponseResolver);
-            }
-        }
+        /// <summary>Gets the AOT-safe options for private message payloads.</summary>
+        public static MessagePackSerializerOptions MessageOptions => AotMessagePackOptions;
 
-        public static MessagePackSerializerOptions SearchResponseOptions
-        {
-            get
-            {
-                var searchResponseResolver = MessagePack.Resolvers.CompositeResolver.Create(
-                    new IMessagePackFormatter[]
-                    {
-                        new SearchResponseFormatter(),
-                        new FileItemFormatter(),
-                        MessagePack.Formatters.TypelessFormatter.Instance
-                    },
-                    new IFormatterResolver[]
-                    {
-                        ContractlessStandardResolver.Instance
-                    });
-                return MessagePackSerializerOptions.Standard.WithResolver(searchResponseResolver);
-            }
-        }
+        /// <summary>Gets the AOT-safe options for user list payloads.</summary>
+        public static MessagePackSerializerOptions UserListOptions => AotMessagePackOptions;
 
-        public static MessagePackSerializerOptions MessageOptions
-        {
-            get
-            {
-                var messageResolver = MessagePack.Resolvers.CompositeResolver.Create(
-                    new IMessagePackFormatter[]
-                    {
-                        new MessageFormatter(),
-                    },
-                    new IFormatterResolver[]
-                    {
-                        StandardResolver.Instance
-                    });
-                return MessagePackSerializerOptions.Standard.WithResolver(messageResolver);
-            }
-        }
+        /// <summary>Gets the AOT-safe options for share cache and primitive payloads.</summary>
+        internal static MessagePackSerializerOptions CacheOptions => AotMessagePackOptions;
 
-        public static MessagePackSerializerOptions UserListOptions
-        {
-            get
-            {
-                var searchResponseResolver = MessagePack.Resolvers.CompositeResolver.Create(
-                    new IMessagePackFormatter[]
-                    {
-                        new UserListItemFormatter(),
-                        new UserStatusFormatter(),
-                        new UserInfoFormatter(),
-                        new UserDataFormatter(),
-                        MessagePack.Formatters.TypelessFormatter.Instance
-                    },
-                    new IFormatterResolver[]
-                    {
-                        ContractlessStandardResolver.Instance
-                    });
-                return MessagePackSerializerOptions.Standard.WithResolver(searchResponseResolver);
-            }
-        }
-
-        private static bool isBinaryFormatterSerialized(string base64string)
-        {
-            return base64string.StartsWith(@"AAEAAAD/////");
-        }
-
+        /// <summary>
+        /// Serializes a registered Seeker JSON persistence type without reflection.
+        /// </summary>
+        /// <typeparam name="T">A type registered by <see cref="SeekerJsonSerializerContext" />.</typeparam>
+        /// <param name="objectToSerialize">The value to serialize.</param>
+        /// <returns>The JSON representation of <paramref name="objectToSerialize" />.</returns>
+        /// <exception cref="NotSupportedException"><typeparamref name="T" /> is not a registered persistence type.</exception>
         public static string SerializeToString<T>(T objectToSerialize)
         {
-            #if BinaryFormatterAvailable
-
-            if(useBinarySerializer)
-            {
-                return LegacyBinarySerializeToString<T>(objectToSerialize);
-            }
-
-            #endif
-
             return JsonSerializeToString<T>(objectToSerialize);
-    }
+        }
 
+        /// <summary>
+        /// Deserializes a registered Seeker JSON persistence type without reflection.
+        /// </summary>
+        /// <typeparam name="T">A reference type registered by <see cref="SeekerJsonSerializerContext" />.</typeparam>
+        /// <param name="serializedString">The JSON payload to deserialize.</param>
+        /// <returns>The deserialized value.</returns>
+        /// <exception cref="NotSupportedException"><typeparamref name="T" /> is not a registered persistence type.</exception>
+        /// <exception cref="JsonException"><paramref name="serializedString" /> is not valid for <typeparamref name="T" />.</exception>
         public static T DeserializeFromString<T>(string serializedString) where T : class
         {
-                return JsonDeserializeFromString<T>(serializedString);
+            return JsonDeserializeFromString<T>(serializedString);
         }
 
         private static T JsonDeserializeFromString<T>(string serializedString)
         {
-            var options = new JsonSerializerOptions
-            {
-                IncludeFields = true,
-            };
-            return System.Text.Json.JsonSerializer.Deserialize<T>(serializedString, options);
+            return JsonSerializer.Deserialize(serializedString, GetJsonTypeInfo<T>())!;
         }
 
+        /// <summary>
+        /// Serializes a registered Seeker JSON persistence type using source-generated metadata.
+        /// </summary>
+        /// <typeparam name="T">A type registered by <see cref="SeekerJsonSerializerContext" />.</typeparam>
+        /// <param name="objectToSerialize">The value to serialize.</param>
+        /// <returns>The JSON representation of <paramref name="objectToSerialize" />.</returns>
+        /// <exception cref="NotSupportedException"><typeparamref name="T" /> is not a registered persistence type.</exception>
         public static string JsonSerializeToString<T>(T objectToSerialize)
         {
-            var options = new JsonSerializerOptions
-            {
-                IncludeFields = true,
-            };
-            return System.Text.Json.JsonSerializer.Serialize<T>(objectToSerialize, options);
+            return JsonSerializer.Serialize(objectToSerialize, GetJsonTypeInfo<T>());
         }
 
-        public class UpdatedNamespaceSerializationBinder : SerializationBinder
+        private static JsonTypeInfo<T> GetJsonTypeInfo<T>()
         {
-            public override Type BindToType(string assemblyName, string typeName)
+            if (SeekerJsonSerializerContext.Default.GetTypeInfo(typeof(T)) is JsonTypeInfo<T> typeInfo)
             {
-                string currentAssembly = typeof(UpdatedNamespaceSerializationBinder).Assembly.FullName;
+                return typeInfo;
+            }
 
-                typeName = typeName.Replace("AndriodApp1", "Seeker");
-                assemblyName = assemblyName.Replace("AndriodApp1", "Seeker");
-                var type = Type.GetType($"{typeName}, {assemblyName}");
-                return type;
+            throw new NotSupportedException(
+                $"{typeof(T).FullName} is not a registered Seeker JSON persistence type.");
+        }
+
+        /// <summary>
+        /// Serializes a string list in Seeker's current trimming-safe JSON format.
+        /// </summary>
+        /// <param name="values">The values to serialize. Enumeration order and duplicates are preserved.</param>
+        /// <returns>A JSON array containing <paramref name="values"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="values"/> is <see langword="null"/>.</exception>
+        public static string SaveStringListToString(IEnumerable<string> values)
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
+            return SerializeToString(new List<string>(values));
+        }
+
+        /// <summary>
+        /// Restores a string list from current JSON or the legacy <c>ArrayOfString</c> XML format.
+        /// </summary>
+        /// <param name="serializedString">The persisted JSON or XML payload.</param>
+        /// <returns>
+        /// The restored values, or an empty list when the payload is empty, malformed, or is not a supported
+        /// string-list document.
+        /// </returns>
+        /// <remarks>
+        /// Legacy XML parsing prohibits DTD processing and external entity resolution. This method intentionally
+        /// treats a damaged preference as empty so a single local persistence value cannot prevent app startup.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="serializedString"/> is <see langword="null"/>.
+        /// </exception>
+        public static List<string> RestoreStringListFromString(string serializedString)
+        {
+            if (serializedString == null)
+            {
+                throw new ArgumentNullException(nameof(serializedString));
+            }
+
+            string payload = serializedString.Trim();
+            if (payload.Length == 0)
+            {
+                return new List<string>();
+            }
+
+            try
+            {
+                if (!payload.StartsWith("<", StringComparison.Ordinal))
+                {
+                    return DeserializeFromString<List<string>>(payload) ?? new List<string>();
+                }
+
+                var settings = new XmlReaderSettings
+                {
+                    DtdProcessing = DtdProcessing.Prohibit,
+                    XmlResolver = null,
+                };
+                using var textReader = new StringReader(payload);
+                using XmlReader xmlReader = XmlReader.Create(textReader, settings);
+                XDocument document = XDocument.Load(xmlReader, LoadOptions.None);
+                XElement? root = document.Root;
+                if (root == null ||
+                    !string.Equals(root.Name.LocalName, "ArrayOfString", StringComparison.Ordinal))
+                {
+                    return new List<string>();
+                }
+
+                return root
+                    .Elements()
+                    .Where(element => string.Equals(element.Name.LocalName, "string", StringComparison.Ordinal))
+                    .Select(element => element.Value)
+                    .ToList();
+            }
+            catch (Exception exception) when (exception is JsonException || exception is XmlException)
+            {
+                return new List<string>();
             }
         }
 
@@ -299,12 +313,12 @@ namespace Seeker
 
         public static byte[] SaveUnseenIndicesToByteArray(int[] indices)
         {
-            return MessagePack.MessagePackSerializer.Serialize(indices);
+            return MessagePack.MessagePackSerializer.Serialize(indices, CacheOptions);
         }
 
         public static int[] RestoreUnseenIndicesFromStream(System.IO.Stream inputStream)
         {
-            return MessagePack.MessagePackSerializer.Deserialize<int[]>(inputStream);
+            return MessagePack.MessagePackSerializer.Deserialize<int[]>(inputStream, CacheOptions);
         }
     }
 }

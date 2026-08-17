@@ -109,6 +109,7 @@ namespace Common
         public static bool CreateCompleteAndIncompleteFolders = true;
         public static bool CreateUsernameSubfolders = false;
         public static bool OverrideDefaultIncompleteLocations = false;
+        public static bool KeepScreenAwakeWhileTransferring = false;
 
         // Speed limits
         public static bool SpeedLimitDownloadOn = false;

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Seeker</string>
+    <string name="app_name">AnimaSeek</string>
     <string name="com.google.firebase.crashlytics.mapping_file_id">1.0</string>
 
     <string name="home_tab">Home</string>
@@ -934,7 +934,7 @@
     <string name="setting_subtitle_username_subfolders">Group downloads by sharer</string>
     <string name="setting_subtitle_file_backed">Recommended · allows pausing / resuming downloads · less memory intensive</string>
     <string name="setting_subtitle_import_client_data">Import data from SoulseekQT, Nicotine+</string>
-    <string name="setting_subtitle_export_client_data">Export user list, ignore list, wishlist to xml · for backup or migration</string>
+    <string name="setting_subtitle_export_client_data">Export user list, ignore list, wishlist to JSON · for backup or migration</string>
     <string name="setting_subtitle_listening">Allows connecting to users with closed ports</string>
 
     <!-- Search keyword synonyms -->

@@ -28,6 +28,31 @@ namespace Seeker.Services
         public event EventHandler<int> TransferItemChanged;
         public event EventHandler<Action> TransferListRefreshRequested;
 
+        /// <summary>
+        /// Raised after successful file finalization, explicit cancel-and-clear cleanup, or an exhausted failure has
+        /// fully completed.
+        /// </summary>
+        /// <remarks>
+        /// Transient faults, automatic retries, ordinary pauses, and system-triggered cancellation do not raise this
+        /// event, allowing platform heads to retain crash-resume metadata until work is genuinely terminal.
+        /// </remarks>
+        public event EventHandler<DownloadTerminalProcessedEventArgs>? DownloadTerminalProcessed;
+
+        /// <summary>
+        /// Raised synchronously when the peer corrects a download's expected byte length before an automatic retry.
+        /// </summary>
+        /// <remarks>
+        /// Platform heads can durably upgrade crash-resume metadata before the retry performs any new network work.
+        /// </remarks>
+        public event EventHandler<DownloadExpectedSizeChangedEventArgs>? DownloadExpectedSizeChanged;
+
+        /// <summary>
+        /// Gets or sets whether the immediate post-save success toast is suppressed because a
+        /// <see cref="DownloadTerminalProcessed"/> subscriber presents completion only after terminal download
+        /// state has been durably committed. Platforms without such a subscriber keep the immediate toast.
+        /// </summary>
+        public bool SuccessToastDeferredUntilTerminalProcessed { get; set; }
+
         public DownloadService(IToaster toaster, IFileSystemService fileSystemService, ISessionService sessionService, IMainThreadRunner mainThreadRunner, Func<ISoulseekClient> soulseekClientFactory, ILoggerBackend logger, INetworkStatus networkStatus)
         {
             this.toaster = toaster ?? throw new ArgumentNullException(nameof(toaster));
@@ -199,9 +224,10 @@ namespace Seeker.Services
         /// takes care of resuming incomplete downloads, switching between mem and file backed, creating the incompleteUri dir.
         /// its the same as the old SeekerState.SoulseekClient.DownloadAsync but with a few bells and whistles...
         /// </summary>
-        public Task DownloadFileAsync(string username, string fullfilename, long? size, CancellationTokenSource cts, out Task waitForNext, DownloadInfo dlInfo, int depth = 1, bool isFileDecodedLegacy = false, bool isFolderDecodedLegacy = false) //an indicator for how much of the full filename to use...
+        public Task DownloadFileAsync(string username, string fullfilename, long? size, CancellationTokenSource cts, out Task waitForNext, DownloadInfo dlInfo, int depth = 1, bool isFileDecodedLegacy = false, bool isFolderDecodedLegacy = false, bool forceFileBacked = false) //an indicator for how much of the full filename to use...
         {
             var waitUntilEnqueue = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            dlInfo.ForceFileBacked = forceFileBacked;
 
             logger.Debug($"DownloadFileAsync: {fullfilename}");
             Task dlTask = null;
@@ -213,7 +239,7 @@ namespace Seeker.Services
                     waitUntilEnqueue.TrySetResult(true);
                 }
             });
-            if (PreferencesState.MemoryBackedDownload)
+            if (PreferencesState.MemoryBackedDownload && !forceFileBacked)
             {
                 var memStream = new MemoryStream();
                 if (dlInfo != null)
@@ -259,6 +285,7 @@ namespace Seeker.Services
                         size: size,
                         startOffset: partialLength,
                         options: new TransferOptions(disposeOutputStreamOnCompletion: true,
+                            seekOutputStreamAutomatically: false,
                             governor: SpeedLimitHelper.OurDownloadGovernor, stateChanged: updateForEnqueue),
                         cancellationToken: cts.Token);
                 }, TaskContinuationOptions.ExecuteSynchronously).Unwrap();
@@ -522,6 +549,21 @@ namespace Seeker.Services
             task =>
             {
                 logger.Debug("DownloadContinuationActionUI started for " + e.dlInfo?.fullFilename + " with status: " + task.Status);
+                DownloadTerminalDisposition? terminalDisposition = null;
+                bool terminalProcessedRaised = false;
+                void RaiseTerminalProcessed(DownloadTerminalDisposition disposition)
+                {
+                    if (terminalProcessedRaised)
+                    {
+                        return;
+                    }
+
+                    terminalProcessedRaised = true;
+                    DownloadTerminalProcessed?.Invoke(
+                        this,
+                        new DownloadTerminalProcessedEventArgs(e.dlInfo.TransferItemReference, disposition));
+                }
+
                 try
                 {
                     Action action = null;
@@ -542,7 +584,7 @@ namespace Seeker.Services
                                 CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
                                 TransferState.SetupCancellationToken(e.dlInfo.TransferItemReference, cancellationTokenSource, out _); //else when you go to cancel you are cancelling an already cancelled useless token!!
                                 var retryDlInfo = new DownloadInfo(e.dlInfo.username, e.dlInfo.fullFilename, e.dlInfo.TransferItemReference.Size, null, cancellationTokenSource, e.dlInfo.QueueLength, 0, task.Exception, e.dlInfo.Depth) { TransferItemReference = e.dlInfo.TransferItemReference };
-                                Task retryTask = DownloadFileAsync(e.dlInfo.username, e.dlInfo.fullFilename, e.dlInfo.TransferItemReference.Size, cancellationTokenSource, out _, retryDlInfo, 1, e.dlInfo.TransferItemReference.ShouldEncodeFileLatin1(), e.dlInfo.TransferItemReference.ShouldEncodeFolderLatin1());
+                                Task retryTask = DownloadFileAsync(e.dlInfo.username, e.dlInfo.fullFilename, e.dlInfo.TransferItemReference.Size, cancellationTokenSource, out _, retryDlInfo, 1, e.dlInfo.TransferItemReference.ShouldEncodeFileLatin1(), e.dlInfo.TransferItemReference.ShouldEncodeFolderLatin1(), e.dlInfo.ForceFileBacked);
                                 retryTask.ContinueWith(DownloadContinuationActionUI(new DownloadAddedEventArgs(retryDlInfo)));
                             }
                             catch (System.Exception e)
@@ -568,6 +610,11 @@ namespace Seeker.Services
                             logger.Debug("continue with cleanup activity: " + e.dlInfo.fullFilename);
                             e.dlInfo.TransferItemReference.CancelAndRetryFlag = false;
                             e.dlInfo.TransferItemReference.InProcessing = false;
+                            terminalDisposition = DownloadTerminalDisposition.Cleared;
+                            // Raised before the destructive cleanup so durable crash-resume state is forgotten first:
+                            // a crash in between leaves only an orphan partial, never a resurrected download that the
+                            // user explicitly cleared.
+                            RaiseTerminalProcessed(DownloadTerminalDisposition.Cleared);
                             TransferItems.TransferItemManagerWrapped.PerformCleanup(e.dlInfo.TransferItemReference); //this way we are sure that the stream is closed.
                         }
 
@@ -597,8 +644,30 @@ namespace Seeker.Services
                             // update the size and rerequest.
                             // if we have partially downloaded the file already we need to delete it to prevent corruption.
                             logger.Debug($"OLD SIZE {transferItem.Size} NEW SIZE {sizeException.RemoteSize}");
-                            transferItem.Size = sizeException.RemoteSize;
-                            e.dlInfo.Size = sizeException.RemoteSize;
+                            var sizeChanged = new DownloadExpectedSizeChangedEventArgs(
+                                transferItem,
+                                sizeException.RemoteSize);
+                            try
+                            {
+                                DownloadExpectedSizeDurabilityPolicy.PersistBeforeApplying(
+                                    () => DownloadExpectedSizeChanged?.Invoke(this, sizeChanged),
+                                    () =>
+                                    {
+                                        transferItem.Size = sizeException.RemoteSize;
+                                        e.dlInfo.Size = sizeException.RemoteSize;
+                                    });
+                            }
+                            catch (Exception persistException)
+                            {
+                                // Retrying without the durable size correction could trust stale partial bytes after
+                                // a crash; the transfer is marked failed for a visible manual retry instead.
+                                logger.FirebaseError(
+                                    "Persisting the corrected download size failed; the transfer was marked failed.",
+                                    persistException);
+                                transferItem.Failed = true;
+                                transferItem.State = TransferStates.Errored;
+                                return;
+                            }
                             retriable = true;
                             forceRetry = true;
                             resetRetryCount = true;
@@ -812,7 +881,7 @@ namespace Seeker.Services
                                 CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
                                 TransferState.SetupCancellationToken(e.dlInfo.TransferItemReference, cancellationTokenSource, out _); //else when you go to cancel you are cancelling an already cancelled useless token!!
                                 var retryDlInfo = new DownloadInfo(e.dlInfo.username, e.dlInfo.fullFilename, e.dlInfo.Size, null, cancellationTokenSource, e.dlInfo.QueueLength, resetRetryCount ? 0 : 1, task.Exception, e.dlInfo.Depth) { TransferItemReference = e.dlInfo.TransferItemReference };
-                                Task retryTask = DownloadFileAsync(e.dlInfo.username, e.dlInfo.fullFilename, e.dlInfo.Size, cancellationTokenSource, out _, retryDlInfo, 1, e.dlInfo.TransferItemReference.ShouldEncodeFileLatin1(), e.dlInfo.TransferItemReference.ShouldEncodeFolderLatin1());
+                                Task retryTask = DownloadFileAsync(e.dlInfo.username, e.dlInfo.fullFilename, e.dlInfo.Size, cancellationTokenSource, out _, retryDlInfo, 1, e.dlInfo.TransferItemReference.ShouldEncodeFileLatin1(), e.dlInfo.TransferItemReference.ShouldEncodeFolderLatin1(), e.dlInfo.ForceFileBacked);
                                 retryTask.ContinueWith(DownloadContinuationActionUI(new DownloadAddedEventArgs(retryDlInfo)));
                                 return; //i.e. dont toast anything just retry.
                             }
@@ -838,6 +907,7 @@ namespace Seeker.Services
                         }
                         mainThreadRunner.RunOnUiThread(action);
                         //System.Console.WriteLine(task.Exception.ToString());
+                        terminalDisposition = DownloadTerminalDisposition.Failed;
                         return;
                     }
                     //failed downloads return before getting here...
@@ -847,11 +917,6 @@ namespace Seeker.Services
                         logger.Firebase("auto retry succeeded: prev exception: " + e.dlInfo.PreviousFailureException.InnerException?.Message?.ToString());
                     }
 
-                    if (!PreferencesState.DisableDownloadToastNotification)
-                    {
-                        action = () => { toaster.ShowToastLong(SimpleHelpers.GetFileNameFromFile(e.dlInfo.fullFilename) + " " + toaster.GetString(StringKey.FinishedDownloading)); };
-                        mainThreadRunner.RunOnUiThread(action);
-                    }
                     string finalUri = string.Empty;
                     bool noSubfolder = e.dlInfo.TransferItemReference.TransferItemExtra.HasFlag(Transfers.TransferItemExtras.NoSubfolder);
                     if (e.dlInfo.OutputMemoryStream != null)
@@ -860,13 +925,13 @@ namespace Seeker.Services
                         string path = fileSystemService.SaveToFile(e.dlInfo.fullFilename, e.dlInfo.username, bytes, null, null, true, e.dlInfo.Depth, noSubfolder, out finalUri);
                         e.dlInfo.OutputMemoryStream.Dispose();
                         e.dlInfo.OutputMemoryStream = null;
-                        fileSystemService.SaveFileToMediaStore(path);
+                        fileSystemService.OnFileFinalized(path);
                     }
                     else if (e.dlInfo.TransferItemReference?.IncompleteUri != null)
                     {
                         //move file from incomplete to final location...
                         string path = fileSystemService.SaveToFile(e.dlInfo.fullFilename, e.dlInfo.username, default, e.dlInfo.TransferItemReference.IncompleteUri, e.dlInfo.TransferItemReference.IncompleteParentUri, false, e.dlInfo.Depth, noSubfolder, out finalUri);
-                        fileSystemService.SaveFileToMediaStore(path);
+                        fileSystemService.OnFileFinalized(path);
                     }
                     else
                     {
@@ -875,10 +940,29 @@ namespace Seeker.Services
                     e.dlInfo.TransferItemReference.IncompleteParentUri = null; //not needed anymore.
                     e.dlInfo.TransferItemReference.IncompleteUri = null;
                     e.dlInfo.TransferItemReference.FinalUri = finalUri;
+                    if (!string.IsNullOrWhiteSpace(finalUri))
+                    {
+                        terminalDisposition = DownloadTerminalDisposition.Succeeded;
+                        if (!PreferencesState.DisableDownloadToastNotification &&
+                            !SuccessToastDeferredUntilTerminalProcessed)
+                        {
+                            action = () =>
+                            {
+                                toaster.ShowToastLong(
+                                    SimpleHelpers.GetFileNameFromFile(e.dlInfo.fullFilename) +
+                                    " " + toaster.GetString(StringKey.FinishedDownloading));
+                            };
+                            mainThreadRunner.RunOnUiThread(action);
+                        }
+                    }
                 }
                 finally
                 {
                     e.dlInfo.TransferItemReference.InProcessing = false;
+                    if (terminalDisposition is { } disposition)
+                    {
+                        RaiseTerminalProcessed(disposition);
+                    }
                 }
             });
             return continuationActionSaveFile;
@@ -971,7 +1055,7 @@ namespace Seeker.Services
         /// sets CancelAndRetryFlag and cancels it (the continuation will re-download).
         /// Returns true if a fresh download was initiated, false if cancel-and-retry.
         /// </summary>
-        public bool RetryDownloadItem(TransferItem item)
+        public bool RetryDownloadItem(TransferItem item, bool forceFileBacked = false)
         {
             if (soulseekClientFactory().IsTransferInDownloads(item.Username, item.FullFilename))
             {
@@ -993,7 +1077,7 @@ namespace Seeker.Services
             var cts = new CancellationTokenSource();
             TransferState.SetupCancellationToken(item, cts, out _);
             var dlInfo = new DownloadInfo(item.Username, item.FullFilename, item.Size, null, cts, item.QueueLength, item.Failed ? 1 : 0, item.GetDirectoryLevel()) { TransferItemReference = item };
-            Task task = DownloadFileAsync(item.Username, item.FullFilename, item.GetSizeForDL(), cts, out _, dlInfo, isFileDecodedLegacy: item.ShouldEncodeFileLatin1(), isFolderDecodedLegacy: item.ShouldEncodeFolderLatin1());
+            Task task = DownloadFileAsync(item.Username, item.FullFilename, item.GetSizeForDL(), cts, out _, dlInfo, isFileDecodedLegacy: item.ShouldEncodeFileLatin1(), isFolderDecodedLegacy: item.ShouldEncodeFolderLatin1(), forceFileBacked: forceFileBacked);
             task.ContinueWith(DownloadContinuationActionUI(new DownloadAddedEventArgs(dlInfo)));
             return true;
         }

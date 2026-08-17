@@ -8,8 +8,10 @@ using Seeker.Debug;
 using Soulseek;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace UnitTestCommon
 {
@@ -708,6 +710,27 @@ namespace UnitTestCommon
             var chipsShowing = RunKeywords(responses, "search", hideHidden: false);
             Assert.IsTrue(KeywordTexts(chipsShowing).Contains("LockedOnlyZone"),
                 "locked-only responses should contribute keywords when hideHidden=false");
+        }
+    }
+
+    [TestFixture]
+    public class KeywordHelper_GetInvariantKeyTests
+    {
+        [Test]
+        public void GetInvariantKey_LowersInvariantly_UnderTurkishCulture()
+        {
+            CultureInfo original = Thread.CurrentThread.CurrentCulture;
+            try
+            {
+                // Culture-sensitive lowering would map "DISC1" to "dısc1" (dotless i) here,
+                // missing the "disc1" grouping below.
+                Thread.CurrentThread.CurrentCulture = new CultureInfo("tr-TR");
+                Assert.AreEqual("disc 1", Seeker.ChipsHelper.KeywordHelper.GetInvariantKey("DISC1"));
+            }
+            finally
+            {
+                Thread.CurrentThread.CurrentCulture = original;
+            }
         }
     }
 

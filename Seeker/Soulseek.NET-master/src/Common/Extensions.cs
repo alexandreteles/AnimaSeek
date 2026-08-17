@@ -1,10 +1,11 @@
 ﻿// <copyright file="Extensions.cs" company="JP Dillingham">
-//     Copyright (c) JP Dillingham. All rights reserved.
+//     Copyright (c) JP Dillingham.
+//     Copyright (c) 2026 AnimaSeek contributors.
+//     Modified: Replaced reflection-based fault wrapping with an AOT-safe exception factory.
 //
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
-//     (at your option) any later version.
+//     the Free Software Foundation, version 3.
 //
 //     This program is distributed in the hope that it will be useful,
 //     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,6 +14,14 @@
 //
 //     You should have received a copy of the GNU General Public License
 //     along with this program.  If not, see https://www.gnu.org/licenses/.
+//
+//     This program is distributed with Additional Terms pursuant to Section 7
+//     of the GPLv3.  See the LICENSE file in the root directory of this
+//     project for the complete terms and conditions.
+//
+//     SPDX-FileCopyrightText: JP Dillingham
+//     SPDX-FileCopyrightText: 2026 AnimaSeek contributors
+//     SPDX-License-Identifier: GPL-3.0-only
 // </copyright>
 
 namespace Soulseek
@@ -60,12 +69,11 @@ namespace Soulseek
         /// <summary>
         ///     Continue a task and report an Exception if one is raised.
         /// </summary>
-        /// <typeparam name="T">The type of Exception to throw.</typeparam>
         /// <param name="task">The task to continue.</param>
-        public static void ForgetButThrowWhenFaulted<T>(this Task task)
-            where T : Exception
+        /// <param name="exceptionFactory">Creates the exception to throw from the faulted task's aggregate exception.</param>
+        public static void ForgetButThrowWhenFaulted(this Task task, Func<Exception, Exception> exceptionFactory)
         {
-            task.ContinueWith(t => { throw (T)Activator.CreateInstance(typeof(T), t.Exception.Message, t.Exception); }, TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.RunContinuationsAsynchronously);
+            task.ContinueWith(t => { throw exceptionFactory(t.Exception); }, TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.RunContinuationsAsynchronously);
         }
 
         /// <summary>

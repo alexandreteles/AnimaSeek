@@ -46,7 +46,7 @@ namespace Mono.Nat.Upnp
 {
     class UpnpSearcher : Searcher
     {
-        static Logger Log { get; } = Logger.Create ();
+        static Logger Log { get; } = Logger.Create (typeof (UpnpSearcher));
 
         static readonly IList<string> SupportedServices = new List<string> {
             "urn:schemas-upnp-org:service:WANIPConnection:1",
@@ -63,19 +63,15 @@ namespace Mono.Nat.Upnp
 
         internal static UpnpSearcher Create ()
         {
-            bool anyNetworkInterfaces = false;
-            bool ourNetworkInterface = false;
             var clients = new Dictionary<UdpClient, List<IPAddress>> ();
             var gateways = new List<IPAddress> { IPAddress.Parse ("239.255.255.250") };
 
             try {
                 foreach (NetworkInterface n in NetworkInterface.GetAllNetworkInterfaces ()) { //this returns many (4+) interfaces.. we only care about the one we are on.
                     foreach (UnicastIPAddressInformation address in n.GetIPProperties ().UnicastAddresses) {
-                        anyNetworkInterfaces = true;
                         if (address.Address.ToString() != Mono.Nat.NatUtility.LocalIpAddress) {
                             continue;
                         }
-                        ourNetworkInterface = true;
                         if (address.Address.AddressFamily == AddressFamily.InterNetwork) {
                             try {
                                 var client = new UdpClient (new IPEndPoint (address.Address, 0));

@@ -6,21 +6,21 @@
     <Configurations>Debug;Release;Debug Mock;Release Mock</Configurations>
   </PropertyGroup>
 
-<PropertyGroup>
-	<LangVersion>10.0</LangVersion>
-</PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
 
   <PropertyGroup Condition="$(Configuration.Contains('Mock'))">
     <DefineConstants>$(DefineConstants);MOCK</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.5.198" />
-    <PackageReference Include="MessagePackAnalyzer" Version="2.5.198">
+    <PackageReference Include="MessagePack" />
+    <PackageReference Include="MessagePackAnalyzer">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Text.Json" Version="8.0.6" />
+    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
 
   <ItemGroup>

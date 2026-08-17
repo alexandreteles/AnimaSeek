@@ -49,7 +49,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
 using static Android.Provider.DocumentsContract;
@@ -955,11 +954,7 @@ namespace Seeker
 
         private void FallbackFileSelectionEntry(bool mustSelectDirectoryButton)
         {
-            bool hasManageAllFilesManisfestPermission = false;
-
-#if IzzySoft
-            hasManageAllFilesManisfestPermission = true;
-#endif
+            const bool hasManageAllFilesManisfestPermission = false;
 
             if (PlatformInfo.RequiresEitherOpenDocumentTreeOrManageAllFiles() && hasManageAllFilesManisfestPermission && !Android.OS.Environment.IsExternalStorageManager) //this is "step 1"
             {

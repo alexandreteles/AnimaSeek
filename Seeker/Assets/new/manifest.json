@@ -1,0 +1,59 @@
+{
+  "identity": "AnimaSeek Phoenix",
+  "status": "approved",
+  "approvedOn": "2026-08-17",
+  "geometryAuthority": "PNG",
+  "palette": {
+    "vacuumNavy": "#071321",
+    "connectionCyan": "#27B9FF",
+    "connectionCoral": "#FF4C58",
+    "discoveryYellow": "#FFD33D",
+    "warmWhite": "#FFF9EE"
+  },
+  "deliverables": {
+    "rasterMasters": [
+      "master/animaseek-phoenix-approved-source.png",
+      "master/animaseek-phoenix-raster-master.png",
+      "master/animaseek-phoenix-provenance.json"
+    ],
+    "vectorMasters": [
+      "source/animaseek-app-icon-any.svg",
+      "source/animaseek-app-icon-dark.svg",
+      "source/animaseek-app-icon-tinted.svg",
+      "source/animaseek-symbol-color.svg",
+      "source/animaseek-symbol-reversed.svg",
+      "source/animaseek-symbol-mono.svg",
+      "source/animaseek-symbol-mono-reversed.svg",
+      "source/animaseek-wordmark.svg",
+      "source/animaseek-wordmark-reversed.svg",
+      "source/animaseek-lockup-horizontal.svg",
+      "source/animaseek-lockup-horizontal-reversed.svg",
+      "source/animaseek-lockup-stacked.svg",
+      "source/animaseek-lockup-stacked-reversed.svg"
+    ],
+    "iosAssetCatalogs": [
+      "ios/AnimaSeekAssets.xcassets/AppIcon.appiconset",
+      "ios/AnimaSeekAssets.xcassets/LaunchLogo.imageset",
+      "ios/AnimaSeekAssets.xcassets/LaunchLockup.imageset",
+      "ios/AnimaSeekAssets.xcassets/BrandNavy.colorset",
+      "ios/AnimaSeekAssets.xcassets/AnimaSeekMark.imageset"
+    ],
+    "rasterExports": [
+      "raster/animaseek-symbol-color-1024.png",
+      "raster/animaseek-symbol-reversed-1024.png",
+      "raster/animaseek-symbol-mono-1024.png",
+      "raster/animaseek-symbol-mono-reversed-1024.png",
+      "raster/animaseek-wordmark-1900.png",
+      "raster/animaseek-wordmark-reversed-1900.png",
+      "raster/animaseek-lockup-horizontal-1600.png",
+      "raster/animaseek-lockup-horizontal-reversed-1600.png",
+      "raster/animaseek-lockup-stacked-1200.png",
+      "raster/animaseek-lockup-stacked-reversed-1200.png"
+    ],
+    "previews": [
+      "preview/animaseek-identity-sheet.png",
+      "preview/animaseek-small-size-check.png"
+    ],
+    "buildTool": "tools/build_phoenix_identity.py"
+  }
+}

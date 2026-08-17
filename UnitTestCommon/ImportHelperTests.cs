@@ -86,6 +86,7 @@ namespace UnitTestCommon
         [TestCase("linux_empty_wish")]
         [TestCase("test")]
         [TestCase("test2")]
+        [Category("RealData")]
         public void ImportQTConfig(string name)
         {
             string testDataDir = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "QT");

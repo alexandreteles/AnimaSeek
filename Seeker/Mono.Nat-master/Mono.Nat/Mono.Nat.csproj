@@ -12,7 +12,7 @@
 
 		<BeforePack>$(BeforePack);SetPackProperties</BeforePack>
 
-		<Configurations>Debug;Release;Release IzzySoft</Configurations>
+		<Configurations>Debug;Release</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -33,10 +33,6 @@
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
 		<CoreCompileDependsOn>SetBuildVersion;$(CoreCompileDependsOn)</CoreCompileDependsOn>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)'=='Release IzzySoft'">
-	  <CoreCompileDependsOn>SetBuildVersion;$(CoreCompileDependsOn)</CoreCompileDependsOn>
 	</PropertyGroup>
 
 	<PropertyGroup>

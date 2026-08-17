@@ -323,7 +323,7 @@ namespace Seeker.Services
                     stream = SeekerState.MainActivityRef.ContentResolver.OpenOutputStream(incompleteUri);
                 }
 
-                return new PositionTrackingOutputStream(stream, 0);
+                return new PositionTrackingOutputStream(stream, partialLength);
             }
         }
 
@@ -907,7 +907,7 @@ namespace Seeker.Services
             //Logger.Debug(toDelete.ParentFile.Name + ":" + toDelete.ParentFile.ListFiles().Length.ToString());
         }
 
-        public void SaveFileToMediaStore(string path)
+        public void OnFileFinalized(string path)
         {
             //ContentValues contentValues = new ContentValues();
             //contentValues.Put(MediaStore.MediaColumns.DateAdded, Helpers.GetDateTimeNowSafe().Ticks / TimeSpan.TicksPerMillisecond);

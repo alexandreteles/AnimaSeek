@@ -4,27 +4,65 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Xml.Serialization;
+using System.Text.Json;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace Seeker
 {
     public static class ImportHelper
     {
         /// <summary>
-        /// Entry point
+        /// Maximum number of compressed bytes accepted from a Nicotine bzip2 backup.
         /// </summary>
-        /// <param name="fileName"></param>
-        /// <param name="stream"></param>
-        /// <returns></returns>
+        /// <remarks>
+        /// Settings backups are normally only a few kilobytes. The limit keeps an imported file
+        /// from consuming unbounded memory while still allowing unusually large account lists.
+        /// </remarks>
+        public const int MaximumCompressedImportBytes = 8 * 1024 * 1024;
+
+        /// <summary>
+        /// Maximum number of uncompressed bytes accepted from a settings file or expanded archive.
+        /// </summary>
+        public const int MaximumUncompressedImportBytes = 32 * 1024 * 1024;
+
+        /// <summary>
+        /// Imports portable settings from a Seeker JSON or legacy XML export, SoulseekQt database, Nicotine
+        /// configuration, or Nicotine tar.bz2 backup.
+        /// </summary>
+        /// <param name="fileName">The source file name, used to recognize binary backup formats.</param>
+        /// <param name="stream">A readable source stream. Seekability is not required.</param>
+        /// <returns>The friends, ignored users, wishlist entries, and user notes in the export.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="fileName"/> or <paramref name="stream"/> is null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="stream"/> is not readable.</exception>
+        /// <exception cref="InvalidDataException">
+        /// The compressed source or uncompressed contents exceed their safety limit.
+        /// </exception>
         public static ImportedData ImportFile(string fileName, System.IO.Stream stream)
         {
-            // android content resolver streams can be pipe-backed (ex. cloud providers)
-            // and Read may return fewer bytes than requested. buffer upfront.
-            MemoryStream bufferedStream = new MemoryStream();
-            stream.CopyTo(bufferedStream);
-            bufferedStream.Seek(0, SeekOrigin.Begin);
+            if (fileName == null)
+            {
+                throw new ArgumentNullException(nameof(fileName));
+            }
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+            if (!stream.CanRead)
+            {
+                throw new ArgumentException("The import stream must be readable.", nameof(stream));
+            }
 
             string extension = System.IO.Path.GetExtension(fileName);
+            bool isCompressed = string.Equals(extension, ".bz2", StringComparison.OrdinalIgnoreCase);
+
+            // android content resolver streams can be pipe-backed (ex. cloud providers)
+            // and Read may return fewer bytes than requested. Buffer with an explicit ceiling.
+            using MemoryStream bufferedStream = CopyToBoundedMemory(
+                stream,
+                isCompressed ? MaximumCompressedImportBytes : MaximumUncompressedImportBytes,
+                isCompressed ? "compressed import file" : "uncompressed import data");
+
             ImportType importType = ImportType.Unknown;
             if (string.Equals(extension, ".scd1", StringComparison.OrdinalIgnoreCase) || string.Equals(extension, ".dat", StringComparison.OrdinalIgnoreCase))
             {
@@ -50,9 +88,10 @@ namespace Seeker
                 case ImportType.NicotineTarBz2:
                     using (Bzip2.BZip2InputStream zippedStream = new Bzip2.BZip2InputStream(bufferedStream, false))
                     {
-                        MemoryStream memStream = new MemoryStream();
-                        zippedStream.CopyTo(memStream);
-                        memStream.Seek(0, SeekOrigin.Begin);
+                        using MemoryStream memStream = CopyToBoundedMemory(
+                            zippedStream,
+                            MaximumUncompressedImportBytes,
+                            "expanded import archive");
                         //seek past tar header
                         SkipTar(memStream);
                         //parse actual config file
@@ -67,6 +106,70 @@ namespace Seeker
                     break;
             }
             return data.Value;
+        }
+
+        /// <summary>Returns the source-file limit applicable to a named import.</summary>
+        /// <param name="fileName">The file name whose extension identifies compressed backups.</param>
+        /// <returns>
+        /// <see cref="MaximumCompressedImportBytes"/> for bzip2 files; otherwise
+        /// <see cref="MaximumUncompressedImportBytes"/>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="fileName"/> is null.</exception>
+        public static int GetMaximumSourceBytes(string fileName)
+        {
+            if (fileName == null)
+            {
+                throw new ArgumentNullException(nameof(fileName));
+            }
+
+            return string.Equals(Path.GetExtension(fileName), ".bz2", StringComparison.OrdinalIgnoreCase)
+                ? MaximumCompressedImportBytes
+                : MaximumUncompressedImportBytes;
+        }
+
+        private static MemoryStream CopyToBoundedMemory(Stream source, int maximumBytes, string contentDescription)
+        {
+            if (source.CanSeek && source.Length - source.Position > maximumBytes)
+            {
+                throw CreateSizeLimitException(contentDescription, maximumBytes);
+            }
+
+            var destination = new MemoryStream(Math.Min(maximumBytes, 64 * 1024));
+            var buffer = new byte[64 * 1024];
+            int totalBytes = 0;
+
+            try
+            {
+                while (true)
+                {
+                    int remainingPlusOne = maximumBytes - totalBytes + 1;
+                    int bytesRead = source.Read(buffer, 0, Math.Min(buffer.Length, remainingPlusOne));
+                    if (bytesRead <= 0)
+                    {
+                        destination.Position = 0;
+                        return destination;
+                    }
+                    if (bytesRead > maximumBytes - totalBytes)
+                    {
+                        throw CreateSizeLimitException(contentDescription, maximumBytes);
+                    }
+
+                    destination.Write(buffer, 0, bytesRead);
+                    totalBytes += bytesRead;
+                }
+            }
+            catch
+            {
+                destination.Dispose();
+                throw;
+            }
+        }
+
+        private static InvalidDataException CreateSizeLimitException(string contentDescription, int maximumBytes)
+        {
+            int maximumMebibytes = maximumBytes / (1024 * 1024);
+            return new InvalidDataException(
+                $"The {contentDescription} exceeds the {maximumMebibytes} MiB safety limit.");
         }
 
 
@@ -589,25 +692,80 @@ namespace Seeker
 
         private static ImportedData ParseSeeker(System.IO.Stream stream)
         {
-            var data = new XmlSerializer(typeof(SeekerImportExportData)).Deserialize(stream) as SeekerImportExportData;
-            if (data == null)
+            using var textReader = new StreamReader(
+                stream,
+                Encoding.UTF8,
+                detectEncodingFromByteOrderMarks: true,
+                bufferSize: 4096,
+                leaveOpen: true);
+            string payload = textReader.ReadToEnd();
+            string trimmedPayload = payload.TrimStart();
+            if (trimmedPayload.StartsWith("{", StringComparison.Ordinal))
+            {
+                SeekerImportExportData? data = SerializationHelper.DeserializeFromString<SeekerImportExportData>(
+                    trimmedPayload);
+                if (data == null)
+                {
+                    throw new JsonException("The Seeker export JSON contained no settings object.");
+                }
+
+                return CreateImportedData(data);
+            }
+
+            var settings = new XmlReaderSettings
+            {
+                DtdProcessing = DtdProcessing.Prohibit,
+                XmlResolver = null,
+            };
+            using var stringReader = new StringReader(payload);
+            using XmlReader reader = XmlReader.Create(stringReader, settings);
+            XDocument document = XDocument.Load(reader, LoadOptions.None);
+            XElement root = document.Root;
+            if (root == null || root.Name.LocalName != nameof(SeekerImportExportData))
             {
                 throw new Exception("Failed to read the Seeker export file.");
             }
-            List<Tuple<string, string>> userNotes = new List<Tuple<string, string>>();
-            if (data.UserNotes != null)
-            {
-                foreach (KeyValueEl keyValueEl in data.UserNotes)
-                {
-                    userNotes.Add(new Tuple<string, string>(keyValueEl.Key, keyValueEl.Value));
-                }
-            }
-            var importData = new ImportedData(
+
+            List<string> ReadStringList(string sectionName) =>
+                root.Elements()
+                    .FirstOrDefault(element => element.Name.LocalName == sectionName)?
+                    .Elements()
+                    .Where(element => element.Name.LocalName == "string")
+                    .Select(element => element.Value)
+                    .ToList()
+                ?? new List<string>();
+
+            List<Tuple<string, string>> userNotes = root.Elements()
+                .FirstOrDefault(element => element.Name.LocalName == nameof(SeekerImportExportData.UserNotes))?
+                .Elements()
+                .Where(element => element.Name.LocalName == nameof(KeyValueEl))
+                .Select(element => new Tuple<string, string>(
+                    element.Elements().FirstOrDefault(child => child.Name.LocalName == nameof(KeyValueEl.Key))?.Value
+                        ?? string.Empty,
+                    element.Elements().FirstOrDefault(child => child.Name.LocalName == nameof(KeyValueEl.Value))?.Value
+                        ?? string.Empty))
+                .ToList()
+                ?? new List<Tuple<string, string>>();
+
+            return new ImportedData(
+                ReadStringList(nameof(SeekerImportExportData.Userlist)),
+                ReadStringList(nameof(SeekerImportExportData.BanIgnoreList)),
+                ReadStringList(nameof(SeekerImportExportData.Wishlist)),
+                userNotes);
+        }
+
+        private static ImportedData CreateImportedData(SeekerImportExportData data)
+        {
+            List<Tuple<string, string>> userNotes = (data.UserNotes ?? new List<KeyValueEl>())
+                .Where(entry => entry != null)
+                .Select(entry => new Tuple<string, string>(entry.Key ?? string.Empty, entry.Value ?? string.Empty))
+                .ToList();
+
+            return new ImportedData(
                 data.Userlist ?? new List<string>(),
                 data.BanIgnoreList ?? new List<string>(),
                 data.Wishlist ?? new List<string>(),
                 userNotes);
-            return importData;
         }
 
         /// <summary>
@@ -732,24 +890,36 @@ namespace Seeker
 
         private static ImportType DetermineImportTypeByFirstLine(Stream stream)
         {
-            System.IO.StreamReader fStream = new System.IO.StreamReader(stream);
-            string firstLine = fStream.ReadLine();
+            using var reader = new StreamReader(
+                stream,
+                Encoding.UTF8,
+                detectEncodingFromByteOrderMarks: true,
+                bufferSize: 4096,
+                leaveOpen: true);
+            int firstCharacter;
+            do
+            {
+                firstCharacter = reader.Read();
+            }
+            while (firstCharacter >= 0 && char.IsWhiteSpace((char)firstCharacter));
+
             stream.Seek(0, SeekOrigin.Begin);
-            if (firstLine == null)
+            if (firstCharacter < 0)
             {
                 throw new Exception("The file is empty.");
             }
-            if (firstLine.StartsWith("<?xml"))
+
+            if (firstCharacter == '<' || firstCharacter == '{')
             {
                 return ImportType.Seeker;
             }
-            else if (firstLine.StartsWith("["))
+            else if (firstCharacter == '[')
             {
                 return ImportType.Nicotine;
             }
             else
             {
-                Logger.Debug("Unsure of filetype.  Firstline = " + firstLine);
+                Logger.Debug("Unsure of filetype. First character = " + (char)firstCharacter);
                 return ImportType.Nicotine;
             }
         }

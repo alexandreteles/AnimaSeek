@@ -7,9 +7,64 @@ using System.Collections.Generic;
 
 namespace Seeker.Serialization
 {
-    public class FileItemFormatter : IMessagePackFormatter<Soulseek.File>
+    /// <summary>
+    /// Preserves the contractless map representation used for Soulseek file attributes by older caches.
+    /// </summary>
+    public sealed class FileAttributeFormatter : IMessagePackFormatter<FileAttribute?>
     {
-        public void Serialize(ref MessagePackWriter writer, Soulseek.File value, MessagePackSerializerOptions options)
+        /// <inheritdoc />
+        public void Serialize(ref MessagePackWriter writer, FileAttribute? value, MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            writer.WriteMapHeader(2);
+            writer.Write(nameof(FileAttribute.Type));
+            writer.Write((int)value.Type);
+            writer.Write(nameof(FileAttribute.Value));
+            writer.Write(value.Value);
+        }
+
+        /// <inheritdoc />
+        public FileAttribute? Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            var type = FileAttributeType.BitRate;
+            var value = 0;
+            var count = reader.ReadMapHeader();
+
+            for (var index = 0; index < count; index++)
+            {
+                switch (reader.ReadString())
+                {
+                    case nameof(FileAttribute.Type):
+                        type = (FileAttributeType)reader.ReadInt32();
+                        break;
+                    case nameof(FileAttribute.Value):
+                        value = reader.ReadInt32();
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            reader.Depth--;
+            return new FileAttribute(type, value);
+        }
+    }
+
+    public class FileItemFormatter : IMessagePackFormatter<Soulseek.File?>
+    {
+        public void Serialize(ref MessagePackWriter writer, Soulseek.File? value, MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -35,7 +90,7 @@ namespace Seeker.Serialization
 
         }
 
-        Soulseek.File IMessagePackFormatter<Soulseek.File>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        Soulseek.File? IMessagePackFormatter<Soulseek.File?>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -106,9 +161,9 @@ namespace Seeker.Serialization
         }
     }
 
-    public class BrowseResponseFormatter : IMessagePackFormatter<Soulseek.BrowseResponse>
+    public class BrowseResponseFormatter : IMessagePackFormatter<Soulseek.BrowseResponse?>
     {
-        public void Serialize(ref MessagePackWriter writer, Soulseek.BrowseResponse value, MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, Soulseek.BrowseResponse? value, MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -132,7 +187,7 @@ namespace Seeker.Serialization
             }
         }
 
-        Soulseek.BrowseResponse IMessagePackFormatter<Soulseek.BrowseResponse>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        Soulseek.BrowseResponse? IMessagePackFormatter<Soulseek.BrowseResponse?>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -190,9 +245,9 @@ namespace Seeker.Serialization
         }
     }
 
-    public class DirectoryItemFormatter : IMessagePackFormatter<Soulseek.Directory>
+    public class DirectoryItemFormatter : IMessagePackFormatter<Soulseek.Directory?>
     {
-        public void Serialize(ref MessagePackWriter writer, Soulseek.Directory value, MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, Soulseek.Directory? value, MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -211,7 +266,7 @@ namespace Seeker.Serialization
             }
         }
 
-        Soulseek.Directory IMessagePackFormatter<Soulseek.Directory>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        Soulseek.Directory? IMessagePackFormatter<Soulseek.Directory?>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -253,9 +308,9 @@ namespace Seeker.Serialization
         }
     }
 
-    public class SearchResponseFormatter : IMessagePackFormatter<SearchResponse>
+    public class SearchResponseFormatter : IMessagePackFormatter<SearchResponse?>
     {
-        public void Serialize(ref MessagePackWriter writer, SearchResponse value, MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, SearchResponse? value, MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -288,7 +343,7 @@ namespace Seeker.Serialization
             }
         }
 
-        SearchResponse IMessagePackFormatter<SearchResponse>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        SearchResponse? IMessagePackFormatter<SearchResponse?>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -369,9 +424,9 @@ namespace Seeker.Serialization
         }
     }
 
-    public class UserListItemFormatter : IMessagePackFormatter<UserListItem>
+    public class UserListItemFormatter : IMessagePackFormatter<UserListItem?>
     {
-        public void Serialize(ref MessagePackWriter writer, UserListItem value, MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, UserListItem? value, MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -394,7 +449,7 @@ namespace Seeker.Serialization
             userInfoFormatter.Serialize(ref writer, value.UserInfo, options);
         }
 
-        UserListItem IMessagePackFormatter<UserListItem>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        UserListItem? IMessagePackFormatter<UserListItem?>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -456,9 +511,9 @@ namespace Seeker.Serialization
         }
     }
 
-    public class UserDataFormatter : IMessagePackFormatter<Soulseek.UserData>
+    public class UserDataFormatter : IMessagePackFormatter<Soulseek.UserData?>
     {
-        public void Serialize(ref MessagePackWriter writer, Soulseek.UserData value, MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, Soulseek.UserData? value, MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -484,7 +539,7 @@ namespace Seeker.Serialization
             }
         }
 
-        Soulseek.UserData IMessagePackFormatter<Soulseek.UserData>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        Soulseek.UserData? IMessagePackFormatter<Soulseek.UserData?>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -611,9 +666,9 @@ namespace Seeker.Serialization
         }
     }
 
-    public class UserStatusFormatter : IMessagePackFormatter<Soulseek.UserStatus>
+    public class UserStatusFormatter : IMessagePackFormatter<Soulseek.UserStatus?>
     {
-        public void Serialize(ref MessagePackWriter writer, Soulseek.UserStatus value, MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, Soulseek.UserStatus? value, MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -627,7 +682,7 @@ namespace Seeker.Serialization
             writer.Write(value.Username);
         }
 
-        Soulseek.UserStatus IMessagePackFormatter<Soulseek.UserStatus>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        Soulseek.UserStatus? IMessagePackFormatter<Soulseek.UserStatus?>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -669,9 +724,9 @@ namespace Seeker.Serialization
     }
 
 
-    public class UserInfoFormatter : IMessagePackFormatter<Soulseek.UserInfo>
+    public class UserInfoFormatter : IMessagePackFormatter<Soulseek.UserInfo?>
     {
-        public void Serialize(ref MessagePackWriter writer, Soulseek.UserInfo value, MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, Soulseek.UserInfo? value, MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -688,7 +743,7 @@ namespace Seeker.Serialization
             writer.Write(value.UploadSlots);
         }
 
-        Soulseek.UserInfo IMessagePackFormatter<Soulseek.UserInfo>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        Soulseek.UserInfo? IMessagePackFormatter<Soulseek.UserInfo?>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -749,9 +804,9 @@ namespace Seeker.Serialization
         }
     }
 
-    public class MessageFormatter : IMessagePackFormatter<Seeker.Message>
+    public class MessageFormatter : IMessagePackFormatter<Seeker.Message?>
     {
-        public void Serialize(ref MessagePackWriter writer, Seeker.Message value, MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, Seeker.Message? value, MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -772,7 +827,7 @@ namespace Seeker.Serialization
             writer.Write(value.SameAsLastUser);
         }
 
-        public Seeker.Message Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        public Seeker.Message? Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {

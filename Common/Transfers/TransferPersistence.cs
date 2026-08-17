@@ -1,143 +1,255 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
+using Soulseek;
 
 namespace Seeker
 {
+    /// <summary>
+    /// Persists transfer snapshots as trimming-safe JSON and restores both current JSON and legacy Android XML.
+    /// </summary>
     public static class TransferPersistence
     {
         private static DateTime transfersLastSavedTime = DateTime.MinValue;
 
+        /// <summary>Restores upload transfers from a current or legacy persisted payload.</summary>
+        /// <param name="transferListLegacy">
+        /// The primary transfer payload. New writes are JSON; existing Android installations may provide XML.
+        /// </param>
+        /// <param name="transferListV2">An older manager-shaped XML payload, when present.</param>
         public static void RestoreUploadTransferItems(string transferListLegacy, string transferListV2)
         {
-            if (transferListV2 == string.Empty)
-            {
-                RestoreUploadTransferItemsLegacy(transferListLegacy);
-            }
-            else
-            {
-                TransferItems.TransferItemManagerUploads = new TransferItemManager(true);
-                using (var stream = new System.IO.StringReader(transferListV2))
-                {
-                    var serializer = new System.Xml.Serialization.XmlSerializer(TransferItems.TransferItemManagerUploads.GetType());
-                    TransferItems.TransferItemManagerUploads = serializer.Deserialize(stream) as TransferItemManager;
-                    TransferItems.TransferItemManagerUploads.OnRelaunch();
-                }
-            }
+            TransferItems.TransferItemManagerUploads = RestoreManager(
+                string.IsNullOrWhiteSpace(transferListV2) ? transferListLegacy : transferListV2,
+                isUploads: true);
         }
 
+        /// <summary>Restores an older upload transfer-list payload.</summary>
+        /// <param name="transferList">A JSON list or legacy XML transfer list.</param>
         public static void RestoreUploadTransferItemsLegacy(string transferList)
         {
-            if (transferList == string.Empty)
-            {
-                TransferItems.TransferItemManagerUploads = new TransferItemManager(true);
-            }
-            else
-            {
-                var transferItemsLegacy = new List<TransferItem>();
-                using (var stream = new System.IO.StringReader(transferList))
-                {
-                    var serializer = new System.Xml.Serialization.XmlSerializer(transferItemsLegacy.GetType());
-                    transferItemsLegacy = serializer.Deserialize(stream) as List<TransferItem>;
-                }
-
-                TransferItems.TransferItemManagerUploads = new TransferItemManager(true);
-                foreach (var ti in transferItemsLegacy)
-                {
-                    TransferItems.TransferItemManagerUploads.Add(ti);
-                }
-                TransferItems.TransferItemManagerUploads.OnRelaunch();
-            }
+            TransferItems.TransferItemManagerUploads = RestoreManager(transferList, isUploads: true);
         }
 
+        /// <summary>Restores download transfers from a current or legacy persisted payload.</summary>
+        /// <param name="transferListLegacy">
+        /// The primary transfer payload. New writes are JSON; existing Android installations may provide XML.
+        /// </param>
+        /// <param name="transferListV2">An older manager-shaped XML payload, when present.</param>
         public static void RestoreDownloadTransferItems(string transferListLegacy, string transferListV2)
         {
-            if (transferListV2 == string.Empty)
-            {
-                RestoreDownloadTransferItemsLegacy(transferListLegacy);
-            }
-            else
-            {
-                TransferItems.TransferItemManagerDL = new TransferItemManager();
-                using (var stream = new System.IO.StringReader(transferListV2))
-                {
-                    var serializer = new System.Xml.Serialization.XmlSerializer(TransferItems.TransferItemManagerDL.GetType());
-                    TransferItems.TransferItemManagerDL = serializer.Deserialize(stream) as TransferItemManager;
-                    TransferItems.TransferItemManagerDL.OnRelaunch();
-                }
-            }
+            TransferItems.TransferItemManagerDL = RestoreManager(
+                string.IsNullOrWhiteSpace(transferListV2) ? transferListLegacy : transferListV2,
+                isUploads: false);
         }
 
+        /// <summary>Restores an older download transfer-list payload.</summary>
+        /// <param name="transferList">A JSON list or legacy XML transfer list.</param>
         public static void RestoreDownloadTransferItemsLegacy(string transferList)
         {
-            if (transferList == string.Empty)
-            {
-                TransferItems.TransferItemManagerDL = new TransferItemManager();
-            }
-            else
-            {
-                var transferItemsLegacy = new List<TransferItem>();
-                using (var stream = new System.IO.StringReader(transferList))
-                {
-                    var serializer = new System.Xml.Serialization.XmlSerializer(transferItemsLegacy.GetType());
-                    transferItemsLegacy = serializer.Deserialize(stream) as List<TransferItem>;
-                }
-
-                TransferItems.TransferItemManagerDL = new TransferItemManager();
-                foreach (var ti in transferItemsLegacy)
-                {
-                    TransferItems.TransferItemManagerDL.Add(ti);
-                }
-                TransferItems.TransferItemManagerDL.OnRelaunch();
-            }
+            TransferItems.TransferItemManagerDL = RestoreManager(transferList, isUploads: false);
         }
 
         /// <summary>
-        /// Serializes transfer items if dirty and enough time has elapsed.
-        /// Returns (downloads, uploads) XML strings if a save was performed, or null if skipped.
+        /// Serializes consistent download and upload snapshots when transfer state is dirty or saving is forced.
         /// </summary>
-        public static (string downloads, string uploads)? SaveTransferItems(bool force = false, int maxSecondsUpdate = 0)
+        /// <param name="force">When <see langword="true"/>, saves even when state is clean or throttled.</param>
+        /// <param name="maxSecondsUpdate">Minimum interval between non-forced saves.</param>
+        /// <returns>JSON download/upload payloads, or <see langword="null"/> when saving was skipped.</returns>
+        public static (string downloads, string uploads)? SaveTransferItems(
+            bool force = false,
+            int maxSecondsUpdate = 0)
         {
-            if (force || (TransferItemManager.TransfersDirty && DateTime.UtcNow.Subtract(transfersLastSavedTime).TotalSeconds > maxSecondsUpdate))
+            if (!force &&
+                (!TransferItemManager.TransfersDirty ||
+                 DateTime.UtcNow.Subtract(transfersLastSavedTime).TotalSeconds <= maxSecondsUpdate))
             {
-                if (TransferItems.TransferItemManagerDL?.AllTransferItems == null)
-                {
-                    return null;
-                }
-                List<TransferItem> dlSnapshot;
-                lock (TransferItems.TransferItemManagerDL.AllTransferItems)
-                {
-                    dlSnapshot = TransferItems.TransferItemManagerDL.AllTransferItems.ToList();
-                }
-
-                List<TransferItem> ulSnapshot;
-                lock (TransferItems.TransferItemManagerUploads.AllTransferItems)
-                {
-                    ulSnapshot = TransferItems.TransferItemManagerUploads.AllTransferItems.ToList();
-                }
-
-                string listOfDownloadItems;
-                string listOfUploadItems;
-                using (var writer = new System.IO.StringWriter())
-                {
-                    var serializer = new System.Xml.Serialization.XmlSerializer(dlSnapshot.GetType());
-                    serializer.Serialize(writer, dlSnapshot);
-                    listOfDownloadItems = writer.ToString();
-                }
-                using (var writer = new System.IO.StringWriter())
-                {
-                    var serializer = new System.Xml.Serialization.XmlSerializer(ulSnapshot.GetType());
-                    serializer.Serialize(writer, ulSnapshot);
-                    listOfUploadItems = writer.ToString();
-                }
-
-                TransferItemManager.TransfersDirty = false;
-                transfersLastSavedTime = DateTime.UtcNow;
-
-                return (listOfDownloadItems, listOfUploadItems);
+                return null;
             }
 
-            return null;
+            if (TransferItems.TransferItemManagerDL?.AllTransferItems is null ||
+                TransferItems.TransferItemManagerUploads?.AllTransferItems is null)
+            {
+                return null;
+            }
+
+            List<TransferItem> downloads;
+            lock (TransferItems.TransferItemManagerDL.AllTransferItems)
+            {
+                downloads = TransferItems.TransferItemManagerDL.AllTransferItems.ToList();
+            }
+
+            List<TransferItem> uploads;
+            lock (TransferItems.TransferItemManagerUploads.AllTransferItems)
+            {
+                uploads = TransferItems.TransferItemManagerUploads.AllTransferItems.ToList();
+            }
+
+            string serializedDownloads = SerializationHelper.SerializeToString(downloads);
+            string serializedUploads = SerializationHelper.SerializeToString(uploads);
+
+            TransferItemManager.TransfersDirty = false;
+            transfersLastSavedTime = DateTime.UtcNow;
+            return (serializedDownloads, serializedUploads);
+        }
+
+        private static TransferItemManager RestoreManager(string serialized, bool isUploads)
+        {
+            var manager = new TransferItemManager(isUploads);
+            foreach (TransferItem item in DeserializeItems(serialized))
+            {
+                manager.Add(item);
+            }
+
+            manager.OnRelaunch();
+            return manager;
+        }
+
+        private static IReadOnlyCollection<TransferItem> DeserializeItems(string serialized)
+        {
+            if (string.IsNullOrWhiteSpace(serialized))
+            {
+                return Array.Empty<TransferItem>();
+            }
+
+            string payload = serialized.TrimStart();
+            if (payload.StartsWith("<", StringComparison.Ordinal))
+            {
+                return DeserializeLegacyXml(payload);
+            }
+
+            return SerializationHelper.DeserializeFromString<List<TransferItem>>(payload)
+                   ?? throw new InvalidDataException("The transfer-state JSON payload was empty.");
+        }
+
+        private static IReadOnlyCollection<TransferItem> DeserializeLegacyXml(string serialized)
+        {
+            var settings = new XmlReaderSettings
+            {
+                DtdProcessing = DtdProcessing.Prohibit,
+                XmlResolver = null,
+            };
+
+            using var textReader = new StringReader(serialized);
+            using XmlReader xmlReader = XmlReader.Create(textReader, settings);
+            XDocument document = XDocument.Load(xmlReader, LoadOptions.None);
+            IEnumerable<XElement> itemElements = document.Root is { } root &&
+                                                 root.Name.LocalName == nameof(TransferItemManager)
+                ? root.Elements()
+                    .FirstOrDefault(element => element.Name.LocalName == nameof(TransferItemManager.AllTransferItems))?
+                    .Elements()
+                    .Where(element => element.Name.LocalName == nameof(TransferItem))
+                    ?? Enumerable.Empty<XElement>()
+                : document
+                    .Descendants()
+                    .Where(element => element.Name.LocalName == nameof(TransferItem));
+
+            return itemElements
+                .Select(ReadLegacyTransferItem)
+                .ToArray();
+        }
+
+        private static TransferItem ReadLegacyTransferItem(XElement element)
+        {
+            var item = new TransferItem
+            {
+                Filename = ReadString(element, nameof(TransferItem.Filename)),
+                Username = ReadString(element, nameof(TransferItem.Username)),
+                FolderName = ReadString(element, nameof(TransferItem.FolderName)),
+                FullFilename = ReadString(element, nameof(TransferItem.FullFilename)),
+                Progress = ReadInt32(element, nameof(TransferItem.Progress)),
+                BytesTransferred = ReadInt64(element, nameof(TransferItem.BytesTransferred)),
+                Failed = ReadBoolean(element, nameof(TransferItem.Failed)),
+                State = ReadEnum(element, nameof(TransferItem.State), TransferStates.None),
+                Size = ReadInt64(element, nameof(TransferItem.Size)),
+                isUpload = ReadBoolean(element, nameof(TransferItem.isUpload)),
+                CancelAndRetryFlag = ReadBoolean(element, nameof(TransferItem.CancelAndRetryFlag)),
+                WasFilenameLatin1Decoded = ReadBoolean(element, nameof(TransferItem.WasFilenameLatin1Decoded)),
+                WasFolderLatin1Decoded = ReadBoolean(element, nameof(TransferItem.WasFolderLatin1Decoded)),
+                FinalUri = ReadString(element, nameof(TransferItem.FinalUri), string.Empty),
+                IncompleteParentUri = ReadNullableString(element, nameof(TransferItem.IncompleteParentUri)),
+                IncompleteUri = ReadNullableString(element, nameof(TransferItem.IncompleteUri)),
+                TransferItemExtra = ReadEnum(
+                    element,
+                    nameof(TransferItem.TransferItemExtra),
+                    default(Transfers.TransferItemExtras)),
+                AvgSpeed = ReadDouble(element, nameof(TransferItem.AvgSpeed)),
+            };
+
+            XElement? queueLength = FindElement(element, nameof(TransferItem.QueueLength));
+            if (queueLength is not null && !string.IsNullOrWhiteSpace(queueLength.Value))
+            {
+                item.QueueLength = XmlConvert.ToInt32(queueLength.Value);
+            }
+
+            return item;
+        }
+
+        private static XElement? FindElement(XElement parent, string name) =>
+            parent.Elements().FirstOrDefault(element => element.Name.LocalName == name);
+
+        private static string ReadString(XElement parent, string name, string defaultValue = "") =>
+            ReadNullableString(parent, name) ?? defaultValue;
+
+        private static string? ReadNullableString(XElement parent, string name)
+        {
+            XElement? element = FindElement(parent, name);
+            if (element is null ||
+                string.Equals(
+                    element.Attribute(XName.Get("nil", "http://www.w3.org/2001/XMLSchema-instance"))?.Value,
+                    "true",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            return element.Value;
+        }
+
+        private static int ReadInt32(XElement parent, string name)
+        {
+            string? value = ReadNullableString(parent, name);
+            return string.IsNullOrWhiteSpace(value) ? 0 : XmlConvert.ToInt32(value);
+        }
+
+        private static long ReadInt64(XElement parent, string name)
+        {
+            string? value = ReadNullableString(parent, name);
+            return string.IsNullOrWhiteSpace(value) ? 0 : XmlConvert.ToInt64(value);
+        }
+
+        private static double ReadDouble(XElement parent, string name)
+        {
+            string? value = ReadNullableString(parent, name);
+            return string.IsNullOrWhiteSpace(value) ? 0 : XmlConvert.ToDouble(value);
+        }
+
+        private static bool ReadBoolean(XElement parent, string name)
+        {
+            string? value = ReadNullableString(parent, name);
+            return !string.IsNullOrWhiteSpace(value) && XmlConvert.ToBoolean(value.ToLowerInvariant());
+        }
+
+        private static TEnum ReadEnum<TEnum>(XElement parent, string name, TEnum defaultValue)
+            where TEnum : struct, Enum
+        {
+            string? value = ReadNullableString(parent, name);
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return defaultValue;
+            }
+
+            if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long number))
+            {
+                return (TEnum)Enum.ToObject(typeof(TEnum), number);
+            }
+
+            string flags = string.Join(", ", value.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+            return Enum.TryParse(flags, ignoreCase: false, out TEnum parsed) ? parsed : defaultValue;
         }
     }
 }

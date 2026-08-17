@@ -1,9 +1,37 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!--
+  Copyright (c) JP Dillingham.
+  Copyright (c) 2026 AnimaSeek contributors.
+  Modified: Renamed, rebranded, AOT-adapted, and configured as AnimaSeek's internal protocol component.
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, version 3.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see https://www.gnu.org/licenses/.
+
+  This program is distributed with Additional Terms pursuant to Section 7
+  of the GPLv3. See the LICENSE file in the root directory of this project
+  for the complete terms and conditions.
+
+  SPDX-FileCopyrightText: JP Dillingham
+  SPDX-FileCopyrightText: 2026 AnimaSeek contributors
+  SPDX-License-Identifier: GPL-3.0-only
+-->
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
-		<LangVersion>9.0</LangVersion>
-		<IsPackable>true</IsPackable>
-		<Configurations>Debug;Release;Release IzzySoft</Configurations>
+		<LangVersion>latest</LangVersion>
+		<AssemblyName>AnimaSeek.ProtocolComponent</AssemblyName>
+		<RootNamespace>Soulseek</RootNamespace>
+		<IsPackable>false</IsPackable>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<Configurations>Debug;Release;Debug Mock;Release Mock</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -24,36 +52,27 @@
 		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release IzzySoft|AnyCPU'">
-		<DocumentationFile>bin\Release\netstandard2.0\Soulseek.xml</DocumentationFile>
-		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-	</PropertyGroup>
-
 	<ItemGroup>
 		<AdditionalFiles Include=".\.CodeAnalysis\stylecop.json" Link="Properties\stylecop.json">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</AdditionalFiles>
-		<None Include="..\README.md" Pack="true" PackagePath="\" Link="Properties\README.md" />
+		<None Include="..\LICENSE" Link="LICENSE" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="..\NOTICE" Link="NOTICE" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<PropertyGroup>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>8.5.0</Version>
-		<Authors>JP Dillingham</Authors>
-		<Product>Soulseek.NET</Product>
-		<PackageProjectUrl>https://github.com/jpdillingham/Soulseek.NET</PackageProjectUrl>
-		<PackageLicense>https://github.com/jpdillingham/Soulseek.NET/blob/master/LICENSE</PackageLicense>
-		<PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
-		<Description>A .NET Standard client library for the Soulseek network.</Description>
-		<Copyright>Copyright (c) JP Dillingham</Copyright>
-		<RepositoryUrl>https://github.com/jpdillingham/Soulseek.NET</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PackageTags>dotnet csharp soulseek soulseek-network</PackageTags>
+		<Version>10.0.2-animaseek.1</Version>
+		<Authors>JP Dillingham; AnimaSeek contributors</Authors>
+		<Product>AnimaSeek Protocol Component</Product>
+		<Title>AnimaSeek Protocol Component (modified)</Title>
+		<PackageId>AnimaSeek.ProtocolComponent.Modified</PackageId>
+		<PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<Description>This is a modified internal AnimaSeek protocol component based on Soulseek.NET 10.0.2. It is not maintained by, endorsed by, or affiliated with the Soulseek.NET project or its author(s). Licensed under GPLv3 with the Additional Terms in LICENSE.</Description>
+		<Copyright>Copyright (c) JP Dillingham; modifications Copyright (c) 2026 AnimaSeek contributors</Copyright>
+		<PackageTags>animaseek internal protocol-component modified-soulseek-compatible</PackageTags>
 		<NeutralLanguage>en-US</NeutralLanguage>
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<PublishRepositoryUrl>false</PublishRepositoryUrl>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
@@ -65,7 +84,6 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
 		<PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
 			<PrivateAssets>all</PrivateAssets>
@@ -80,6 +98,9 @@
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>Common</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>AnimaSeek.ProtocolComponent.AotTests</_Parameter1>
 		</AssemblyAttribute>
 	</ItemGroup>
 </Project>

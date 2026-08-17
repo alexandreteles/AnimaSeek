@@ -1,0 +1,31 @@
+{
+  "identity": "AnimaSeek Phoenix",
+  "approvedOn": "2026-08-17",
+  "geometryAuthority": "PNG",
+  "approvedSource": {
+    "file": "animaseek-phoenix-approved-source.png",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "sha256": "a282d99e439ba42ed7b2133ad83d27b0d707dec524f38d649078956e515e6173",
+    "note": "Original user-approved generated preview, preserved byte-for-byte; its checkerboard is baked into RGB pixels."
+  },
+  "cleanRasterMaster": {
+    "file": "animaseek-phoenix-raster-master.png",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "sha256": "0f4d3ef329e812c36b183fd816db2aafdf5a27bc79e2d278bda23079ee88f3c3",
+    "note": "Transparent four-color master segmented and traced from the approved source PNG."
+  },
+  "vectorMethod": "Closed raster contours simplified and encoded as quadratic SVG paths; no SVG geometry was used to generate the approved PNG.",
+  "palette": {
+    "navy": "#071321",
+    "cyan": "#27B9FF",
+    "coral": "#FF4C58",
+    "yellow": "#FFD33D",
+    "warm_white": "#FFF9EE"
+  }
+}

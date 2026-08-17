@@ -16,6 +16,13 @@ namespace Seeker
         public Exception PreviousFailureException;
         public TransferItem TransferItemReference = null;
         public int Depth = 1;
+
+        /// <summary>
+        /// Gets or sets whether this download and its automatic retries must use a resumable file-backed stream even
+        /// when the legacy memory-backed preference is enabled.
+        /// </summary>
+        public bool ForceFileBacked { get; set; }
+
         /// <summary>
         /// For memory-backed downloads, holds the MemoryStream reference so the
         /// continuation can read the downloaded bytes via ToArray().

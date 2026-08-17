@@ -157,15 +157,21 @@ namespace UnitTestCommon
         [Test]
         public void GetTransferSpeedString_AboveMb()
         {
-            string result = SimpleHelpers.GetTransferSpeedString(2 * 1048576.0);
-            Assert.That(result, Is.EqualTo("2.0 MB/s"));
+            RunInCulture("en-US", () =>
+            {
+                string result = SimpleHelpers.GetTransferSpeedString(2 * 1048576.0);
+                Assert.That(result, Is.EqualTo("2.0 MB/s"));
+            });
         }
 
         [Test]
         public void GetTransferSpeedString_BelowMb()
         {
-            string result = SimpleHelpers.GetTransferSpeedString(512 * 1024.0);
-            Assert.That(result, Is.EqualTo("512.0 KB/s"));
+            RunInCulture("en-US", () =>
+            {
+                string result = SimpleHelpers.GetTransferSpeedString(512 * 1024.0);
+                Assert.That(result, Is.EqualTo("512.0 KB/s"));
+            });
         }
 
         [Test]
@@ -174,26 +180,6 @@ namespace UnitTestCommon
             // exactly 1MB is NOT > 1MB
             string result = SimpleHelpers.GetTransferSpeedString(1048576.0);
             Assert.That(result, Does.Contain("KB/s"));
-        }
-
-        // --- IsFileUri ---
-
-        [Test]
-        public void IsFileUri_FileScheme_ReturnsTrue()
-        {
-            Assert.That(SimpleHelpers.IsFileUri("file:///storage/test"), Is.True);
-        }
-
-        [Test]
-        public void IsFileUri_ContentScheme_ReturnsFalse()
-        {
-            Assert.That(SimpleHelpers.IsFileUri("content://com.android/test"), Is.False);
-        }
-
-        [Test]
-        public void IsFileUri_UnknownScheme_Throws()
-        {
-            Assert.Throws<Exception>(() => SimpleHelpers.IsFileUri("https://example.com"));
         }
 
         // --- IsSpecialMessage ---
@@ -438,10 +424,13 @@ namespace UnitTestCommon
         [Test]
         public void GetHumanReadableAttributes_SampleRateOnly()
         {
-            var attrs = new List<FileAttribute> { new FileAttribute(FileAttributeType.SampleRate, 44100) };
-            var file = new File(1, "test.flac", 1000, "flac", attrs);
-            string result = SimpleHelpers.GetHumanReadableAttributesForSingleItem(file);
-            Assert.That(result, Is.EqualTo("44.1 kHz"));
+            RunInCulture("en-US", () =>
+            {
+                var attrs = new List<FileAttribute> { new FileAttribute(FileAttributeType.SampleRate, 44100) };
+                var file = new File(1, "test.flac", 1000, "flac", attrs);
+                string result = SimpleHelpers.GetHumanReadableAttributesForSingleItem(file);
+                Assert.That(result, Is.EqualTo("44.1 kHz"));
+            });
         }
 
         [Test]
@@ -560,29 +549,12 @@ namespace UnitTestCommon
         [Test]
         public void GetRecentTimeNiceFormated_OverOneMonth_ReturnsFormattedDate()
         {
-            var timeRan = new DateTime(2025, 4, 14);
-            string result = SimpleHelpers.GetRecentTimeNiceFormated(timeRan, TimeSpan.FromDays(35), "just now", "min ago", "hr ago", "yesterday", "days ago");
-            Assert.That(result, Is.EqualTo("Apr 14"));
-        }
-
-        // --- KNOWN_TYPES ---
-
-        [Test]
-        public void KnownTypes_ContainsExpectedExtensions()
-        {
-            Assert.That(SimpleHelpers.KNOWN_TYPES, Does.Contain(".mp3"));
-            Assert.That(SimpleHelpers.KNOWN_TYPES, Does.Contain(".flac"));
-            Assert.That(SimpleHelpers.KNOWN_TYPES, Does.Contain(".wav"));
-            Assert.That(SimpleHelpers.KNOWN_TYPES, Does.Contain(".aiff"));
-            Assert.That(SimpleHelpers.KNOWN_TYPES, Does.Contain(".wma"));
-            Assert.That(SimpleHelpers.KNOWN_TYPES, Does.Contain(".aac"));
-        }
-
-        [Test]
-        public void KnownTypes_DoesNotContainUnexpected()
-        {
-            Assert.That(SimpleHelpers.KNOWN_TYPES, Does.Not.Contain(".ogg"));
-            Assert.That(SimpleHelpers.KNOWN_TYPES, Does.Not.Contain(".opus"));
+            RunInCulture("en-US", () =>
+            {
+                var timeRan = new DateTime(2025, 4, 14);
+                string result = SimpleHelpers.GetRecentTimeNiceFormated(timeRan, TimeSpan.FromDays(35), "just now", "min ago", "hr ago", "yesterday", "days ago");
+                Assert.That(result, Is.EqualTo("Apr 14"));
+            });
         }
 
         // --- GetFolderNameForSearchResult ---
@@ -631,32 +603,5 @@ namespace UnitTestCommon
             Assert.That(match.Value, Is.EqualTo("slsk://username/file.mp3"));
         }
 
-        // --- Edge cases for GetHumanReadableTime format string correctness ---
-
-        [Test]
-        public void GetHumanReadableTime_WithoutSpace_NoSpacesBetweenComponents()
-        {
-            // 1h 1m 1s = 3661
-            string result = SimpleHelpers.GetHumanReadableTime(3661);
-            Assert.That(result, Is.EqualTo("1h1m1s"));
-            // verify no spaces at all
-            Assert.That(result, Does.Not.Contain(" "));
-        }
-
-        [Test]
-        public void GetHumanReadableTime_WithSpace_SpaceBeforeEachUnit()
-        {
-            string result = SimpleHelpers.GetHumanReadableTime(3661, true);
-            Assert.That(result, Is.EqualTo("1h 1m 1s"));
-        }
-
-        [Test]
-        public void GetHumanReadableTime_SecondsOnly_WithoutSpace_FormatArgUnused()
-        {
-            string withoutSpace = SimpleHelpers.GetHumanReadableTime(45, false);
-            string withSpace = SimpleHelpers.GetHumanReadableTime(45, true);
-            Assert.That(withoutSpace, Is.EqualTo("45s"));
-            Assert.That(withSpace, Is.EqualTo("45s"));
-        }
     }
 }

@@ -2,6 +2,7 @@
 using Soulseek;
 using System;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading;
 
 namespace Seeker
@@ -31,13 +32,17 @@ namespace Seeker
         public TransferItemExtras TransferItemExtra;
 
         [System.Xml.Serialization.XmlIgnoreAttribute]
+        [JsonIgnore]
         public TimeSpan? RemainingTime;
         public double AvgSpeed = 0;
         [System.Xml.Serialization.XmlIgnoreAttribute]
+        [JsonIgnore]
         public bool CancelAndClearFlag = false;
         [System.Xml.Serialization.XmlIgnoreAttribute]
+        [JsonIgnore]
         public bool InProcessing = false; //whether its currently a task in Soulseek.Net.  so from Intialized / Queued to the end of the main download continuation task...
         [System.Xml.Serialization.XmlIgnoreAttribute]
+        [JsonIgnore]
         public CancellationTokenSource CancellationTokenSource = null;
 
         public int QueueLength

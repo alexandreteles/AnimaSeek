@@ -38,7 +38,7 @@ namespace Mono.Nat
 {
     abstract class Searcher : ISearcher
     {
-        static Logger Log { get; } = Logger.Create ();
+        static Logger Log { get; } = Logger.Create (typeof (Searcher));
 
         protected static readonly TimeSpan SearchPeriod = TimeSpan.FromSeconds(10); //note that MX is 3 seconds..  This is to repeat the search
 

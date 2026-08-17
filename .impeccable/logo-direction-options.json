@@ -1,0 +1,116 @@
+{
+  "title": "Choose AnimaSeek's symbol",
+  "question": "Each direction is independent from the bird and keeps color. Choose the identity AnimaSeek should own, re-roll, or steer another pass.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Shared Aperture",
+      "kicker": "INDEPENDENT MARK",
+      "lineage": "color-separation contact prints and split-lens apertures",
+      "thesis": "Two separate viewpoints overlap to create a third opening into something new.",
+      "palette": [
+        "#4355F9",
+        "#FF6B5E",
+        "#FFC857",
+        "#111318"
+      ],
+      "materials": [
+        "flat overprint",
+        "crisp cut paper"
+      ],
+      "viewport": "A square app icon where two asymmetric color forms meet around one unmistakable central aperture.",
+      "risk": "If the overlap becomes too symmetrical, it could resemble a generic link or infinity mark.",
+      "sketch": ".impeccable/sketches/animaseek-shared-aperture.webp"
+    },
+    {
+      "id": "challenger-poster",
+      "label": "Uncensored Encounter",
+      "kicker": "CULTURAL DISCOVERY",
+      "lineage": "Polish film-poster surrealism translated into a compact mark",
+      "thesis": "Two human presences become one impossible doorway, making discovery feel intimate and untamed.",
+      "case": "Strongest cultural and emotional identification; less immediate product clarity at tiny icon sizes.",
+      "palette": [
+        "#D82D35",
+        "#4A244F",
+        "#D7A75D",
+        "#17121A"
+      ],
+      "materials": [
+        "dry gouache",
+        "poster-stock grain"
+      ],
+      "viewport": "A square icon dominated by one surreal fused contour with a bright opening at its center.",
+      "risk": "Its expressive texture may collapse when reduced to Spotlight and Settings sizes.",
+      "sketch": ".impeccable/sketches/animaseek-uncensored-encounter.webp",
+      "hero": "https://impeccable.style/worlds/cards/posters-covers-sleeves-polish-film-poster-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/posters-covers-sleeves-polish-film-poster.webp"
+    },
+    {
+      "id": "challenger-signal",
+      "label": "Signal Bloom",
+      "kicker": "DISCOVERY EVENT",
+      "lineage": "particle-detector event displays softened into an encounter symbol",
+      "thesis": "Two signals meet and bloom into many paths: discovery made visible at the moment of connection.",
+      "case": "Clearest connection-to-discovery mechanism; less human and more technical than the brief asks for.",
+      "palette": [
+        "#071321",
+        "#27B9FF",
+        "#FFD33D",
+        "#FF4C58"
+      ],
+      "materials": [
+        "luminous signal tracks",
+        "concentric detector rings"
+      ],
+      "viewport": "A circular burst of a few disciplined tracks inside a dark square icon, with two paths entering and several leaving.",
+      "risk": "It can be mistaken for a science, AI, or crypto product unless aggressively simplified.",
+      "sketch": ".impeccable/sketches/animaseek-signal-bloom.webp",
+      "hero": "https://impeccable.style/worlds/cards/scientific-notation-particle-detector-event-display-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/scientific-notation-particle-detector-event-display.webp"
+    },
+    {
+      "id": "challenger-horizon",
+      "label": "Shared Horizon",
+      "kicker": "NEW WORLDS",
+      "lineage": "folded night maps, textile seams, and shared dream edges",
+      "thesis": "Separate places fold together so each reveals a new world inside the other.",
+      "case": "Warmest expression of shared experience; the connection mechanism is more poetic than immediate.",
+      "palette": [
+        "#0B1930",
+        "#1FB9A8",
+        "#F2C45C",
+        "#D979A0"
+      ],
+      "materials": [
+        "quilted night fields",
+        "embroidered seam"
+      ],
+      "viewport": "A square icon where two folded horizons meet and reveal a small radiant world between them.",
+      "risk": "It may read as a sleep, travel, or weather app before it reads as human discovery.",
+      "sketch": ".impeccable/sketches/animaseek-shared-horizon.webp",
+      "hero": "https://impeccable.style/worlds/cards/dream-surreal-impossible-worlds-sleeping-city-fold-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/dream-surreal-impossible-worlds-sleeping-city-fold.webp"
+    }
+  ],
+  "reroll": true,
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "lineage": "polished social-network and discovery-app iconography",
+    "thesis": "A central spark connects to a small constellation of people and paths.",
+    "palette": [
+      "#0A84FF",
+      "#5E5CE6",
+      "#FFFFFF",
+      "#111111"
+    ],
+    "materials": [
+      "flat vector geometry",
+      "native blue field"
+    ],
+    "viewport": "A balanced node-and-path emblem centered inside a conventional rounded app-icon field.",
+    "risk": "Immediately understandable, but interchangeable with many connection and discovery products.",
+    "sketch": ".impeccable/sketches/animaseek-category-standard.webp"
+  },
+  "steer": true
+}

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
@@ -9,13 +9,17 @@
     <Configurations>Debug;Release;Debug Mock</Configurations>
   </PropertyGroup>
 
+  <PropertyGroup Condition="$(Configuration.Contains('Mock'))">
+    <DefineConstants>$(DefineConstants);MOCK</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-    <PackageReference Include="NUnit" Version="4.3.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
-    <PackageReference Include="coverlet.collector" Version="6.0.4" />
-    <PackageReference Include="Verify.NUnit" Version="28.11.0" />
-    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Verify.NUnit" />
+    <PackageReference Include="SharpZipLib" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +38,21 @@
   <ItemGroup>
     <ProjectReference Include="..\Seeker\Soulseek.NET-master\src\Soulseek_Source.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Seeker.iOS\Services\IosInterruptedDownloadStore.cs"
+             Link="iOS\IosInterruptedDownloadStore.cs" />
+    <Compile Include="..\Seeker.iOS\Services\IosDownloadFinalizationJournal.cs"
+             Link="iOS\IosDownloadFinalizationJournal.cs" />
+    <Compile Include="..\Seeker.iOS\Services\IosTransferStateStore.cs"
+             Link="iOS\IosTransferStateStore.cs" />
+    <Compile Include="..\Seeker.iOS\ContinuedTransferBackgroundPolicy.cs"
+             Link="iOS\ContinuedTransferBackgroundPolicy.cs" />
+    <Compile Include="..\Seeker.iOS\DownloadCompletionPublicationPolicy.cs"
+             Link="iOS\DownloadCompletionPublicationPolicy.cs" />
+    <Compile Include="..\Seeker.iOS\BackgroundConnectionEligibilityPolicy.cs"
+             Link="iOS\BackgroundConnectionEligibilityPolicy.cs" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,442 @@
+name: iOS
+
+on:
+  pull_request:
+    branches: [ios, master]
+    paths:
+      - "Common/**"
+      - "UnitTestCommon/**"
+      - "Seeker.iOS/**"
+      - "Seeker/Soulseek.NET-master/src/**"
+      - "Seeker/Soulseek.NET-master/tests/Soulseek.Tests.Aot/**"
+      - "Seeker/Mono.Nat-master/Mono.Nat/**"
+      - "Directory.Packages.props"
+      - "global.json"
+      - ".github/workflows/ios.yml"
+      - ".releaserc.json"
+  push:
+    branches: [ios, master]
+    # Keep in sync with the pull_request paths above. Releases are cut by
+    # semantic-release on master pushes; commits that only touch files outside
+    # these paths (docs and the like) carry no release-worthy changes, and any
+    # they would have contributed are picked up by the next triggering push.
+    paths:
+      - "Common/**"
+      - "UnitTestCommon/**"
+      - "Seeker.iOS/**"
+      - "Seeker/Soulseek.NET-master/src/**"
+      - "Seeker/Soulseek.NET-master/tests/Soulseek.Tests.Aot/**"
+      - "Seeker/Mono.Nat-master/Mono.Nat/**"
+      - "Directory.Packages.props"
+      - "global.json"
+      - ".github/workflows/ios.yml"
+      - ".releaserc.json"
+  workflow_dispatch:
+
+# Cancel superseded in-flight runs for PRs and ios-branch pushes; master runs
+# are never cancelled so a release always completes, and the shared group
+# serializes master pushes so concurrent releases cannot race on tags.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Portable core tests
+            project: UnitTestCommon/UnitTestCommon.csproj
+            test-args: --filter TestCategory!=RealData
+          - name: Soulseek AOT regression tests
+            project: Seeker/Soulseek.NET-master/tests/Soulseek.Tests.Aot/Soulseek.Tests.Aot.csproj
+    env:
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.302
+
+      - name: Restore
+        run: dotnet restore ${{ matrix.project }}
+
+      - name: Test
+        run: >-
+          dotnet test ${{ matrix.project }}
+          --configuration Release
+          --no-restore
+          --verbosity normal
+          ${{ matrix.test-args }}
+
+  build:
+    name: Build Debug Mock
+    needs: test
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.302
+
+      - name: Select Xcode 26.6
+        run: sudo xcode-select --switch /Applications/Xcode_26.6.app/Contents/Developer
+
+      - name: Install iOS workload
+        run: dotnet workload install ios
+
+      - name: Restore
+        run: >-
+          dotnet restore Seeker.iOS/Seeker.iOS.csproj
+          --runtime iossimulator-arm64
+
+      # The exact strict AOT/full-link flag set documented in DEVELOPMENT.md.
+      - name: Build
+        run: >-
+          dotnet build Seeker.iOS/Seeker.iOS.csproj
+          --configuration "Debug Mock"
+          --framework net10.0-ios
+          --runtime iossimulator-arm64
+          --no-restore
+          -p:UseInterpreter=false
+          -p:MtouchLink=Full
+          -p:TrimmerSingleWarn=false
+          -p:ILLinkTreatWarningsAsErrors=true
+          -p:ArchiveOnBuild=false
+
+  version:
+    name: Compute release version
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      # semantic-release verifies release authorization with a dry-run push.
+      contents: write
+    outputs:
+      published: ${{ steps.semantic.outputs.new_release_published }}
+      version: ${{ steps.semantic.outputs.new_release_version }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # semantic-release needs the full history and tags to find the
+          # previous release and analyze the commits since.
+          fetch-depth: 0
+
+      - name: Determine next version (semantic-release dry run)
+        id: semantic
+        uses: cycjimmy/semantic-release-action@v6
+        with:
+          dry_run: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  release:
+    name: Release
+    if: needs.version.outputs.published == 'true'
+    needs: [build, version]
+    runs-on: macos-26
+    timeout-minutes: 60
+    permissions:
+      contents: write # push the release tag and create the GitHub release
+      id-token: write # sign attestations through Sigstore OIDC
+      attestations: write # store attestations on the repository
+      issues: write # semantic-release comments on resolved issues
+      pull-requests: write # semantic-release comments on released PRs
+    env:
+      RELEASE_VERSION: ${{ needs.version.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # The publishing semantic-release run re-analyzes the same history.
+          fetch-depth: 0
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.302
+
+      - name: Select Xcode 26.6
+        run: sudo xcode-select --switch /Applications/Xcode_26.6.app/Contents/Developer
+
+      - name: Install iOS workload
+        run: dotnet workload install ios
+
+      - name: Stamp bundle version
+        id: stamp
+        shell: bash
+        run: |
+          build="${GITHUB_RUN_NUMBER}"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${RELEASE_VERSION}" Seeker.iOS/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${build}" Seeker.iOS/Info.plist
+          echo "build=${build}" >> "${GITHUB_OUTPUT}"
+
+      - name: Restore device runtime
+        run: dotnet restore Seeker.iOS/Seeker.iOS.csproj --runtime ios-arm64
+
+      # Until a paid Apple developer account exists every release ships an
+      # unsigned IPA; sideloading tools such as AltStore re-sign it on install.
+      - name: Publish unsigned IPA
+        run: >-
+          dotnet publish Seeker.iOS/Seeker.iOS.csproj
+          --configuration Release
+          --framework net10.0-ios
+          --runtime ios-arm64
+          --no-restore
+          -p:UseInterpreter=false
+          -p:MtouchLink=Full
+          -p:TrimmerSingleWarn=false
+          -p:ILLinkTreatWarningsAsErrors=true
+          -p:ArchiveOnBuild=true
+          -p:BuildIpa=true
+          -p:EnableCodeSigning=false
+          -p:ApplicationDisplayVersion="${{ env.RELEASE_VERSION }}"
+          -p:ApplicationVersion="${{ steps.stamp.outputs.build }}"
+
+      - name: Collect unsigned IPA
+        shell: bash
+        run: |
+          ipa_source="$(find Seeker.iOS/bin/Release/net10.0-ios/ios-arm64 -type f -name '*.ipa' -print -quit)"
+          if [[ -z "${ipa_source}" ]]; then
+            echo "The unsigned publish did not produce an IPA." >&2
+            exit 1
+          fi
+          mkdir -p dist
+          mv "${ipa_source}" "dist/animaseek_v${RELEASE_VERSION}_unsigned.ipa"
+
+      # The signed IPA is additive: when any signing secret is absent the
+      # release still ships, carrying only the unsigned IPA.
+      - name: Detect signing secrets
+        id: signing_check
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_CODESIGN_KEY: ${{ secrets.APPLE_CODESIGN_KEY }}
+          APPLE_KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
+          APPLE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
+        shell: bash
+        run: |
+          missing=()
+          for name in \
+            APPLE_CERTIFICATE_BASE64 \
+            APPLE_CERTIFICATE_PASSWORD \
+            APPLE_CODESIGN_KEY \
+            APPLE_KEYCHAIN_PASSWORD \
+            APPLE_PROVISIONING_PROFILE_BASE64; do
+            if [[ -z "${!name}" ]]; then
+              missing+=("${name}")
+            fi
+          done
+          if (( ${#missing[@]} == 0 )); then
+            echo "available=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "available=false" >> "${GITHUB_OUTPUT}"
+            echo "Skipping the signed IPA; missing signing secrets: ${missing[*]}"
+          fi
+
+      - name: Install signing identity and profile
+        if: steps.signing_check.outputs.available == 'true'
+        id: signing
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
+          APPLE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
+        shell: bash
+        run: |
+          certificate_path="${RUNNER_TEMP}/animaseek.p12"
+          profile_path="${RUNNER_TEMP}/animaseek.mobileprovision"
+          keychain_path="${RUNNER_TEMP}/animaseek-signing.keychain-db"
+          printf '%s' "${APPLE_CERTIFICATE_BASE64}" | base64 --decode > "${certificate_path}"
+          printf '%s' "${APPLE_PROVISIONING_PROFILE_BASE64}" | base64 --decode > "${profile_path}"
+          security create-keychain -p "${APPLE_KEYCHAIN_PASSWORD}" "${keychain_path}"
+          security set-keychain-settings -lut 21600 "${keychain_path}"
+          security unlock-keychain -p "${APPLE_KEYCHAIN_PASSWORD}" "${keychain_path}"
+          security import "${certificate_path}" \
+            -P "${APPLE_CERTIFICATE_PASSWORD}" \
+            -A -t cert -f pkcs12 -k "${keychain_path}"
+          security set-key-partition-list \
+            -S apple-tool:,apple: \
+            -k "${APPLE_KEYCHAIN_PASSWORD}" \
+            "${keychain_path}"
+          security list-keychains -d user -s "${keychain_path}" login.keychain-db
+          profile_uuid="$(security cms -D -i "${profile_path}" | plutil -extract UUID raw -)"
+          profile_directory="${HOME}/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "${profile_directory}"
+          cp "${profile_path}" "${profile_directory}/${profile_uuid}.mobileprovision"
+          echo "profile_uuid=${profile_uuid}" >> "${GITHUB_OUTPUT}"
+          echo "keychain_path=${keychain_path}" >> "${GITHUB_OUTPUT}"
+
+      - name: Publish signed IPA
+        if: steps.signing_check.outputs.available == 'true'
+        env:
+          APPLE_CODESIGN_KEY: ${{ secrets.APPLE_CODESIGN_KEY }}
+        run: >-
+          dotnet publish Seeker.iOS/Seeker.iOS.csproj
+          --configuration Release
+          --framework net10.0-ios
+          --runtime ios-arm64
+          --no-restore
+          -p:UseInterpreter=false
+          -p:MtouchLink=Full
+          -p:TrimmerSingleWarn=false
+          -p:ILLinkTreatWarningsAsErrors=true
+          -p:ArchiveOnBuild=true
+          -p:BuildIpa=true
+          -p:ApplicationDisplayVersion="${{ env.RELEASE_VERSION }}"
+          -p:ApplicationVersion="${{ steps.stamp.outputs.build }}"
+          -p:CodesignKey="${APPLE_CODESIGN_KEY}"
+          -p:CodesignProvision="${{ steps.signing.outputs.profile_uuid }}"
+
+      - name: Collect signed IPA
+        if: steps.signing_check.outputs.available == 'true'
+        shell: bash
+        run: |
+          ipa_source="$(find Seeker.iOS/bin/Release/net10.0-ios/ios-arm64 -type f -name '*.ipa' -print -quit)"
+          if [[ -z "${ipa_source}" ]]; then
+            echo "The signed publish did not produce an IPA." >&2
+            exit 1
+          fi
+          mv "${ipa_source}" "dist/animaseek_v${RELEASE_VERSION}_signed.ipa"
+
+      # CycloneDX reads the restored NuGet graph, so the SBOM reflects the
+      # actual dependency closure of the shipped app rather than a file scan.
+      - name: Generate SBOM
+        shell: bash
+        run: |
+          dotnet tool install --global CycloneDX
+          export PATH="${PATH}:${HOME}/.dotnet/tools"
+          dotnet-CycloneDX Seeker.iOS/Seeker.iOS.csproj \
+            --framework net10.0-ios \
+            --recursive \
+            --disable-package-restore \
+            --no-serial-number \
+            --output dist \
+            --filename "animaseek_v${RELEASE_VERSION}_sbom.cdx.json" \
+            --output-format Json \
+            --set-name AnimaSeek \
+            --set-version "${RELEASE_VERSION}"
+
+      # Both attest steps also upload to the repository attestation store, so
+      # `gh attestation verify <artifact> --repo <owner>/<repo>` works without
+      # the bundle files; the bundles are attached to the release for offline
+      # verification.
+      - name: Attest build provenance
+        id: provenance
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: dist/*.ipa
+
+      - name: Attest SBOM
+        id: sbom_attest
+        uses: actions/attest@v4
+        with:
+          subject-path: dist/*.ipa
+          sbom-path: dist/animaseek_v${{ env.RELEASE_VERSION }}_sbom.cdx.json
+
+      - name: Attach attestation bundles
+        shell: bash
+        run: |
+          cp "${{ steps.provenance.outputs.bundle-path }}" "dist/animaseek_v${RELEASE_VERSION}_provenance.jsonl"
+          cp "${{ steps.sbom_attest.outputs.bundle-path }}" "dist/animaseek_v${RELEASE_VERSION}_sbom-attestation.jsonl"
+
+      # AltStore re-signs on install, so its source always points at the
+      # unsigned IPA, which every release carries. The versions array is
+      # cumulative: the previous release's source (when one exists) is fetched
+      # and the new version is prepended to its history, so subscribers of the
+      # stable releases/latest/download URL see every published version.
+      - name: Prepare AltStore source metadata
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Any failure along the chain (first release ever, previous release
+          # without the asset, unparsable JSON) falls back to a fresh history.
+          # The filter drops any entry for the version being released so a
+          # re-run never duplicates it.
+          previous_versions='[]'
+          latest_tag="$(gh api "repos/${GITHUB_REPOSITORY}/releases/latest" --jq '.tag_name' 2>/dev/null || true)"
+          if [[ -n "${latest_tag}" ]] \
+            && gh release download "${latest_tag}" --pattern altstore-source.json --output previous-source.json 2>/dev/null \
+            && carried="$(jq --arg v "${RELEASE_VERSION}" \
+              '[(.apps[0].versions // [])[] | select(.version != $v)]' previous-source.json 2>/dev/null)" \
+            && [[ -n "${carried}" ]]; then
+            previous_versions="${carried}"
+            echo "Carrying forward $(jq length <<< "${previous_versions}") version(s) from ${latest_tag}."
+          else
+            echo "No previous release source found; starting a fresh version history."
+          fi
+          ipa_name="animaseek_v${RELEASE_VERSION}_unsigned.ipa"
+          size="$(stat -f '%z' "dist/${ipa_name}")"
+          sha256="$(shasum -a 256 "dist/${ipa_name}" | awk '{print $1}')"
+          release_date="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          download_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/v${RELEASE_VERSION}/${ipa_name}"
+          icon_url="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_SHA}/Seeker.iOS/Assets.xcassets/AppIcon.appiconset/AppIcon-Any-1024.png"
+          jq -n \
+            --arg name "AnimaSeek" \
+            --arg source_id "com.animaseek.app.source" \
+            --arg bundle_id "com.animaseek.app" \
+            --arg version "${RELEASE_VERSION}" \
+            --arg build "${{ steps.stamp.outputs.build }}" \
+            --arg date "${release_date}" \
+            --arg download "${download_url}" \
+            --arg icon "${icon_url}" \
+            --arg sha256 "${sha256}" \
+            --argjson size "${size}" \
+            --argjson previous "${previous_versions}" \
+            '{
+              name: $name,
+              identifier: $source_id,
+              apps: [{
+                name: $name,
+                bundleIdentifier: $bundle_id,
+                developerName: "AnimaSeek contributors",
+                subtitle: "A native iOS Soulseek client",
+                localizedDescription: "AnimaSeek is a native Soulseek client for iPhone, forked from Seeker.",
+                iconURL: $icon,
+                versions: ([{
+                  version: $version,
+                  buildVersion: $build,
+                  date: $date,
+                  downloadURL: $download,
+                  size: $size,
+                  sha256: $sha256,
+                  minOSVersion: "26.0"
+                }] + $previous)
+              }]
+            }' > dist/altstore-source.json
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: AnimaSeek-v${{ env.RELEASE_VERSION }}
+          path: dist/
+
+      # The publishing run recomputes the same version the dry run reported
+      # (identical history; master runs are serialized by the concurrency
+      # group), then pushes the tag and creates the GitHub release with every
+      # file in dist/ attached, per .releaserc.json.
+      - name: Tag and publish GitHub release
+        uses: cycjimmy/semantic-release-action@v6
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Remove temporary signing keychain
+        if: always() && steps.signing.outputs.keychain_path != ''
+        run: security delete-keychain "${{ steps.signing.outputs.keychain_path }}"

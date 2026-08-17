@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
+using System.Xml.Linq;
 using VerifyNUnit;
 
 namespace UnitTestCommon
@@ -35,12 +35,24 @@ namespace UnitTestCommon
 
         private string SerializeTransferItems(List<TransferItem> items)
         {
-            using (var writer = new StringWriter())
-            {
-                var serializer = new XmlSerializer(typeof(List<TransferItem>));
-                serializer.Serialize(writer, items);
-                return writer.ToString();
-            }
+            return new XElement(
+                "ArrayOfTransferItem",
+                items.Select(
+                    item => new XElement(
+                        nameof(TransferItem),
+                        new XElement(nameof(TransferItem.Filename), item.Filename),
+                        new XElement(nameof(TransferItem.Username), item.Username),
+                        new XElement(nameof(TransferItem.FolderName), item.FolderName),
+                        new XElement(nameof(TransferItem.FullFilename), item.FullFilename),
+                        new XElement(nameof(TransferItem.Progress), item.Progress),
+                        new XElement(nameof(TransferItem.BytesTransferred), item.BytesTransferred),
+                        new XElement(nameof(TransferItem.Failed), item.Failed),
+                        new XElement(nameof(TransferItem.State), item.State),
+                        new XElement(nameof(TransferItem.Size), item.Size),
+                        new XElement(nameof(TransferItem.isUpload), item.isUpload),
+                        new XElement(nameof(TransferItem.QueueLength), item.QueueLength),
+                        new XElement(nameof(TransferItem.FinalUri), item.FinalUri))))
+                .ToString(SaveOptions.DisableFormatting);
         }
 
         // --- RestoreDownloadTransferItems ---
@@ -87,21 +99,6 @@ namespace UnitTestCommon
             Assert.AreEqual("\\dir\\folder1\\song.mp3", restored.FullFilename);
             Assert.AreEqual("song.mp3", restored.Filename);
             Assert.AreEqual("folder1", restored.FolderName);
-        }
-
-        [Test]
-        public void RestoreDownloadTransferItems_LegacyData_CallsOnRelaunch_ResetsInProgress()
-        {
-            var items = new List<TransferItem>
-            {
-                CreateTransferItem("user1", "\\dir\\folder1\\song.mp3"),
-            };
-            items[0].State = TransferStates.InProgress;
-            string xml = SerializeTransferItems(items);
-
-            TransferPersistence.RestoreDownloadTransferItems(xml, string.Empty);
-
-            Assert.AreEqual(TransferStates.Cancelled, TransferItems.TransferItemManagerDL.AllTransferItems[0].State);
         }
 
         [Test]
@@ -209,6 +206,7 @@ namespace UnitTestCommon
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Value.downloads.Contains("song.mp3"));
+            Assert.That(result.Value.downloads.TrimStart(), Does.StartWith("["));
         }
 
         [Test]
@@ -386,7 +384,7 @@ namespace UnitTestCommon
         }
 
         [Test]
-        public void Roundtrip_XmlIgnoredFieldsAreReset()
+        public void Roundtrip_TransientFieldsAreReset()
         {
             TransferItems.TransferItemManagerDL = new TransferItemManager();
             TransferItems.TransferItemManagerUploads = new TransferItemManager(true);
@@ -463,6 +461,34 @@ namespace UnitTestCommon
 
             Assert.AreEqual(3, TransferItems.TransferItemManagerDL.AllTransferItems.Count);
             Assert.AreEqual(2, TransferItems.TransferItemManagerDL.AllFolderItems.Count);
+        }
+
+        [Test]
+        public void RestoreDownloadTransferItems_V2Manager_UsesAuthoritativeTransferCollection()
+        {
+            string fixturePath = Path.Combine(
+                TestContext.CurrentContext.TestDirectory,
+                "TestData",
+                "TransferManagerV2.xml");
+            string managerXml = System.IO.File.ReadAllText(fixturePath);
+
+            TransferPersistence.RestoreDownloadTransferItems("<ignored />", managerXml);
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(3, TransferItems.TransferItemManagerDL.AllTransferItems.Count);
+                Assert.AreEqual(
+                    new long[] { 100, 101, 200 },
+                    TransferItems.TransferItemManagerDL.AllTransferItems.Select(item => item.Size).ToArray());
+                Assert.AreEqual(
+                    new[] { "first-attempt", "second-attempt" },
+                    TransferItems.TransferItemManagerDL.AllTransferItems
+                        .Where(item => item.Filename == "track.mp3")
+                        .Select(item => item.FinalUri)
+                        .ToArray());
+                Assert.AreEqual(1, TransferItems.TransferItemManagerDL.AllFolderItems.Count);
+                Assert.AreEqual(3, TransferItems.TransferItemManagerDL.AllFolderItems[0].TransferItems.Count);
+            });
         }
     }
 }

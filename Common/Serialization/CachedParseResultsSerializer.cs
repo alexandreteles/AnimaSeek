@@ -40,13 +40,13 @@ namespace Seeker.Serialization
         {
             provider.EnsureCacheExists();
 
-            byte[] data = MessagePackSerializer.Serialize(cached.FileKeyToPresentableName);
+            byte[] data = MessagePackSerializer.Serialize(cached.FileKeyToPresentableName, SerializationHelper.CacheOptions);
             provider.Write(KeyConsts.M_HelperIndex_Filename, data);
 
-            data = MessagePackSerializer.Serialize(cached.SearchTermTokenToListOfFileKeys);
+            data = MessagePackSerializer.Serialize(cached.SearchTermTokenToListOfFileKeys, SerializationHelper.CacheOptions);
             provider.Write(KeyConsts.M_TokenIndex_Filename, data);
 
-            data = MessagePackSerializer.Serialize(cached.PresentableNameToFullFileInfo);
+            data = MessagePackSerializer.Serialize(cached.PresentableNameToFullFileInfo, SerializationHelper.CacheOptions);
             provider.Write(KeyConsts.M_Keys_Filename, data);
 
             data = MessagePackSerializer.Serialize(cached.BrowseResponse, options: SerializationHelper.BrowseResponseOptions);
@@ -55,7 +55,7 @@ namespace Seeker.Serialization
             data = MessagePackSerializer.Serialize(cached.BrowseResponseHiddenPortion, options: SerializationHelper.BrowseResponseOptions);
             provider.Write(KeyConsts.M_BrowseResponse_Hidden_Filename, data);
 
-            data = MessagePackSerializer.Serialize(cached.PresentableDirectoryNameToDirectoryUriMappings);
+            data = MessagePackSerializer.Serialize(cached.PresentableDirectoryNameToDirectoryUriMappings, SerializationHelper.CacheOptions);
             provider.Write(KeyConsts.M_FriendlyDirNameToUri_Filename, data);
 
             provider.SaveCachedFileCount(cached.NonHiddenFileCount);
@@ -70,7 +70,7 @@ namespace Seeker.Serialization
                     return null;
                 }
 
-                return MessagePackSerializer.Deserialize<T>(stream, options);
+                return MessagePackSerializer.Deserialize<T>(stream, options ?? SerializationHelper.CacheOptions);
             }
         }
     }

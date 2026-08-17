@@ -11,13 +11,13 @@ namespace Seeker
     public class SavedStateSearchTabHeader : ISerializable
     {
         [JsonInclude]
-        public string LastSearchTerm { get; private set; }
+        public string LastSearchTerm { get; internal set; }
 
         [JsonInclude]
-        public long LastRanTime { get; private set; }
+        public long LastRanTime { get; internal set; }
 
         [JsonInclude]
-        public int LastSearchResultsCount { get; private set; }
+        public int LastSearchResultsCount { get; internal set; }
 
         [JsonInclude]
         public int UnseenCount { get; set; }

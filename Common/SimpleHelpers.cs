@@ -20,7 +20,7 @@ namespace Seeker
         }
 
         /// <summary>
-        /// This is necessary since DocumentFile.ListFiles() returns files in an incomprehensible order (not by name, size, modified, inode, etc.)
+        /// This is necessary because storage-provider enumeration order is not stable or meaningful.
         /// </summary>
         public static void SortSlskDirFiles(List<Soulseek.File> files)
         {
@@ -90,22 +90,6 @@ namespace Seeker
             else
             {
                 return "\\Locked\\";
-            }
-        }
-
-        public static bool IsFileUri(string uriString)
-        {
-            if (uriString.StartsWith("file:"))
-            {
-                return true;
-            }
-            else if (uriString.StartsWith("content:"))
-            {
-                return false;
-            }
-            else
-            {
-                throw new Exception("IsFileUri failed: " + uriString);
             }
         }
 

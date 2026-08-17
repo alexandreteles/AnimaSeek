@@ -65,6 +65,7 @@ namespace UnitTestCommon
 
         [TestCase("RealUser1")]
         [TestCase("RealUser2")]
+        [Category("RealData")]
         public async Task TestRealUserParsingBrowseResponseTestData(string username)
         {
             string testDataDir = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "BrowseResponse");
@@ -159,21 +160,6 @@ namespace UnitTestCommon
                 }
             }
             return sb.ToString();
-        }
-
-        //[TestCase("browse_response_test")]
-        public async Task TestParsingRealBrowseResponse(string username)
-        {
-            string testDataDir = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "BrowseResponse");
-            string jsonPath = Path.Combine(testDataDir, $"{username}.json");
-            var stream = System.IO.File.OpenRead(@"C:\seeker_newest\UnitTestCommon\TestData\BrowseResponse\username.mpk");
-            var browseResponse = MessagePackSerializer.Deserialize<BrowseResponse>(stream, SerializationHelper.BrowseResponseOptions);
-            var input = PrintTreeToString(browseResponse);
-
-            Common.TreeNode<Soulseek.Directory> tree = BrowseUtils.CreateTreeFromFlatList(browseResponse, false, null, null, username, false);
-            string result = PrintTreeToString(tree);
-
-            await Verifier.Verify(result).UseParameters(username);
         }
 
         private Soulseek.Directory createDirectory(string dirName)

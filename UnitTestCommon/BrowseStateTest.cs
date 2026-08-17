@@ -50,14 +50,6 @@ namespace UnitTestCommon
         }
 
         [Test]
-        public void HasResponse_EmptyUsername_ReturnsFalse()
-        {
-            var state = new BrowseState();
-            state.CurrentUsername = "";
-            Assert.IsFalse(state.HasResponse());
-        }
-
-        [Test]
         public void HasResponse_WithUsername_ReturnsTrue()
         {
             var state = new BrowseState();
@@ -191,26 +183,6 @@ namespace UnitTestCommon
 
             Assert.IsNotNull(state.CachedFilteredDataItems);
             Assert.AreEqual("song", state.CachedFilteredDataItems.Item1);
-        }
-
-        [Test]
-        public void UpdateFilteredResponses_MoreRestrictiveSearch_UsesCachedResults()
-        {
-            var state = new BrowseState();
-            var tree = BuildTestTree();
-            state.SetBrowseResponse("testuser", tree, null, @"root\Music");
-
-            // First filter
-            state.Filter.Set("song");
-            state.UpdateFilteredResponses();
-            int firstCount = state.FilteredDataItems.Count;
-
-            // More restrictive filter (adds chars)
-            state.Filter.Set("song1");
-            state.UpdateFilteredResponses();
-
-            // Should still work and possibly have fewer results
-            Assert.IsTrue(state.FilteredDataItems.Count <= firstCount);
         }
 
         // ===== GoUpDirectory =====

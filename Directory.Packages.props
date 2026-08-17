@@ -1,0 +1,38 @@
+<Project>
+  <PropertyGroup>
+    <!-- Keep central package management scoped to first-party projects. The vendored
+         Soulseek.NET and Mono.Nat trees retain their upstream package declarations. -->
+    <ManagePackageVersionsCentrally Condition="
+      '$(MSBuildProjectName)' == 'Seeker' Or
+      '$(MSBuildProjectName)' == 'Common' Or
+      '$(MSBuildProjectName)' == 'UnitTestCommon' Or
+      '$(MSBuildProjectName)' == 'InstrumentationTests'">true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(ManagePackageVersionsCentrally)' == 'true'">
+    <PackageVersion Include="MessagePack" Version="3.1.8" />
+    <PackageVersion Include="MessagePackAnalyzer" Version="3.1.8" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.10" />
+
+    <PackageVersion Include="Xamarin.AndroidX.Compose.Runtime.Annotation.Jvm" Version="1.10.0.1" />
+    <PackageVersion Include="Xamarin.AndroidX.ConstraintLayout" Version="2.2.1.4" />
+    <PackageVersion Include="Xamarin.AndroidX.CoordinatorLayout" Version="1.3.0.4" />
+    <PackageVersion Include="Xamarin.AndroidX.DocumentFile" Version="1.1.0.2" />
+    <PackageVersion Include="Xamarin.AndroidX.Fragment" Version="1.8.9.2" />
+    <PackageVersion Include="Xamarin.AndroidX.Legacy.Support.Core.Utils" Version="1.0.0.35" />
+    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.10.0.1" />
+    <PackageVersion Include="Xamarin.AndroidX.RecyclerView" Version="1.4.0.4" />
+    <PackageVersion Include="Xamarin.AndroidX.SwipeRefreshLayout" Version="1.2.0.1" />
+    <PackageVersion Include="Xamarin.Firebase.Crashlytics" Version="120.0.6" />
+    <PackageVersion Include="Xamarin.Google.Android.Material" Version="1.13.0.1" />
+
+    <PackageVersion Include="coverlet.collector" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageVersion Include="NUnit" Version="4.6.1" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="6.2.0" />
+    <PackageVersion Include="SharpZipLib" Version="1.4.2" />
+    <!-- Verify 31 changes the established snapshot ordering/newline contract; retain the
+         compatible major until those baselines are intentionally migrated as one change. -->
+    <PackageVersion Include="Verify.NUnit" Version="28.11.0" />
+  </ItemGroup>
+</Project>

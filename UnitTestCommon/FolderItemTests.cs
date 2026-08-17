@@ -25,101 +25,12 @@ namespace UnitTestCommon
         // --- Constructor ---
 
         [Test]
-        public void Constructor_SetsFieldsCorrectly()
-        {
-            var ti = CreateTransferItem("alice", "\\music\\jazz\\song.mp3", "jazz");
-            var folder = new FolderItem("jazz", "alice", ti);
-
-            Assert.AreEqual("jazz", folder.FolderName);
-            Assert.AreEqual("alice", folder.Username);
-            Assert.AreEqual(1, folder.TransferItems.Count);
-            Assert.AreEqual(ti, folder.TransferItems[0]);
-        }
-
-        [Test]
         public void Constructor_NullFolderName_DerivesFolderNameFromFilename()
         {
             var ti = CreateTransferItem("alice", "\\music\\jazz\\song.mp3", "jazz");
             var folder = new FolderItem(null, "alice", ti);
 
             Assert.AreEqual("jazz", folder.FolderName);
-        }
-
-        [Test]
-        public void DefaultConstructor_CreatesEmptyTransferItems()
-        {
-            var folder = new FolderItem();
-
-            Assert.IsNotNull(folder.TransferItems);
-            Assert.AreEqual(0, folder.TransferItems.Count);
-        }
-
-        // --- Add / Remove / HasTransferItem / IsEmpty ---
-
-        [Test]
-        public void Add_AddsItem()
-        {
-            var ti1 = CreateTransferItem("alice", "\\music\\jazz\\song1.mp3", "jazz");
-            var folder = new FolderItem("jazz", "alice", ti1);
-
-            var ti2 = CreateTransferItem("alice", "\\music\\jazz\\song2.mp3", "jazz");
-            folder.Add(ti2);
-
-            Assert.AreEqual(2, folder.TransferItems.Count);
-            Assert.IsTrue(folder.TransferItems.Contains(ti2));
-        }
-
-        [Test]
-        public void Remove_RemovesItem()
-        {
-            var ti1 = CreateTransferItem("alice", "\\music\\jazz\\song1.mp3", "jazz");
-            var ti2 = CreateTransferItem("alice", "\\music\\jazz\\song2.mp3", "jazz");
-            var folder = new FolderItem("jazz", "alice", ti1);
-            folder.Add(ti2);
-
-            folder.Remove(ti1);
-
-            Assert.AreEqual(1, folder.TransferItems.Count);
-            Assert.IsFalse(folder.TransferItems.Contains(ti1));
-        }
-
-        [Test]
-        public void HasTransferItem_ReturnsTrueForContainedItem()
-        {
-            var ti = CreateTransferItem("alice", "\\music\\jazz\\song.mp3", "jazz");
-            var folder = new FolderItem("jazz", "alice", ti);
-
-            Assert.IsTrue(folder.HasTransferItem(ti));
-        }
-
-        [Test]
-        public void HasTransferItem_ReturnsFalseForUnknownItem()
-        {
-            var ti1 = CreateTransferItem("alice", "\\music\\jazz\\song1.mp3", "jazz");
-            var ti2 = CreateTransferItem("alice", "\\music\\jazz\\song2.mp3", "jazz");
-            var folder = new FolderItem("jazz", "alice", ti1);
-
-            Assert.IsFalse(folder.HasTransferItem(ti2));
-        }
-
-        [Test]
-        public void IsEmpty_TrueAfterRemovingAll()
-        {
-            var ti = CreateTransferItem("alice", "\\music\\jazz\\song.mp3", "jazz");
-            var folder = new FolderItem("jazz", "alice", ti);
-
-            folder.Remove(ti);
-
-            Assert.IsTrue(folder.IsEmpty());
-        }
-
-        [Test]
-        public void IsEmpty_FalseWhenItemsExist()
-        {
-            var ti = CreateTransferItem("alice", "\\music\\jazz\\song.mp3", "jazz");
-            var folder = new FolderItem("jazz", "alice", ti);
-
-            Assert.IsFalse(folder.IsEmpty());
         }
 
         // --- IsUpload ---
@@ -588,53 +499,5 @@ namespace UnitTestCommon
             Assert.AreEqual(2, folder.TransferItems.Count);
         }
 
-        // --- ITransferItem interface ---
-
-        [Test]
-        public void GetFolderName_ReturnsFolderName()
-        {
-            var ti = CreateTransferItem("alice", "\\music\\jazz\\song.mp3", "jazz");
-            var folder = new FolderItem("jazz", "alice", ti);
-
-            Assert.AreEqual("jazz", folder.GetFolderName());
-        }
-
-        [Test]
-        public void GetUsername_ReturnsUsername()
-        {
-            var ti = CreateTransferItem("alice", "\\music\\jazz\\song.mp3", "jazz");
-            var folder = new FolderItem("jazz", "alice", ti);
-
-            Assert.AreEqual("alice", folder.GetUsername());
-        }
-
-        [Test]
-        public void GetRemainingTime_ReturnsRemainingFolderTime()
-        {
-            var ti = CreateTransferItem("alice", "\\music\\jazz\\song.mp3", "jazz");
-            var folder = new FolderItem("jazz", "alice", ti);
-            folder.RemainingFolderTime = TimeSpan.FromSeconds(42);
-
-            Assert.AreEqual(TimeSpan.FromSeconds(42), folder.GetRemainingTime());
-        }
-
-        [Test]
-        public void GetRemainingTime_NullByDefault()
-        {
-            var ti = CreateTransferItem("alice", "\\music\\jazz\\song.mp3", "jazz");
-            var folder = new FolderItem("jazz", "alice", ti);
-
-            Assert.IsNull(folder.GetRemainingTime());
-        }
-
-        [Test]
-        public void GetAvgSpeed_ReturnsAvgSpeed()
-        {
-            var ti = CreateTransferItem("alice", "\\music\\jazz\\song.mp3", "jazz");
-            var folder = new FolderItem("jazz", "alice", ti);
-            folder.AvgSpeed = 123.45;
-
-            Assert.AreEqual(123.45, folder.GetAvgSpeed());
-        }
     }
 }

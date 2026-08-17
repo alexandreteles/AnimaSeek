@@ -44,10 +44,10 @@ using Seeker.Services;
 using Seeker.UPnP;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
 
 namespace Seeker
 {
@@ -187,8 +187,8 @@ namespace Seeker
         private void ExportClientData()
         {
             var intent = new Android.Content.Intent(Android.Content.Intent.ActionCreateDocument);
-            intent.SetType("application/xml");
-            intent.PutExtra(Android.Content.Intent.ExtraTitle, "seeker_data.xml");
+            intent.SetType("application/json");
+            intent.PutExtra(Android.Content.Intent.ExtraTitle, "animaseek_data.json");
             intent.AddCategory(Android.Content.Intent.CategoryOpenable);
             if (OperatingSystem.IsAndroidVersionAtLeast(26))
             {
@@ -907,11 +907,7 @@ namespace Seeker
         {
             requestCode = ConvertRequestCodeIntoLegacyVersion(requestCode);
 
-            bool hasManageAllFilesManisfestPermission = false;
-
-#if IzzySoft
-            hasManageAllFilesManisfestPermission = true;
-#endif
+            const bool hasManageAllFilesManisfestPermission = false;
 
             if (PlatformInfo.RequiresEitherOpenDocumentTreeOrManageAllFiles() && hasManageAllFilesManisfestPermission && !Android.OS.Environment.IsExternalStorageManager) //this is "step 1"
             {
@@ -1399,12 +1395,10 @@ namespace Seeker
                 {
                     var seekerImportExportData = GetCurrentExportData();
 
-                    var stream = this.ContentResolver.OpenOutputStream(data.Data);
-                    var xmlWriterSettings = new XmlWriterSettings() { Indent = true };
-                    using (var writer = XmlWriter.Create(stream, xmlWriterSettings))
-                    {
-                        new XmlSerializer(typeof(SeekerImportExportData)).Serialize(writer, seekerImportExportData);
-                    }
+                    using Stream stream = this.ContentResolver.OpenOutputStream(data.Data)
+                        ?? throw new IOException("Android could not open the selected settings-export destination.");
+                    using var writer = new StreamWriter(stream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+                    writer.Write(SerializationHelper.SerializeToString(seekerImportExportData));
 
                     SeekerApplication.Toaster.ShowToast(SeekerApplication.GetString(Resource.String.successfully_exported), ToastLength.Short);
                 }
@@ -1464,4 +1458,3 @@ namespace Seeker
     }
 
 }
-

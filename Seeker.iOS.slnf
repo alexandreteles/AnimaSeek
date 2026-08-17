@@ -1,0 +1,13 @@
+{
+  "solution": {
+    "path": "Seeker.sln",
+    "projects": [
+      "Common/Common.csproj",
+      "Seeker.iOS.FileSystemTests/Seeker.iOS.FileSystemTests.csproj",
+      "Seeker.iOS/Seeker.iOS.csproj",
+      "Seeker/Mono.Nat-master/Mono.Nat/Mono.Nat.csproj",
+      "Seeker/Soulseek.NET-master/src/Soulseek_Source.csproj",
+      "UnitTestCommon/UnitTestCommon.csproj"
+    ]
+  }
+}

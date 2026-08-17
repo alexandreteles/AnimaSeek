@@ -42,12 +42,10 @@ namespace Seeker.Helpers
         public void Firebase(string msg)
         {
             DiagnosticFileWriter.AppendIfEnabled(msg);
-#if !IzzySoft
             if (CrashlyticsEnabled)
             {
                 global::Firebase.Crashlytics.FirebaseCrashlytics.Instance.RecordException(new Java.Lang.Throwable(msg));
             }
-#endif
 #if ADB_LOGCAT
             log.Debug(LogCatTag, msg);
 #endif
@@ -56,12 +54,10 @@ namespace Seeker.Helpers
         public void InfoFirebase(string msg)
         {
             DiagnosticFileWriter.AppendIfEnabled(msg);
-#if !IzzySoft
             if (CrashlyticsEnabled)
             {
                 global::Firebase.Crashlytics.FirebaseCrashlytics.Instance.Log(msg);
             }
-#endif
 #if ADB_LOGCAT
             log.Debug(LogCatTag, msg);
 #endif

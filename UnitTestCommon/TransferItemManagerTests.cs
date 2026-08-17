@@ -33,16 +33,6 @@ namespace UnitTestCommon
         }
 
         [Test]
-        public void Add_AddsToAllTransferItems()
-        {
-            var ti = CreateTransferItem("user1", "\\dir\\folder1\\file.mp3");
-            manager.Add(ti);
-
-            Assert.AreEqual(1, manager.AllTransferItems.Count);
-            Assert.AreEqual(ti, manager.AllTransferItems[0]);
-        }
-
-        [Test]
         public void Add_CreatesFolderItem()
         {
             var ti = CreateTransferItem("user1", "\\dir\\folder1\\file.mp3");

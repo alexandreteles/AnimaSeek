@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Common
 {
     /// <summary>
-    /// Wraps a write-only stream (e.g. Android OutputStreamInvoker) to track Position,
+    /// Wraps a non-seekable write-only stream to track Position,
     /// which the Slsk.net library reads for download progress reporting.
     /// </summary>
     public class PositionTrackingOutputStream : Stream

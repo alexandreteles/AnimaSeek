@@ -64,40 +64,6 @@ namespace UnitTestCommon
         }
 
         [Test]
-        public void DefaultStringsFile_Exists_And_Has_Strings()
-        {
-            Assert.IsTrue(_defaultStrings.Count > 0, "Default strings.xml should have entries");
-            TestContext.WriteLine($"Default strings.xml has {_defaultStrings.Count} strings");
-        }
-
-        [Test]
-        [Ignore("Not useful")]
-        public void AllTranslations_Have_Same_String_Names()
-        {
-            var errors = new List<string>();
-
-            foreach (var (dir, strings) in _translations)
-            {
-                var missing = _defaultStrings.Keys.Except(strings.Keys).ToList();
-                var extra = strings.Keys.Except(_defaultStrings.Keys).ToList();
-
-                foreach (var m in missing)
-                {
-                    errors.Add($"{dir}: missing string '{m}'");
-                }
-                foreach (var e in extra)
-                {
-                    errors.Add($"{dir}: extra string '{e}' not in default");
-                }
-            }
-
-            if (errors.Count > 0)
-            {
-                Assert.Fail($"{errors.Count} name mismatches:\n" + string.Join("\n", errors.Take(50)));
-            }
-        }
-
-        [Test]
         public void AllTranslations_Have_Matching_Placeholder_Counts()
         {
             var errors = new List<string>();

@@ -61,7 +61,7 @@ namespace Seeker
         /// <see cref="AddUser"/>.
         /// </summary>
         /// <returns>true if the user was found in the list.</returns>
-        public bool UpdateExistingUser(string username, UserData userData, UserStatus userStatus, out bool transitionedOfflineToOnline)
+        public bool UpdateExistingUser(string username, UserData? userData, UserStatus? userStatus, out bool transitionedOfflineToOnline)
         {
             UserPresence? prevStatus = UserPresence.Offline;
             bool found = false;

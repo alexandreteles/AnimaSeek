@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Xml.Serialization;
 
 namespace UnitTestCommon
 {
@@ -30,6 +29,42 @@ namespace UnitTestCommon
             set => throw new NotSupportedException();
         }
         public override int Read(byte[] buffer, int offset, int count) => inner.Read(buffer, offset, Math.Min(count, 1));
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override void Flush()
+        {
+        }
+    }
+
+    /// <summary>Produces a fixed number of repeated bytes without allocating them up front.</summary>
+    internal sealed class RepeatingByteStream : Stream
+    {
+        private long remainingBytes;
+
+        public RepeatingByteStream(long length)
+        {
+            remainingBytes = length;
+        }
+
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            int bytesRead = (int)Math.Min(count, remainingBytes);
+            Array.Clear(buffer, offset, bytesRead);
+            remainingBytes -= bytesRead;
+            return bytesRead;
+        }
+
         public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
         public override void SetLength(long value) => throw new NotSupportedException();
         public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
@@ -119,12 +154,11 @@ namespace UnitTestCommon
         [Test]
         public void SeekerXml_MissingOptionalLists_Parses()
         {
-            //an export from an older version may lack fields added later - XmlSerializer leaves
-            //those lists null, not empty
-            var data = new SeekerImportExportData() { Userlist = new List<string> { "usernameB" } };
-            var ms = new MemoryStream();
-            new XmlSerializer(typeof(SeekerImportExportData)).Serialize(ms, data);
-            ms.Seek(0, SeekOrigin.Begin);
+            // An export from an older version may lack fields added later.
+            const string xml =
+                "<SeekerImportExportData><Userlist><string>usernameB</string></Userlist>" +
+                "</SeekerImportExportData>";
+            var ms = new MemoryStream(Encoding.UTF8.GetBytes(xml));
             var result = ImportHelper.ImportFile("seeker_export", ms);
             Assert.That(result.UserList, Is.EqualTo(new List<string> { "usernameB" }));
             Assert.That(result.IgnoredBanned, Is.Empty);
@@ -143,6 +177,37 @@ namespace UnitTestCommon
             ms.Seek(0, SeekOrigin.Begin);
             var ex = Assert.Throws<Exception>(() => ImportHelper.ImportFile("backup.dat", ms));
             Assert.That(ex.Message, Does.Contain("QT"));
+        }
+
+        [Test]
+        public void CompressedImport_OverSourceLimit_ThrowsForNonSeekableStream()
+        {
+            using var stream = new RepeatingByteStream(ImportHelper.MaximumCompressedImportBytes + 1L);
+
+            var exception = Assert.Throws<InvalidDataException>(
+                () => ImportHelper.ImportFile("backup.tar.bz2", stream));
+
+            Assert.That(exception.Message, Does.Contain("compressed import file"));
+            Assert.That(exception.Message, Does.Contain("8 MiB"));
+        }
+
+        [Test]
+        public void Bzip2Import_OverExpandedLimit_ThrowsBeforeParsing()
+        {
+            using var expandedStream = new RepeatingByteStream(ImportHelper.MaximumUncompressedImportBytes + 1L);
+            using var compressedStream = new MemoryStream();
+            ICSharpCode.SharpZipLib.BZip2.BZip2.Compress(
+                expandedStream,
+                compressedStream,
+                isStreamOwner: false,
+                level: 9);
+            compressedStream.Position = 0;
+
+            var exception = Assert.Throws<InvalidDataException>(
+                () => ImportHelper.ImportFile("backup.tar.bz2", compressedStream));
+
+            Assert.That(exception.Message, Does.Contain("expanded import archive"));
+            Assert.That(exception.Message, Does.Contain("32 MiB"));
         }
     }
 }

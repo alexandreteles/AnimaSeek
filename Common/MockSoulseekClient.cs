@@ -18,7 +18,27 @@ namespace Seeker
     {
         public MockSoulseekClient()
         {
-            StartBackgroundTimers();
+            if (ShouldStartBackgroundTimers())
+            {
+                StartBackgroundTimers();
+            }
+        }
+
+        /// <summary>
+        /// Decides whether the mock emits spontaneous room chatter, private messages, and status changes.
+        /// Screenshot/UI launch routes default to silence for repeatable state, but those loops are the only
+        /// source of incoming room and message traffic, so <c>ANIMASEEK_MOCK_BACKGROUND</c> must be able to
+        /// turn them back on for a route launch that is exercising chat. Production never compiles this.
+        /// </summary>
+        private static bool ShouldStartBackgroundTimers()
+        {
+            string? requested = Environment.GetEnvironmentVariable("ANIMASEEK_MOCK_BACKGROUND")?.Trim();
+            if (!string.IsNullOrEmpty(requested))
+            {
+                return !string.Equals(requested, "0", StringComparison.Ordinal);
+            }
+
+            return string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ANIMASEEK_UI_ROUTE"));
         }
 
         public int SimulatedDelayMs { get; set; } = 200;
@@ -33,6 +53,8 @@ namespace Seeker
 
         private readonly ConcurrentDictionary<string, List<string>> _mockJoinedRoomUsers = new ConcurrentDictionary<string, List<string>>();
         private readonly ConcurrentDictionary<string, UserPresence> _mockRoomUserPresence = new ConcurrentDictionary<string, UserPresence>();
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, byte>> _mockPrivateRoomMembers = new();
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, byte>> _mockPrivateRoomModerators = new();
 
         private static readonly string[] _mockMessages =
         {
@@ -316,8 +338,15 @@ namespace Seeker
         public Func<CancellationToken?, Task<int>>? GetPrivilegesAsyncHandler { get; set; }
         public Func<string, CancellationToken?, Task<UserStatistics>>? GetUserStatisticsAsyncHandler { get; set; }
         public Func<string, CancellationToken?, Task<UserInfo>>? GetUserInfoAsyncHandler { get; set; }
+        public Func<string, CancellationToken?, Task<UserStatus>>? GetUserStatusAsyncHandler { get; set; }
         public Func<int, CancellationToken?, Task>? SendUploadSpeedAsyncHandler { get; set; }
         public Func<string, string, CancellationToken?, Task>? SetRoomTickerAsyncHandler { get; set; }
+        public Func<string, string, CancellationToken?, Task>? AddPrivateRoomMemberAsyncHandler { get; set; }
+        public Func<string, string, CancellationToken?, Task>? RemovePrivateRoomMemberAsyncHandler { get; set; }
+        public Func<string, string, CancellationToken?, Task>? AddPrivateRoomModeratorAsyncHandler { get; set; }
+        public Func<string, string, CancellationToken?, Task>? RemovePrivateRoomModeratorAsyncHandler { get; set; }
+        public Func<string, CancellationToken?, Task>? DropPrivateRoomMembershipAsyncHandler { get; set; }
+        public Func<string, CancellationToken?, Task>? DropPrivateRoomOwnershipAsyncHandler { get; set; }
 
         // --- Mutable properties ---
         public SoulseekClientStates State { get; set; } = SoulseekClientStates.Disconnected;
@@ -329,6 +358,13 @@ namespace Seeker
         public SoulseekClientOptions? Options { get; set; }
         public ServerInfo? ServerInfo { get; set; }
         public DistributedNetworkInfo? DistributedNetwork { get; set; }
+
+        /// <inheritdoc />
+        public int MajorVersion { get; } = 170;
+
+        /// <inheritdoc />
+        public int MinorVersion { get; } = SoulseekClientIdentity.MinorVersion;
+
         public IReadOnlyCollection<Transfer> Downloads => DownloadDictionary.Values.Select(t => new Transfer(t)).ToList().AsReadOnly();
         public IReadOnlyCollection<Transfer> Uploads => UploadDictionary.Values.Select(t => new Transfer(t)).ToList().AsReadOnly();
 
@@ -360,6 +396,7 @@ namespace Seeker
         public event EventHandler<DownloadFailedEventArgs>? DownloadFailed;
         public event EventHandler<IReadOnlyCollection<string>>? ExcludedSearchPhrasesReceived;
         public event EventHandler<string>? GlobalMessageReceived;
+        public event EventHandler? KickedFromServer;
         public event EventHandler? LoggedIn;
         public event EventHandler<PrivateMessageReceivedEventArgs>? PrivateMessageReceived;
         public event EventHandler<string>? PrivateRoomMembershipAdded;
@@ -397,6 +434,7 @@ namespace Seeker
         // --- Event raise helpers (for events Seeker subscribes to) ---
         public void RaiseConnected() => Connected?.Invoke(this, EventArgs.Empty);
         public void RaiseDisconnected(SoulseekClientDisconnectedEventArgs args) => Disconnected?.Invoke(this, args);
+        public void RaiseKickedFromServer() => KickedFromServer?.Invoke(this, EventArgs.Empty);
         public void RaiseStateChanged(SoulseekClientStateChangedEventArgs args) => StateChanged?.Invoke(this, args);
         public void RaiseLoggedIn() => LoggedIn?.Invoke(this, EventArgs.Empty);
         public void RaiseServerInfoReceived(ServerInfo args) => ServerInfoReceived?.Invoke(this, args);
@@ -644,10 +682,15 @@ namespace Seeker
             return directories.AsReadOnly();
         }
 
-        private static readonly Random _random = new Random();
+        private static readonly Random _random = new Random(GetRandomSeed());
         private static readonly object _randomLock = new object();
         private static readonly string[] _mockUsernames = { "musiclover42", "vinyl_rips", "flac_hoarder", "mp3collector", "audiophile99", "shareking", "basshead", "djmix", "recorddigger", "soundwave", "testUser", "test_user2_long_username_12345" };
         private static readonly string[] _mockCountryCodes = { "US", "GB", "DE", "FR", "JP", "BR", "CA", "AU", "SE", "NL", "IT", "ES", "PL", "RU", "MX", "KR", "IN", "AR", "NO", "FI" };
+
+        private static int GetRandomSeed() =>
+            int.TryParse(Environment.GetEnvironmentVariable("ANIMASEEK_MOCK_SEED"), out int seed)
+                ? seed
+                : Environment.TickCount;
 
         private static string GenerateMockCountryCode()
         {
@@ -1341,11 +1384,27 @@ namespace Seeker
         public async Task<(Soulseek.Search Search, IReadOnlyCollection<SearchResponse> Responses)> SearchAsync(SearchQuery query, SearchScope scope = null, int? token = null, SearchOptions options = null, CancellationToken? cancellationToken = null)
         {
             if (SearchAsyncHandler != null) return await SearchAsyncHandler(query, scope, token, options, cancellationToken);
+            return await SearchInternalAsync(query, responseHandler: null, scope, token, options, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Runs the simulated search once for both public overloads. The real client implements the
+        /// collection overload by wrapping the callback overload, so both must publish the same
+        /// responses through <paramref name="responseHandler"/> and <see cref="SearchOptions.ResponseReceived"/>.
+        /// </summary>
+        private async Task<(Soulseek.Search Search, IReadOnlyCollection<SearchResponse> Responses)> SearchInternalAsync(SearchQuery query, Action<SearchResponse> responseHandler, SearchScope scope, int? token, SearchOptions options, CancellationToken? cancellationToken)
+        {
             var resolvedScope = scope ?? new SearchScope(SearchScopeType.Network);
             var resolvedToken = token ?? GetNextToken();
 
             var (count, totalTimeMs, search) = ParseMockSearchParams(query);
             int delayPerResponse = count > 0 ? totalTimeMs / count : 0;
+
+            void Publish(Soulseek.Search current, SearchResponse response)
+            {
+                responseHandler?.Invoke(response);
+                options?.ResponseReceived?.Invoke((current, response));
+            }
 
             var searchRequested = new Soulseek.Search(query, resolvedScope, resolvedToken, SearchStates.Requested, 0, 0, 0);
             SearchStateChanged?.Invoke(this, new SearchStateChangedEventArgs(SearchStates.None, searchRequested));
@@ -1369,7 +1428,7 @@ namespace Seeker
                     }
                     replayList.Add(capturedResponses[i]);
                     var curSearch = new Soulseek.Search(query, resolvedScope, resolvedToken, SearchStates.InProgress, i + 1, 0, 0);
-                    options?.ResponseReceived?.Invoke((curSearch, capturedResponses[i]));
+                    Publish(curSearch, capturedResponses[i]);
                     if (delayPerCapture > 0)
                     {
                         await Task.Delay(delayPerCapture).ConfigureAwait(false);
@@ -1442,7 +1501,7 @@ namespace Seeker
                     }
                     allResponses.Add(curatedResponses[i]);
                     var currentSearch = new Soulseek.Search(query, resolvedScope, resolvedToken, SearchStates.InProgress, i + 1, 0, 0);
-                    options?.ResponseReceived?.Invoke((currentSearch, curatedResponses[i]));
+                    Publish(currentSearch, curatedResponses[i]);
                     if (delayPerCurated > 0)
                     {
                         await Task.Delay(delayPerCurated).ConfigureAwait(false);
@@ -1459,7 +1518,7 @@ namespace Seeker
                 var response = GenerateMockSearchResponse(resolvedToken, search);
                 allResponses.Add(response);
                 var currentSearch = new Soulseek.Search(query, resolvedScope, resolvedToken, SearchStates.InProgress, 1, 0, 0);
-                options?.ResponseReceived?.Invoke((currentSearch, response));
+                Publish(currentSearch, response);
                 await Task.Delay(2000).ConfigureAwait(false);
             }
             else
@@ -1479,7 +1538,7 @@ namespace Seeker
                         var response = GenerateMockSearchResponse(resolvedToken, (isWishlist ? DateTime.Now.ToString("HH:mm:ss") : "") + search);
                         allResponses.Add(response);
                         var currentSearch = new Soulseek.Search(query, resolvedScope, resolvedToken, SearchStates.InProgress, i + 1, 0, 0);
-                        options?.ResponseReceived?.Invoke((currentSearch, response));
+                        Publish(currentSearch, response);
                         if (delayPerResponse > 0)
                         {
                             await Task.Delay(delayPerResponse).ConfigureAwait(false);
@@ -1524,7 +1583,7 @@ namespace Seeker
                                 }
                                 int idx = Interlocked.Increment(ref monotonic);
                                 var currentSearch = new Soulseek.Search(query, resolvedScope, resolvedToken, SearchStates.InProgress, idx, 0, 0);
-                                options?.ResponseReceived?.Invoke((currentSearch, response));
+                                Publish(currentSearch, response);
                             });
                         }
                         await Task.WhenAll(burstTasks).ConfigureAwait(false);
@@ -1540,20 +1599,9 @@ namespace Seeker
         public async Task<Soulseek.Search> SearchAsync(SearchQuery query, Action<SearchResponse> responseHandler, SearchScope scope = null, int? token = null, SearchOptions options = null, CancellationToken? cancellationToken = null)
         {
             if (SearchWithHandlerAsyncHandler != null) return await SearchWithHandlerAsyncHandler(query, responseHandler, scope, token, options, cancellationToken);
-            var resolvedScope = scope ?? new SearchScope(SearchScopeType.Network);
-            var resolvedToken = token ?? GetNextToken();
-
-            var searchRequested = new Soulseek.Search(query, resolvedScope, resolvedToken, SearchStates.Requested, 0, 0, 0);
-            SearchStateChanged?.Invoke(this, new SearchStateChangedEventArgs(SearchStates.None, searchRequested));
-            await Task.Delay(SimulatedDelayMs / 2).ConfigureAwait(false);
-
-            var searchInProgress = new Soulseek.Search(query, resolvedScope, resolvedToken, SearchStates.InProgress, 0, 0, 0);
-            SearchStateChanged?.Invoke(this, new SearchStateChangedEventArgs(SearchStates.Requested, searchInProgress));
-            await Task.Delay(SimulatedDelayMs * 2).ConfigureAwait(false);
-
-            var searchCompleted = new Soulseek.Search(query, resolvedScope, resolvedToken, SearchStates.Completed, 0, 0, 0);
-            SearchStateChanged?.Invoke(this, new SearchStateChangedEventArgs(SearchStates.InProgress, searchCompleted));
-            return searchCompleted;
+            if (responseHandler == null) throw new ArgumentNullException(nameof(responseHandler), "The specified Response delegate is null");
+            var (completed, _) = await SearchInternalAsync(query, responseHandler, scope, token, options, cancellationToken).ConfigureAwait(false);
+            return completed;
         }
 
         public async Task<Transfer> DownloadAsync(string username, string remoteFilename, string localFilename, long? size = null, long startOffset = 0, int? token = null, TransferOptions options = null, CancellationToken? cancellationToken = null)
@@ -2052,19 +2100,8 @@ namespace Seeker
         public async Task<bool> ReconfigureOptionsAsync(SoulseekClientOptionsPatch patch, CancellationToken? cancellationToken = null)
         {
             if (ReconfigureOptionsAsyncHandler != null) return await ReconfigureOptionsAsyncHandler(patch, cancellationToken);
-            Options = (Options ?? new SoulseekClientOptions()).With(
-                searchResponseResolver: patch.SearchResponseResolver,
-                browseResponseResolver: patch.BrowseResponseResolver,
-                enqueueDownload: patch.EnqueueDownload,
-                directoryContentsResolver: patch.DirectoryContentsResolver);
-            bool fast = _random.Next(0, 2) == 0;
-            bool fault = _random.Next(0, 4) == 0;
-            var delay = fast ? 100 : 2000;
-            await Task.Delay(delay).ConfigureAwait(false);
-            if (fault)
-            {
-                throw new Exception("Failed");
-            }
+            Options = (Options ?? new SoulseekClientOptions()).With(patch);
+            await Task.Delay(SimulatedDelayMs / 5, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
             return true;
         }
 
@@ -2086,8 +2123,9 @@ namespace Seeker
 
         public async Task<UserData> WatchUserAsync(string username, CancellationToken? cancellationToken = null)
         {
+            if (WatchUserAsyncHandler != null) return await WatchUserAsyncHandler(username, cancellationToken);
             var delay = getBimodalDelay(100, 5000);
-            await Task.Delay(delay).ConfigureAwait(false);
+            await Task.Delay(delay, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
             UserPresence userPresence = _random.Next(0, 3) switch
             {
                 0 => UserPresence.Offline,
@@ -2207,7 +2245,15 @@ namespace Seeker
         public async Task SetRoomTickerAsync(string roomName, string message, CancellationToken? cancellationToken = null)
         {
             if (SetRoomTickerAsyncHandler != null) { await SetRoomTickerAsyncHandler(roomName, message, cancellationToken); return; }
-            await Task.Delay(SimulatedDelayMs / 5).ConfigureAwait(false);
+            await Task.Delay(SimulatedDelayMs / 5, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+            if (string.IsNullOrEmpty(message))
+            {
+                RaiseRoomTickerRemoved(new RoomTickerRemovedEventArgs(roomName, Username));
+            }
+            else
+            {
+                RaiseRoomTickerAdded(new RoomTickerAddedEventArgs(roomName, new RoomTicker(Username, message)));
+            }
         }
 
         // --- Methods used by Seeker (utility) ---
@@ -2225,20 +2271,65 @@ namespace Seeker
         public Task AcknowledgePrivilegeNotificationAsync(int privilegeNotificationId, CancellationToken? cancellationToken = null)
             => throw new NotImplementedException();
 
-        public Task AddPrivateRoomMemberAsync(string roomName, string username, CancellationToken? cancellationToken = null)
-            => Task.CompletedTask;
+        public async Task AddPrivateRoomMemberAsync(string roomName, string username, CancellationToken? cancellationToken = null)
+        {
+            if (AddPrivateRoomMemberAsyncHandler != null)
+            {
+                await AddPrivateRoomMemberAsyncHandler(roomName, username, cancellationToken);
+                return;
+            }
 
-        public Task AddPrivateRoomModeratorAsync(string roomName, string username, CancellationToken? cancellationToken = null)
-            => Task.CompletedTask;
+            await Task.Delay(SimulatedDelayMs / 5, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+            ConcurrentDictionary<string, byte> members = _mockPrivateRoomMembers.GetOrAdd(roomName, _ => new());
+            members[username] = 0;
+            RaisePrivateRoomUserListReceived(new RoomInfo(roomName, members.Keys));
+        }
+
+        public async Task AddPrivateRoomModeratorAsync(string roomName, string username, CancellationToken? cancellationToken = null)
+        {
+            if (AddPrivateRoomModeratorAsyncHandler != null)
+            {
+                await AddPrivateRoomModeratorAsyncHandler(roomName, username, cancellationToken);
+                return;
+            }
+
+            await Task.Delay(SimulatedDelayMs / 5, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+            ConcurrentDictionary<string, byte> moderators = _mockPrivateRoomModerators.GetOrAdd(roomName, _ => new());
+            moderators[username] = 0;
+            RaiseOperatorInPrivateRoomAddedRemoved(new OperatorAddedRemovedEventArgs(roomName, username, true));
+            RaisePrivateRoomModeratedUserListReceived(new RoomInfo(roomName, moderators.Keys));
+        }
 
         public Task ConnectToUserAsync(string username, bool invalidateCache = false, CancellationToken? cancellationToken = null)
             => throw new NotImplementedException();
 
-        public Task DropPrivateRoomMembershipAsync(string roomName, CancellationToken? cancellationToken = null)
-            => Task.CompletedTask;
+        public async Task DropPrivateRoomMembershipAsync(string roomName, CancellationToken? cancellationToken = null)
+        {
+            if (DropPrivateRoomMembershipAsyncHandler != null)
+            {
+                await DropPrivateRoomMembershipAsyncHandler(roomName, cancellationToken);
+                return;
+            }
 
-        public Task DropPrivateRoomOwnershipAsync(string roomName, CancellationToken? cancellationToken = null)
-            => Task.CompletedTask;
+            await Task.Delay(SimulatedDelayMs / 5, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+            _mockPrivateRoomMembers.TryRemove(roomName, out _);
+            _mockPrivateRoomModerators.TryRemove(roomName, out _);
+            RaisePrivateRoomMembershipRemoved(roomName);
+        }
+
+        public async Task DropPrivateRoomOwnershipAsync(string roomName, CancellationToken? cancellationToken = null)
+        {
+            if (DropPrivateRoomOwnershipAsyncHandler != null)
+            {
+                await DropPrivateRoomOwnershipAsyncHandler(roomName, cancellationToken);
+                return;
+            }
+
+            await Task.Delay(SimulatedDelayMs / 5, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+            _mockPrivateRoomMembers.TryRemove(roomName, out _);
+            _mockPrivateRoomModerators.TryRemove(roomName, out _);
+            RaisePrivateRoomMembershipRemoved(roomName);
+        }
 
         public Task<Task<Transfer>> EnqueueDownloadAsync(string username, string remoteFilename, string localFilename, long? size = null, long startOffset = 0, int? token = null, TransferOptions options = null, CancellationToken? cancellationToken = null)
             => throw new NotImplementedException();
@@ -2264,14 +2355,48 @@ namespace Seeker
         public Task<bool> GetUserPrivilegedAsync(string username, CancellationToken? cancellationToken = null)
             => throw new NotImplementedException();
 
-        public Task<UserStatus> GetUserStatusAsync(string username, CancellationToken? cancellationToken = null)
-            => throw new NotImplementedException();
+        public async Task<UserStatus> GetUserStatusAsync(string username, CancellationToken? cancellationToken = null)
+        {
+            if (GetUserStatusAsyncHandler != null)
+            {
+                return await GetUserStatusAsyncHandler(username, cancellationToken);
+            }
 
-        public Task RemovePrivateRoomMemberAsync(string roomName, string username, CancellationToken? cancellationToken = null)
-            => Task.CompletedTask;
+            await Task.Delay(SimulatedDelayMs / 5, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+            UserPresence presence = _mockRoomUserPresence.GetOrAdd(
+                username,
+                _ => (UserPresence)_random.Next((int)UserPresence.Offline, (int)UserPresence.Online + 1));
+            return new UserStatus(username, presence, isPrivileged: false);
+        }
 
-        public Task RemovePrivateRoomModeratorAsync(string roomName, string username, CancellationToken? cancellationToken = null)
-            => Task.CompletedTask;
+        public async Task RemovePrivateRoomMemberAsync(string roomName, string username, CancellationToken? cancellationToken = null)
+        {
+            if (RemovePrivateRoomMemberAsyncHandler != null)
+            {
+                await RemovePrivateRoomMemberAsyncHandler(roomName, username, cancellationToken);
+                return;
+            }
+
+            await Task.Delay(SimulatedDelayMs / 5, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+            ConcurrentDictionary<string, byte> members = _mockPrivateRoomMembers.GetOrAdd(roomName, _ => new());
+            members.TryRemove(username, out _);
+            RaisePrivateRoomUserListReceived(new RoomInfo(roomName, members.Keys));
+        }
+
+        public async Task RemovePrivateRoomModeratorAsync(string roomName, string username, CancellationToken? cancellationToken = null)
+        {
+            if (RemovePrivateRoomModeratorAsyncHandler != null)
+            {
+                await RemovePrivateRoomModeratorAsyncHandler(roomName, username, cancellationToken);
+                return;
+            }
+
+            await Task.Delay(SimulatedDelayMs / 5, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+            ConcurrentDictionary<string, byte> moderators = _mockPrivateRoomModerators.GetOrAdd(roomName, _ => new());
+            moderators.TryRemove(username, out _);
+            RaiseOperatorInPrivateRoomAddedRemoved(new OperatorAddedRemovedEventArgs(roomName, username, false));
+            RaisePrivateRoomModeratedUserListReceived(new RoomInfo(roomName, moderators.Keys));
+        }
 
         public Task StartPublicChatAsync(CancellationToken? cancellationToken = null)
             => throw new NotImplementedException();

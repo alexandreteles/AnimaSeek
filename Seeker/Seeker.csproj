@@ -6,15 +6,16 @@
     <AndroidAapt2LinkExtraArgs>--no-version-vectors</AndroidAapt2LinkExtraArgs>
     <MonoSymbolArchive>true</MonoSymbolArchive>
     <AndroidManagedSymbols>true</AndroidManagedSymbols>
-    <TargetFramework>net9.0-android</TargetFramework>
+    <TargetFramework>net10.0-android</TargetFramework>
     <SupportedOSPlatformVersion>23</SupportedOSPlatformVersion>
-    <AssemblyTitle>AndriodApp1</AssemblyTitle>
-    <Product>AndriodApp1</Product>
+    <ApplicationId>com.animaseek.app</ApplicationId>
+    <ApplicationTitle>AnimaSeek</ApplicationTitle>
+    <AssemblyTitle>AnimaSeek</AssemblyTitle>
+    <Product>AnimaSeek</Product>
     <Copyright>Copyright ©  2018</Copyright>
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
     <FileVersion>1.1.0.0</FileVersion>
-	<NoWarn>$(NoWarn);SYSLIB0011</NoWarn>
-	<Configurations>Debug;Debug Mock;Release;Release Mock;Release IzzySoft</Configurations>
+	<Configurations>Debug;Debug Mock;Release;Release Mock</Configurations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
@@ -62,28 +63,6 @@
     <RuntimeIdentifiers>android-arm;android-x86;android-x64;android-arm64</RuntimeIdentifiers>
     <DefineConstants>MOCK</DefineConstants>
   </PropertyGroup>
-	<PropertyGroup>
-		<AndroidKeyStore>true</AndroidKeyStore>
-		<AndroidSigningKeyStore>$(AndroidSigningKeyStore)</AndroidSigningKeyStore>
-		<AndroidSigningKeyAlias>$(AndroidSigningKeyAlias)</AndroidSigningKeyAlias>
-		<AndroidSigningKeyPass>$(AndroidSigningKeyPass)</AndroidSigningKeyPass>
-		<AndroidSigningStorePass>$(AndroidSigningStorePass)</AndroidSigningStorePass>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release IzzySoft|AnyCPU'">
-	  <AndroidProguardMappingFile>$(OutputPath)mapping.txt</AndroidProguardMappingFile>
-	  <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
-	  <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-	  <PublishTrimmed>true</PublishTrimmed>
-	  <AndroidLinkMode>SdkOnly</AndroidLinkMode>
-	  <RunAOTCompilation>false</RunAOTCompilation>
-	  <EnableLLVM>false</EnableLLVM>
-	  <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
-	  <AndroidUseAapt2>true</AndroidUseAapt2>
-	  <AndroidCreatePackagePerAbi>false</AndroidCreatePackagePerAbi>
-	  <MonoSymbolArchive>True</MonoSymbolArchive>
-	  <RuntimeIdentifiers>android-arm;android-x86;android-x64;android-arm64</RuntimeIdentifiers>
-	  <DefineConstants>IzzySoft</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup Condition="$(Configuration.StartsWith('Release'))">
 	<AndroidKeyStore>true</AndroidKeyStore>
 	<AndroidSigningKeyStore>$(AndroidSigningKeyStore)</AndroidSigningKeyStore>
@@ -91,51 +70,22 @@
 	<AndroidSigningKeyPass>$(AndroidSigningKeyPass)</AndroidSigningKeyPass>
 	<AndroidSigningStorePass>$(AndroidSigningStorePass)</AndroidSigningStorePass>
   </PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release IzzySoft|AnyCPU'">
-	<AndroidKeyStore>true</AndroidKeyStore>
-	<AndroidSigningKeyStore>C:\Users\jack\AppData\Local\Xamarin\Mono for Android\Keystore\Jack\Jack.keystore</AndroidSigningKeyStore>
-	<AndroidSigningKeyAlias>jack</AndroidSigningKeyAlias>
-  </PropertyGroup>
 	<ItemGroup>
-    <GoogleServicesJson Include="google-services.json" Condition="Exists('google-services.json') And '$(Configuration)|$(Platform)' != 'Release IzzySoft|AnyCPU'" />
+    <GoogleServicesJson Include="google-services.json" Condition="Exists('google-services.json')" />
   </ItemGroup>
-  <Choose>
-    <When Condition=" '$(Configuration)'!='Release IzzySoft' ">
-      <ItemGroup>
-        <PackageReference Include="Xamarin.Firebase.Crashlytics" Version="120.0.6" />
-      </ItemGroup>
-    </When>
-  </Choose>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.StringTools">
-      <Version>18.3.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.Text.Json">
-      <Version>10.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.AndroidX.ConstraintLayout">
-      <Version>2.2.1.4</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.AndroidX.SwipeRefreshLayout">
-      <Version>1.2.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Google.Android.Material" Version="1.13.0.1" />
-    <PackageReference Include="Xamarin.AndroidX.Legacy.Support.Core.Utils" Version="1.0.0.35" />
-    <PackageReference Include="Xamarin.AndroidX.DocumentFile">
-      <Version>1.1.0.2</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.AndroidX.Fragment">
-      <Version>1.8.9.2</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.AndroidX.RecyclerView">
-      <Version>1.4.0.4</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.AndroidX.CoordinatorLayout">
-      <Version>1.3.0.4</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.10.0.1" />
+    <PackageReference Include="Xamarin.Firebase.Crashlytics" />
+    <PackageReference Include="Xamarin.AndroidX.ConstraintLayout" />
+    <PackageReference Include="Xamarin.AndroidX.SwipeRefreshLayout" />
+    <PackageReference Include="Xamarin.Google.Android.Material" />
+    <PackageReference Include="Xamarin.AndroidX.Legacy.Support.Core.Utils" />
+    <PackageReference Include="Xamarin.AndroidX.DocumentFile" />
+    <PackageReference Include="Xamarin.AndroidX.Fragment" />
+    <PackageReference Include="Xamarin.AndroidX.RecyclerView" />
+    <PackageReference Include="Xamarin.AndroidX.CoordinatorLayout" />
+    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" />
     <!-- https://github.com/dotnet/android-libraries/issues/1341 - .Jvm and .Android both contain Immutable.class -->
-    <PackageReference Include="Xamarin.AndroidX.Compose.Runtime.Annotation.Jvm" Version="1.10.0.1" ExcludeAssets="all" />
+    <PackageReference Include="Xamarin.AndroidX.Compose.Runtime.Annotation.Jvm" ExcludeAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
@@ -147,10 +97,6 @@
     <Compile Remove="Soulseek.NET-master\**" />
   </ItemGroup>
   <PropertyGroup />
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-	<Exec Condition=" '$(OS)' == 'Windows_NT' " Command="powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File &quot;$(ProjectDir)preBuild.ps1&quot; &quot;$(ProjectDir)Properties\AndroidManifest.xml&quot; &quot;$(ConfigurationName)&quot;" />
-	<Exec Condition=" '$(OS)' != 'Windows_NT' " Command="pwsh -ExecutionPolicy Bypass -NoProfile -NonInteractive -File &quot;$(ProjectDir)preBuild.ps1&quot; &quot;$(ProjectDir)Properties/AndroidManifest.xml&quot; &quot;$(ConfigurationName)&quot;" />
-  </Target>
   <Target Name="GenerateDebugSecrets" BeforeTargets="CoreCompile"
           Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug Mock'">
     <PropertyGroup>

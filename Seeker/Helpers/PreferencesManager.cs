@@ -1,6 +1,7 @@
 using Android.Content;
 using Common;
 using Common.Messages;
+using Seeker.Services;
 using System;
 using System.Collections.Generic;
 
@@ -21,13 +22,10 @@ namespace Seeker
             if (prefs == null)
                 return;
 
-            RestoreAccountState(prefs);
-            RestoreUIPreferences(prefs);
-            RestoreTransferSettings(prefs);
-            RestoreSpeedLimitSettings(prefs);
-            RestoreSearchSettings(prefs);
-            RestoreSocialSettings(prefs);
-            RestoreMiscSettings(prefs);
+            new PreferencesStateRestorer(new AndroidSharedPreferencesKeyValueStore(prefs)).RestoreAll();
+            // Common's restorer deliberately skips the Android-only SAF storage keys (iOS uses
+            // fixed sandbox locations), so the Android head must restore them itself.
+            RestoreAndroidStorageLocationState(prefs);
         }
 
         public static void RestoreAccountState(ISharedPreferences prefs)
@@ -49,19 +47,13 @@ namespace Seeker
             RestoreSmartFilterState(prefs);
         }
 
-        public static void RestoreTransferSettings(ISharedPreferences prefs)
+        /// <summary>
+        /// Restores the Android-only SAF download-directory keys. These are permission-backed
+        /// storage locations, not portable preferences, so <see cref="PreferencesStateRestorer"/>
+        /// intentionally does not cover them. All other transfer settings are restored by Common.
+        /// </summary>
+        public static void RestoreAndroidStorageLocationState(ISharedPreferences prefs)
         {
-            PreferencesState.AutoClearCompleteDownloads = prefs.GetBoolean(KeyConsts.M_AutoClearComplete, false);
-            PreferencesState.AutoClearCompleteUploads = prefs.GetBoolean(KeyConsts.M_AutoClearCompleteUploads, false);
-            PreferencesState.TransferViewShowSizes = prefs.GetBoolean(KeyConsts.M_TransfersShowSizes, true);
-            PreferencesState.TransferViewShowSpeed = prefs.GetBoolean(KeyConsts.M_TransfersShowSpeed, true);
-            PreferencesState.TransferViewGroupByFolder = prefs.GetBoolean(KeyConsts.M_TransfersGroupByFolder, false);
-            PreferencesState.TransferViewInUploadsMode = prefs.GetBoolean(KeyConsts.M_TransfersInUploadsMode, false);
-            PreferencesState.DisableDownloadToastNotification = prefs.GetBoolean(KeyConsts.M_DisableToastNotifications, true);
-            PreferencesState.MemoryBackedDownload = prefs.GetBoolean(KeyConsts.M_MemoryBackedDownload, false);
-            PreferencesState.NoSubfolderForSingle = prefs.GetBoolean(KeyConsts.M_NoSubfolderForSingle, false);
-            PreferencesState.NotifyOnFolderCompleted = prefs.GetBoolean(KeyConsts.M_NotifyFolderComplete, true);
-            PreferencesState.AutoRetryBackOnline = prefs.GetBoolean(KeyConsts.M_AutoRetryBackOnline, true);
             PreferencesState.SaveDataDirectoryUri = prefs.GetString(KeyConsts.M_SaveDataDirectoryUri, "");
             PreferencesState.SaveDataDirectoryUriIsFromTree = prefs.GetBoolean(KeyConsts.M_SaveDataDirectoryUriIsFromTree, true);
         }
@@ -132,16 +124,8 @@ namespace Seeker
 
         private static List<string> GetSearchHistory(ISharedPreferences prefs)
         {
-            string searchHistoryXml = prefs.GetString(KeyConsts.M_SearchHistory, string.Empty);
-            if (!string.IsNullOrEmpty(searchHistoryXml))
-            {
-                using (var stream = new System.IO.StringReader(searchHistoryXml))
-                {
-                    var serializer = new System.Xml.Serialization.XmlSerializer(typeof(List<string>));
-                    return serializer.Deserialize(stream) as List<string> ?? new List<string>();
-                }
-            }
-            return new List<string>();
+            string searchHistory = prefs.GetString(KeyConsts.M_SearchHistory, string.Empty);
+            return SerializationHelper.RestoreStringListFromString(searchHistory);
         }
 
         public static void RestoreSocialSettings(ISharedPreferences prefs)
@@ -710,13 +694,7 @@ namespace Seeker
         {
             lock (SharedPrefLock)
             {
-                string serialized;
-                using (var writer = new System.IO.StringWriter())
-                {
-                    var serializer = new System.Xml.Serialization.XmlSerializer(typeof(List<string>));
-                    serializer.Serialize(writer, PreferencesState.SearchHistory);
-                    serialized = writer.ToString();
-                }
+                string serialized = SerializationHelper.SaveStringListToString(PreferencesState.SearchHistory);
                 var editor = SeekerState.SharedPreferences.Edit();
                 editor.PutString(KeyConsts.M_SearchHistory, serialized);
                 editor.Apply();

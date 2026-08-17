@@ -8,13 +8,20 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Serialization;
 using VerifyNUnit;
 
 namespace UnitTestCommon
 {
     public class BackwardCompatSerializationTests
     {
+        [SetUp]
+        public void Setup()
+        {
+            TransferItems.TransferItemManagerDL = null;
+            TransferItems.TransferItemManagerUploads = null;
+            TransferItemManager.TransfersDirty = false;
+        }
+
         private static string GetPreferenceString(string keyName)
         {
             var xmlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Set1", "SoulSeekPrefs.xml");
@@ -113,12 +120,7 @@ namespace UnitTestCommon
         public void SearchHistory_DeserializesFromDisk()
         {
             var raw = GetPreferenceString("Momento_SearchHistoryArray");
-            var serializer = new XmlSerializer(typeof(List<string>));
-            List<string> result;
-            using (var reader = new StringReader(raw))
-            {
-                result = (List<string>)serializer.Deserialize(reader);
-            }
+            List<string> result = SerializationHelper.RestoreStringListFromString(raw);
 
             Assert.IsTrue(result.Contains("ArtistA"));
             Assert.IsTrue(result.Contains("ArtistB AlbumB"));
@@ -180,12 +182,7 @@ namespace UnitTestCommon
         public void RecentUsersList_DeserializesFromDisk()
         {
             var raw = GetPreferenceString("Momento_RecentUsersList");
-            var serializer = new XmlSerializer(typeof(List<string>));
-            List<string> result;
-            using (var reader = new StringReader(raw))
-            {
-                result = (List<string>)serializer.Deserialize(reader);
-            }
+            List<string> result = SerializationHelper.RestoreStringListFromString(raw);
 
             Assert.IsTrue(result.Contains("testuser4"));
         }
@@ -194,12 +191,7 @@ namespace UnitTestCommon
         public async Task TransferListDownloads_DeserializesFromDisk()
         {
             var raw = GetPreferenceString("Momento_List");
-            var serializer = new XmlSerializer(typeof(List<TransferItem>));
-            List<TransferItem> result;
-            using (var reader = new StringReader(raw))
-            {
-                result = (List<TransferItem>)serializer.Deserialize(reader);
-            }
+            List<TransferItem> result = RestoreDownloadItemsViaProduction(raw);
 
             await Verifier.Verify(result.Select(t => new
             {
@@ -221,12 +213,7 @@ namespace UnitTestCommon
         public async Task TransferListDownloads_DeserializesFromDisk_BackwardsCompatBytesTransferred()
         {
             var raw = GetPreferenceString("Momento_List");
-            var serializer = new XmlSerializer(typeof(List<TransferItem>));
-            List<TransferItem> result;
-            using (var reader = new StringReader(raw))
-            {
-                result = (List<TransferItem>)serializer.Deserialize(reader);
-            }
+            List<TransferItem> result = RestoreDownloadItemsViaProduction(raw);
 
             await Verifier.Verify(result.Select(t => new
             {
@@ -241,12 +228,7 @@ namespace UnitTestCommon
         public async Task TransferListUploads_DeserializesFromDisk()
         {
             var raw = GetPreferenceString("Momento_Upload_List");
-            var serializer = new XmlSerializer(typeof(List<TransferItem>));
-            List<TransferItem> result;
-            using (var reader = new StringReader(raw))
-            {
-                result = (List<TransferItem>)serializer.Deserialize(reader);
-            }
+            List<TransferItem> result = RestoreUploadItemsViaProduction(raw);
 
             await Verifier.Verify(result.Select(t => new
             {
@@ -262,6 +244,26 @@ namespace UnitTestCommon
                 t.QueueLength,
                 t.FinalUri,
             }));
+        }
+
+        /// <summary>
+        ///     Restores a legacy Android download payload through the production
+        ///     <see cref="TransferPersistence"/> restore path, so the snapshots pin the real parser.
+        /// </summary>
+        private static List<TransferItem> RestoreDownloadItemsViaProduction(string payload)
+        {
+            TransferPersistence.RestoreDownloadTransferItems(payload, string.Empty);
+            return TransferItems.TransferItemManagerDL.AllTransferItems;
+        }
+
+        /// <summary>
+        ///     Restores a legacy Android upload payload through the production
+        ///     <see cref="TransferPersistence"/> restore path, so the snapshots pin the real parser.
+        /// </summary>
+        private static List<TransferItem> RestoreUploadItemsViaProduction(string payload)
+        {
+            TransferPersistence.RestoreUploadTransferItems(payload, string.Empty);
+            return TransferItems.TransferItemManagerUploads.AllTransferItems;
         }
     }
 }

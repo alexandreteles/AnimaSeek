@@ -139,9 +139,11 @@ namespace Common
         public const string M_AdditionalUsernameSubdirectories = "Momento_M_AdditionalUsernameSubdirectories";
 
         public const string M_PostNotificationRequestAlreadyShown = "Momento_M_PostNotificationRequestAlreadyShown";
+        public const string M_KeepScreenAwakeWhileTransferring = "Momento_KeepScreenAwakeWhileTransferring";
 
         public const string M_FilterFormat = "Momento_FilterFormat";
         public const string M_FilterMinBitrateKbs = "Momento_FilterMinBitrateKbs";
+        public const string M_IosSearchFilterCategory = "AnimaSeek.iOS.Search.FilterCategory.v1";
 
         public const string M_SmartFilter_KeywordsEnabled = "Momento_SmartFilterKeywordsEnabled";
         public const string M_SmartFilter_CountsEnabled = "Momento_SmartFilterCountsEnabled";
