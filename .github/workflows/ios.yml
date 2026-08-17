@@ -303,7 +303,6 @@ jobs:
             --framework net10.0-ios \
             --recursive \
             --disable-package-restore \
-            --no-serial-number \
             --output dist \
             --filename "animaseek_v${RELEASE_VERSION}_sbom.cdx.json" \
             --output-format Json \
