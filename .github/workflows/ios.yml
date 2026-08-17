@@ -15,22 +15,10 @@ on:
       - ".github/workflows/ios.yml"
       - ".releaserc.json"
   push:
+    # Deliberately unfiltered: every push to these branches runs the pipeline,
+    # and semantic-release alone decides from the commit types whether a
+    # master push publishes a release.
     branches: [ios, master]
-    # Keep in sync with the pull_request paths above. Releases are cut by
-    # semantic-release on master pushes; commits that only touch files outside
-    # these paths (docs and the like) carry no release-worthy changes, and any
-    # they would have contributed are picked up by the next triggering push.
-    paths:
-      - "Common/**"
-      - "UnitTestCommon/**"
-      - "Seeker.iOS/**"
-      - "Seeker/Soulseek.NET-master/src/**"
-      - "Seeker/Soulseek.NET-master/tests/Soulseek.Tests.Aot/**"
-      - "Seeker/Mono.Nat-master/Mono.Nat/**"
-      - "Directory.Packages.props"
-      - "global.json"
-      - ".github/workflows/ios.yml"
-      - ".releaserc.json"
   workflow_dispatch:
 
 # Cancel superseded in-flight runs for PRs and ios-branch pushes; master runs
