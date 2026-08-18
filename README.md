@@ -14,6 +14,8 @@ This work uses the [Soulseek.NET](https://github.com/jpdillingham/Soulseek.NET) 
 
 This app will always be completely free and open source software, no ads, no 'premium' versions or paid features, etc.
 
+Builds are published on the [releases page](https://github.com/alexandreteles/AnimaSeek/releases).
+
 ---
 
 ## AI Usage Disclaimer
