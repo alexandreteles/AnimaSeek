@@ -28,8 +28,22 @@ internal sealed class RoomViewController : UIViewController
     };
     private const string MessageCellIdentifier = "rooms.message";
     private const string NoticeCellIdentifier = "rooms.notice";
-    private const int CircularActionSize = 44;
     private const int ComposerBottomInset = 20;
+
+    // A single body line centered in the 44-point resting field; the field grows from there.
+    private const int ComposerVerticalInset = 11;
+
+    // Enough that a wrapped line never runs into the corner curve, and the text keeps a readable left margin.
+    private const int ComposerLeadingInset = 16;
+
+    // Beyond five lines the composer would eat the conversation, so the field scrolls instead of growing.
+    private const int ComposerMaxLines = 5;
+
+    // The same limit expressed against the screen, for accessibility text sizes where five lines is far more.
+    private const double ComposerMaxHeightFraction = 0.3;
+
+    // The field never welds itself to the keyboard: this gap survives whether the keyboard is up or down.
+    private const int ComposerKeyboardGap = 8;
 
     // A plain view defaults to 8-point margins, which made the composer visibly wider than the floating tab
     // bar beneath it. This matches the bar's inset so the two read as one stack of controls.
@@ -49,14 +63,43 @@ internal sealed class RoomViewController : UIViewController
         BackgroundColor = UIColor.TertiarySystemFill,
     };
 
-    private readonly UITextField messageField = UIKitFactory.TextField(
-        AppStrings.Get("IosUiMessagePlaceholder"),
-        new NSString(string.Empty));
+    // A conversation composer has to accept line breaks, so the input is a text view whose Return key inserts
+    // one and whose height follows its content. Sending is the send control's job alone.
+    private readonly UITextView messageView = new()
+    {
+        TranslatesAutoresizingMaskIntoConstraints = false,
+        BackgroundColor = UIColor.Clear,
+        Font = UIFont.GetPreferredFontForTextStyle(UIFontTextStyle.Body),
+        AdjustsFontForContentSizeCategory = true,
+        ScrollEnabled = false,
+        TextContainerInset = UIEdgeInsets.Zero,
+        ReturnKeyType = UIReturnKeyType.Default,
+    };
+
+    // A text view has no placeholder of its own, so the hint is a label the field's own text covers.
+    private readonly UILabel placeholderLabel = UIKitFactory.Label(
+        UIFontTextStyle.Body,
+        UIColor.PlaceholderText,
+        lines: 1);
     private readonly UILabel statusLabel = UIKitFactory.Label(UIFontTextStyle.Footnote, UIColor.SecondaryLabel);
     private IReadOnlyList<RoomTimelineRow> timeline = [];
+    private NSLayoutConstraint composerHeight = null!;
+    private UITextViewDelegate? composerDelegate;
     private UIButton sendButton = null!;
     private UIButton jumpToLatestButton = null!;
+    private KeyboardDismissTap? dismissTap;
     private bool joining;
+    private bool swipeOpen;
+    private bool reloadDeferred;
+
+    // Whether the transcript is following its newest message. This is latched rather than measured, because
+    // the keyboard shrinks the table without anyone scrolling: measuring at that moment would report "reading
+    // history" and abandon the conversation halfway up the screen.
+    private bool followsLatest = true;
+
+    // The last height the transcript was laid out at, so a keyboard or a grown composer can be told apart
+    // from an ordinary layout pass.
+    private nfloat lastTableHeight;
 
     /// <summary>Creates one room detail controller.</summary>
     /// <param name="router">The typed cross-feature router.</param>
@@ -98,7 +141,12 @@ internal sealed class RoomViewController : UIViewController
         // A table source already is the scroll-view delegate, so scroll tracking has to be one of its
         // overrides: adding a Scrolled event handler beside it makes UIKit throw as soon as the source is
         // first invoked, which took the app down on the first tap in a room.
-        table.Source = new TimelineSource(() => timeline, PresentTimelineActions, UpdateJumpToLatestVisibility);
+        table.Source = new TimelineSource(
+            () => timeline,
+            PresentTimelineActions,
+            QuoteMessage,
+            SetSwipeOpen,
+            TimelineScrolled);
         table.AccessibilityIdentifier = "rooms.detail.messages";
         ConfigureNavigation();
         ConfigureComposer();
@@ -131,6 +179,36 @@ internal sealed class RoomViewController : UIViewController
     {
         base.ViewDidLayoutSubviews();
         table.ResizeTableHeader();
+
+        // The field's fitted height depends on its resolved width, so it is re-measured once layout settles —
+        // which also re-measures it after a Dynamic Type change.
+        UpdateComposerHeight();
+        KeepFollowingLatest();
+    }
+
+    /// <summary>Re-anchors the newest message whenever the keyboard or a grown composer shortens the table.</summary>
+    /// <remarks>
+    /// The table's bottom rides the composer, which rides the keyboard, so raising the keyboard shortens the
+    /// transcript while its content offset stays put — which pushes the newest message below the fold. This
+    /// runs on every frame of that animation, so the conversation stays pinned to its latest message instead
+    /// of sliding out from under the person reading it.
+    /// </remarks>
+    private void KeepFollowingLatest()
+    {
+        if (Math.Abs(table.Bounds.Height - lastTableHeight) < 0.5)
+        {
+            return;
+        }
+
+        lastTableHeight = table.Bounds.Height;
+        if (followsLatest)
+        {
+            ScrollToLatest(animated: false);
+        }
+        else
+        {
+            UpdateJumpToLatestVisibility();
+        }
     }
 
     /// <inheritdoc/>
@@ -169,43 +247,46 @@ internal sealed class RoomViewController : UIViewController
     /// <summary>Builds the composer with directional constraints and the iOS keyboard layout guide.</summary>
     private void ConfigureComposer()
     {
-        messageField.AccessibilityIdentifier = "rooms.detail.composer";
-        messageField.ReturnKeyType = UIReturnKeyType.Send;
-        messageField.ShouldReturn = field =>
-        {
-            _ = SendAsync();
-            return false;
-        };
-
-        // The rounded-rect border is replaced by a capsule the field sits inside, so the composer matches the
-        // system's own input bars instead of drawing a boxed control.
-        messageField.BorderStyle = UITextBorderStyle.None;
+        messageView.AccessibilityIdentifier = "rooms.detail.composer";
+        messageView.AccessibilityLabel = AppStrings.Get("IosUiMessagePlaceholder");
+        messageView.TextContainer.LineFragmentPadding = 0;
+        composerDelegate = new ComposerTextViewDelegate(this);
+        messageView.Delegate = composerDelegate;
+        placeholderLabel.Text = AppStrings.Get("IosUiMessagePlaceholder");
+        placeholderLabel.IsAccessibilityElement = false;
         statusLabel.Lines = 0;
         statusLabel.AccessibilityIdentifier = "rooms.detail.status";
         statusLabel.Hidden = true;
-        sendButton = CircularAction("arrow.up", AppStrings.Get("IosUiSend"), () => _ = SendAsync());
-        sendButton.Configuration = FilledCircleConfiguration("arrow.up");
+        sendButton = UIKitFactory.CircularAction(
+            "arrow.up",
+            AppStrings.Get("IosUiSend"),
+            () => _ = SendAsync(),
+            filled: true);
         sendButton.AccessibilityIdentifier = "rooms.detail.send";
-        jumpToLatestButton = CircularAction(
+        jumpToLatestButton = UIKitFactory.CircularAction(
             "chevron.down",
             AppStrings.Get("IosUiJumpToLatest"),
             () => ScrollToLatest(animated: true));
         jumpToLatestButton.AccessibilityIdentifier = "rooms.detail.jump-to-latest";
         jumpToLatestButton.Hidden = true;
 
-        UIKitFactory.ApplyCapsuleCorners(fieldBackground);
-        fieldBackground.Layer.BorderWidth = (nfloat)0.5;
-        fieldBackground.Layer.BorderColor = UIColor.Separator.GetResolvedColor(fieldBackground.TraitCollection).CGColor;
+        UIKitFactory.ApplyGrowingFieldCorners(fieldBackground);
+        UIKitFactory.ApplyComposerFieldBorder(fieldBackground);
+        fieldBackground.AddSubviews(messageView, placeholderLabel);
 
-        // A CGColor is a resolved value, not a dynamic color, so the border must be re-resolved when the
-        // interface style flips.
-        fieldBackground.RegisterForTraitChanges<UITraitUserInterfaceStyle>((_, _) =>
-            fieldBackground.Layer.BorderColor = UIColor.Separator.GetResolvedColor(fieldBackground.TraitCollection).CGColor);
-        fieldBackground.AddSubview(messageField);
+        // Sending was the only way out of the keyboard, which trapped the transcript at half height. A tap on
+        // the conversation now puts it away and gives the history its full height back.
+        dismissTap = new KeyboardDismissTap(
+            table,
+            () => messageView.IsFirstResponder,
+            () => View!.EndEditing(true));
+
+        // A growing field must not drag the send control up with it: the two stay aligned on their bottom
+        // edges, the way every native conversation composer behaves.
         var input = new UIStackView([fieldBackground, sendButton])
         {
             Axis = UILayoutConstraintAxis.Horizontal,
-            Alignment = UIStackViewAlignment.Center,
+            Alignment = UIStackViewAlignment.Bottom,
             Spacing = 8,
             TranslatesAutoresizingMaskIntoConstraints = false,
         };
@@ -222,6 +303,8 @@ internal sealed class RoomViewController : UIViewController
         NSLayoutConstraint keyboardBottom = composer.BottomAnchor
             .ConstraintEqualTo(View.KeyboardLayoutGuide.TopAnchor)
             .WithPriority(UILayoutPriority.DefaultHigh);
+        composerHeight = messageView.HeightAnchor.ConstraintEqualTo(
+            messageView.Font?.LineHeight ?? UIKitFactory.CircularActionSize - (2 * ComposerVerticalInset));
         NSLayoutConstraint.ActivateConstraints(
         [
             table.TopAnchor.ConstraintEqualTo(View.TopAnchor),
@@ -233,55 +316,26 @@ internal sealed class RoomViewController : UIViewController
             keyboardBottom,
             composer.BottomAnchor.ConstraintLessThanOrEqualTo(
                 View.SafeAreaLayoutGuide.BottomAnchor,
-                -ComposerBottomInset),
+                -(ComposerBottomInset - ComposerKeyboardGap)),
             stack.TopAnchor.ConstraintEqualTo(composer.TopAnchor, 8),
-            stack.BottomAnchor.ConstraintEqualTo(composer.BottomAnchor),
+            stack.BottomAnchor.ConstraintEqualTo(composer.BottomAnchor, -ComposerKeyboardGap),
             stack.LeadingAnchor.ConstraintEqualTo(composer.LayoutMarginsGuide.LeadingAnchor),
             stack.TrailingAnchor.ConstraintEqualTo(composer.LayoutMarginsGuide.TrailingAnchor),
-            messageField.TopAnchor.ConstraintEqualTo(fieldBackground.TopAnchor, 8),
-            messageField.BottomAnchor.ConstraintEqualTo(fieldBackground.BottomAnchor, -8),
-            messageField.LeadingAnchor.ConstraintEqualTo(fieldBackground.LeadingAnchor, 14),
-            messageField.TrailingAnchor.ConstraintEqualTo(fieldBackground.TrailingAnchor, -14),
-            fieldBackground.HeightAnchor.ConstraintGreaterThanOrEqualTo(CircularActionSize),
-            sendButton.WidthAnchor.ConstraintEqualTo(CircularActionSize),
-            sendButton.HeightAnchor.ConstraintEqualTo(CircularActionSize),
+            messageView.TopAnchor.ConstraintEqualTo(fieldBackground.TopAnchor, ComposerVerticalInset),
+            messageView.BottomAnchor.ConstraintEqualTo(fieldBackground.BottomAnchor, -ComposerVerticalInset),
+            messageView.LeadingAnchor.ConstraintEqualTo(fieldBackground.LeadingAnchor, ComposerLeadingInset),
+            messageView.TrailingAnchor.ConstraintEqualTo(fieldBackground.TrailingAnchor, -ComposerLeadingInset),
+            composerHeight,
+            placeholderLabel.TopAnchor.ConstraintEqualTo(messageView.TopAnchor),
+            placeholderLabel.LeadingAnchor.ConstraintEqualTo(messageView.LeadingAnchor),
+            placeholderLabel.TrailingAnchor.ConstraintLessThanOrEqualTo(messageView.TrailingAnchor),
+            fieldBackground.HeightAnchor.ConstraintGreaterThanOrEqualTo(UIKitFactory.CircularActionSize),
 
             // The jump control floats over the conversation instead of taking a full row of the composer,
             // aligned to the composer's own trailing edge.
             jumpToLatestButton.TrailingAnchor.ConstraintEqualTo(composer.LayoutMarginsGuide.TrailingAnchor),
             jumpToLatestButton.BottomAnchor.ConstraintEqualTo(composer.TopAnchor, -12),
-            jumpToLatestButton.WidthAnchor.ConstraintEqualTo(CircularActionSize),
-            jumpToLatestButton.HeightAnchor.ConstraintEqualTo(CircularActionSize),
         ]);
-    }
-
-    /// <summary>Creates one 44-point circular glyph control that carries its meaning through VoiceOver.</summary>
-    /// <param name="symbol">The SF Symbol glyph.</param>
-    /// <param name="label">The localized accessible name, since the control shows no text.</param>
-    /// <param name="action">The action invoked after explicit activation.</param>
-    private static UIButton CircularAction(string symbol, string label, Action action)
-    {
-        var button = UIButton.FromType(UIButtonType.System);
-        UIButtonConfiguration configuration = UIButtonConfiguration.GrayButtonConfiguration;
-        configuration.Image = UIImage.GetSystemImage(symbol);
-        configuration.CornerStyle = UIButtonConfigurationCornerStyle.Capsule;
-        configuration.ContentInsets = NSDirectionalEdgeInsets.Zero;
-        button.Configuration = configuration;
-        button.TranslatesAutoresizingMaskIntoConstraints = false;
-        button.AccessibilityLabel = label;
-        button.TouchUpInside += (_, _) => action();
-        return button;
-    }
-
-    /// <summary>Creates the filled variant used by the primary send control.</summary>
-    /// <param name="symbol">The SF Symbol glyph.</param>
-    private static UIButtonConfiguration FilledCircleConfiguration(string symbol)
-    {
-        UIButtonConfiguration configuration = UIButtonConfiguration.FilledButtonConfiguration;
-        configuration.Image = UIImage.GetSystemImage(symbol);
-        configuration.CornerStyle = UIButtonConfigurationCornerStyle.Capsule;
-        configuration.ContentInsets = NSDirectionalEdgeInsets.Zero;
-        return configuration;
     }
 
     /// <summary>Joins the room with inline loading, failure, and retry feedback.</summary>
@@ -315,15 +369,22 @@ internal sealed class RoomViewController : UIViewController
     /// <summary>Sends a non-empty message and restores the draft after failure.</summary>
     private async Task SendAsync()
     {
-        string text = messageField.Text?.Trim() ?? string.Empty;
+        string text = messageView.Text?.Trim() ?? string.Empty;
         if (text.Length == 0 || !sendButton.Enabled)
         {
             return;
         }
 
-        messageField.Text = string.Empty;
+        // Sending is an explicit act of joining the conversation, so it always returns to the newest message
+        // even when the person was reading history a moment ago.
+        followsLatest = true;
+
+        // Locking the field to block edits mid-flight also drops the keyboard, and the composer is now the only
+        // way to send, so focus is handed back once the send resolves.
+        bool composing = messageView.IsFirstResponder;
+        SetDraft(string.Empty, caret: 0);
         sendButton.Enabled = false;
-        messageField.Enabled = false;
+        messageView.Editable = false;
         statusLabel.Text = AppStrings.Get("IosUiMessageSending");
         try
         {
@@ -333,16 +394,90 @@ internal sealed class RoomViewController : UIViewController
         }
         catch
         {
-            messageField.Text = text;
+            SetDraft(text, text.Length);
             statusLabel.Text = AppStrings.Get("IosUiRoomMessageFailed");
             statusLabel.TextColor = UIColor.SystemRed;
             AccessibilityExtensions.Announce(statusLabel.Text);
         }
         finally
         {
-            messageField.Enabled = true;
+            messageView.Editable = true;
+
+            // Availability decides whether re-focusing is meaningful after a disconnect or failed join.
             ApplyAvailability();
+            if (composing && messageView.Editable)
+            {
+                messageView.BecomeFirstResponder();
+            }
         }
+    }
+
+    /// <summary>Replaces the draft and its caret, keeping the placeholder, height, and send control truthful.</summary>
+    /// <param name="text">The replacement draft.</param>
+    /// <param name="caret">The caret offset to restore inside the new draft.</param>
+    private void SetDraft(string text, int caret)
+    {
+        messageView.Text = text;
+
+        // A programmatic assignment never reaches the delegate, so the derived composer state is refreshed here.
+        ComposerChanged();
+        messageView.SelectedRange = new NSRange(Math.Clamp(caret, 0, text.Length), 0);
+    }
+
+    /// <summary>Quotes one message into the draft and leaves the caret on the blank line beneath it.</summary>
+    /// <param name="message">The message being replied to.</param>
+    private void QuoteMessage(RoomMessageEntry message)
+    {
+        // A quote has to survive as one line of Markdown, so any newlines inside the original collapse to spaces.
+        string quoted = string.Join(' ', message.Message.Split(
+            ['\r', '\n'],
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+        string prefix = $"{AppStrings.Format("IosUiRoomReplyQuote", message.Username, quoted)}\n\n";
+        string draft = messageView.Text ?? string.Empty;
+        SetDraft(draft.Length == 0 ? prefix : prefix + draft, prefix.Length);
+        messageView.BecomeFirstResponder();
+        AccessibilityExtensions.Announce(AppStrings.Format("IosUiRoomReplyAdded", message.Username));
+    }
+
+    /// <summary>Refreshes the placeholder, the composer height, and send availability after any draft edit.</summary>
+    private void ComposerChanged()
+    {
+        placeholderLabel.Hidden = messageView.Text?.Length > 0;
+        UpdateComposerHeight();
+        UpdateSendAvailability();
+    }
+
+    /// <summary>Grows the field with its content up to <see cref="ComposerMaxLines"/>, then lets it scroll.</summary>
+    private void UpdateComposerHeight()
+    {
+        double width = messageView.Bounds.Width;
+        if (width <= 0)
+        {
+            return;
+        }
+
+        double line = messageView.Font?.LineHeight ?? UIKitFactory.CircularActionSize - (2 * ComposerVerticalInset);
+        double fitted = messageView.SizeThatFits(new CGSize((nfloat)width, (nfloat)10000)).Height;
+
+        // Five lines of an accessibility text size would swallow the conversation, so the field also never
+        // claims more than a third of the screen — whichever limit is reached first wins.
+        double ceiling = Math.Max(line, Math.Min(line * ComposerMaxLines, View!.Bounds.Height * ComposerMaxHeightFraction));
+        double target = Math.Min(Math.Max(fitted, line), ceiling);
+        messageView.ScrollEnabled = fitted > ceiling + 0.5;
+        if (Math.Abs(composerHeight.Constant - target) < 0.5)
+        {
+            return;
+        }
+
+        composerHeight.Constant = (nfloat)target;
+        View?.LayoutIfNeeded();
+    }
+
+    /// <summary>Enables sending only for a joined room holding a non-empty draft.</summary>
+    private void UpdateSendAvailability()
+    {
+        bool joined = store.GetRoom(roomName)?.ConnectionState == RoomConnectionState.Joined && !joining;
+        sendButton.Enabled = joined && !string.IsNullOrWhiteSpace(messageView.Text);
     }
 
     /// <summary>Shows copy, sender, retry, and validated Soulseek-link actions.</summary>
@@ -354,6 +489,10 @@ internal sealed class RoomViewController : UIViewController
             message.TimestampUtc.ToLocalTime().ToString("g"),
             UIAlertControllerStyle.ActionSheet);
         sheet.AddAction(UIAlertAction.Create(
+            AppStrings.Get("IosUiReply"),
+            UIAlertActionStyle.Default,
+            _ => QuoteMessage(message)));
+        sheet.AddAction(UIAlertAction.Create(
             AppStrings.Get("IosUiCopyMessage"),
             UIAlertActionStyle.Default,
             _ => UIPasteboard.General.String = message.Message));
@@ -364,7 +503,7 @@ internal sealed class RoomViewController : UIViewController
                 UIAlertActionStyle.Default,
                 action =>
                 {
-                    messageField.Text = message.Message;
+                    SetDraft(message.Message, message.Message.Length);
                     _ = SendAsync();
                 }));
         }
@@ -640,26 +779,58 @@ internal sealed class RoomViewController : UIViewController
     /// <param name="animated">Whether native scrolling may animate when Reduce Motion permits it.</param>
     private void ScrollToLatest(bool animated)
     {
+        followsLatest = true;
         if (timeline.Count == 0)
         {
             jumpToLatestButton.Hidden = true;
             return;
         }
 
-        table.ScrollToRow(
-            NSIndexPath.FromRowSection(timeline.Count - 1, 0),
-            UITableViewScrollPosition.Bottom,
-            animated && AccessibilityExtensions.AccessibleAnimationDuration(0.25) > 0);
+        // Auto-following must never yank the table out from under a touch: scrolling while a swipe or drag is
+        // in flight cancels that gesture, which silently broke swipe-to-reply in a busy room.
+        if (table.Dragging || table.Tracking)
+        {
+            UpdateJumpToLatestVisibility();
+            return;
+        }
+
+        // Self-sizing rows report an estimated height until UIKit has actually measured them, so an animated
+        // scroll aims at an end that moves while it travels — which is how a long arriving message ended up
+        // half-hidden behind the composer. Two unanimated passes land on the settled end instead: the first
+        // forces the rows it passes to be measured, the second aims at what they turned out to be.
+        CGPoint from = table.ContentOffset;
+        NSIndexPath latest = NSIndexPath.FromRowSection(timeline.Count - 1, 0);
+        table.LayoutIfNeeded();
+        table.ScrollToRow(latest, UITableViewScrollPosition.Bottom, false);
+        table.LayoutIfNeeded();
+        table.ScrollToRow(latest, UITableViewScrollPosition.Bottom, false);
+
+        // The exact destination is only known after those passes, so an animated request replays the journey
+        // from where it started rather than aiming at an estimate.
+        if (animated &&
+            AccessibilityExtensions.AccessibleAnimationDuration(0.25) > 0 &&
+            Math.Abs(from.Y - table.ContentOffset.Y) > 0.5)
+        {
+            CGPoint destination = table.ContentOffset;
+            table.SetContentOffset(from, false);
+            table.SetContentOffset(destination, true);
+        }
+
         jumpToLatestButton.Hidden = true;
     }
 
     /// <summary>Shows Jump to Latest only while a person is reading older room history.</summary>
-    private void UpdateJumpToLatestVisibility()
+    private void UpdateJumpToLatestVisibility() => jumpToLatestButton.Hidden = NearLatest;
+
+    /// <summary>Keeps the follow decision in a person's own hands: only their own scrolling changes it.</summary>
+    private void TimelineScrolled()
     {
-        bool nearLatest = timeline.Count == 0 ||
-            table.ContentSize.Height <= table.Bounds.Height ||
-            table.ContentOffset.Y + table.Bounds.Height >= table.ContentSize.Height - 80;
-        jumpToLatestButton.Hidden = nearLatest;
+        if (table.Dragging || table.Decelerating)
+        {
+            followsLatest = NearLatest;
+        }
+
+        UpdateJumpToLatestVisibility();
     }
 
     /// <summary>Builds a self-sizing ticker summary when the corresponding room preference is enabled.</summary>
@@ -701,8 +872,8 @@ internal sealed class RoomViewController : UIViewController
     {
         RoomConnectionState state = store.GetRoom(roomName)?.ConnectionState ?? RoomConnectionState.NotJoined;
         bool joined = state == RoomConnectionState.Joined && !joining;
-        messageField.Enabled = joined;
-        sendButton.Enabled = joined;
+        messageView.Editable = joined;
+        UpdateSendAvailability();
         if (joining || state == RoomConnectionState.Joining)
         {
             statusLabel.Text = AppStrings.Get("IosUiRoomJoining");
@@ -761,14 +932,39 @@ internal sealed class RoomViewController : UIViewController
         return container;
     }
 
-    /// <summary>Updates room content while preserving reading position unless already near the latest message.</summary>
+    /// <summary>Refreshes the visible room while preserving the current reading location.</summary>
     /// <param name="sender">The room store.</param>
     /// <param name="args">Unused event data.</param>
     private void OnChanged(object? sender, EventArgs args)
     {
-        bool nearLatest = table.ContentSize.Height <= table.Bounds.Height ||
-            table.ContentOffset.Y + table.Bounds.Height >= table.ContentSize.Height - 80;
-        ReloadRoom(nearLatest);
+        // Reloading the table closes an open swipe, so an arriving message would snap Reply shut before it
+        // could be pressed. The refresh waits until the swipe is resolved instead.
+        if (swipeOpen)
+        {
+            reloadDeferred = true;
+            return;
+        }
+
+        ReloadRoom(followsLatest);
+    }
+
+    /// <summary>Reports whether the conversation is already showing its newest content.</summary>
+    private bool NearLatest => timeline.Count == 0 ||
+        table.ContentSize.Height <= table.Bounds.Height ||
+        table.ContentOffset.Y + table.Bounds.Height >= table.ContentSize.Height - 80;
+
+    /// <summary>Tracks a reply drag and flushes whatever arrived while a row was held under a finger.</summary>
+    /// <param name="open">Whether a row is currently being dragged.</param>
+    private void SetSwipeOpen(bool open)
+    {
+        swipeOpen = open;
+        if (open || !reloadDeferred)
+        {
+            return;
+        }
+
+        reloadDeferred = false;
+        ReloadRoom(followsLatest);
     }
 
     /// <summary>Returns localized switch state text for non-color status.</summary>
@@ -794,10 +990,14 @@ internal sealed class RoomViewController : UIViewController
     private sealed class TimelineSource(
         Func<IReadOnlyList<RoomTimelineRow>> getRows,
         Action<RoomTimelineRow> select,
+        Action<RoomMessageEntry> reply,
+        Action<bool> swipeChanged,
         Action scrolled) : UITableViewSource
     {
         private readonly Func<IReadOnlyList<RoomTimelineRow>> getRows = getRows;
         private readonly Action<RoomTimelineRow> select = select;
+        private readonly Action<RoomMessageEntry> reply = reply;
+        private readonly Action<bool> swipeChanged = swipeChanged;
         private readonly Action scrolled = scrolled;
 
         /// <inheritdoc/>
@@ -830,6 +1030,7 @@ internal sealed class RoomViewController : UIViewController
                 !string.Equals(next.Username, message.Username, StringComparison.Ordinal);
             var cell = (RoomMessageCell)tableView.DequeueReusableCell(MessageCellIdentifier, indexPath);
             cell.Apply(message, startsGroup, endsGroup);
+            cell.ConfigureReply(() => reply(message), swipeChanged);
             return cell;
         }
 
@@ -841,6 +1042,14 @@ internal sealed class RoomViewController : UIViewController
         }
     }
 
+    /// <summary>Keeps the placeholder, height, and send control in step with what a person types.</summary>
+    /// <param name="owner">The presenting room controller.</param>
+    private sealed class ComposerTextViewDelegate(RoomViewController owner) : UITextViewDelegate
+    {
+        /// <inheritdoc/>
+        public override void Changed(UITextView textView) => owner.ComposerChanged();
+    }
+
     /// <summary>Presents one message as a native conversation bubble aligned by authorship.</summary>
     private sealed class RoomMessageCell : UITableViewCell
     {
@@ -849,6 +1058,7 @@ internal sealed class RoomViewController : UIViewController
         private readonly UIView bubble = new() { TranslatesAutoresizingMaskIntoConstraints = false };
         private readonly UILabel messageLabel = UIKitFactory.Label(UIFontTextStyle.Body);
         private readonly UILabel metaLabel = UIKitFactory.Label(UIFontTextStyle.Caption2, UIColor.TertiaryLabel);
+        private readonly ReplySwipe replySwipe;
 
         /// <summary>Creates the reusable bubble hierarchy for a table-registered cell class.</summary>
         /// <param name="handle">The native handle supplied by UIKit.</param>
@@ -876,6 +1086,36 @@ internal sealed class RoomViewController : UIViewController
                 messageLabel.TrailingAnchor.ConstraintEqualTo(bubble.TrailingAnchor, -14),
                 bubble.WidthAnchor.ConstraintLessThanOrEqualTo(stack.WidthAnchor, (nfloat)0.82),
             ]);
+
+            // The stack carries the drag, not the content view, whose frame the table assigns directly.
+            replySwipe = new ReplySwipe(this, stack);
+        }
+
+        /// <inheritdoc/>
+        public override void PrepareForReuse()
+        {
+            base.PrepareForReuse();
+            replySwipe.Reset();
+        }
+
+        /// <summary>Points the drag and its VoiceOver equivalent at the message this row currently shows.</summary>
+        /// <param name="reply">Quotes the current message into the composer.</param>
+        /// <param name="dragging">Receives whether a drag is in flight, so arriving messages hold their reload.</param>
+        public void ConfigureReply(Action reply, Action<bool> dragging)
+        {
+            replySwipe.Configure(reply, dragging);
+
+            // A drag is invisible to VoiceOver, so the same intent is offered as a rotor action.
+            AccessibilityCustomActions =
+            [
+                new UIAccessibilityCustomAction(
+                    AppStrings.Get("IosUiReply"),
+                    (UIAccessibilityCustomActionHandler)(_ =>
+                    {
+                        reply();
+                        return true;
+                    })),
+            ];
         }
 
         /// <summary>Applies one message, its authorship alignment, and its position within a sender group.</summary>

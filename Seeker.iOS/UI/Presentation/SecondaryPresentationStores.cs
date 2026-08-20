@@ -1059,6 +1059,9 @@ internal sealed class MessagesPresentationStore : IDisposable
             : durable;
     }
 
+    /// <summary>Gets the connected or most recently authenticated account name, for attributing own messages.</summary>
+    public string? CurrentUsername => AppCompositionRoot.Session.Username;
+
     /// <summary>Marks a conversation read through its latest message.</summary>
     /// <param name="username">The remote user name.</param>
     public void MarkRead(string username)

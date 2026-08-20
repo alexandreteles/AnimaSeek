@@ -913,6 +913,19 @@ internal sealed class ConversationViewController : UIViewController
 {
     private static readonly NSString MessageSectionIdentifier = new("messages");
     private const string MessageReuseIdentifier = "MessageBubbleCell";
+
+    // A single body line centered in the 44-point resting field; the field grows from there. These match the
+    // room composer so both conversations behave and measure identically.
+    private const int ComposerVerticalInset = 11;
+    private const int ComposerLeadingInset = 16;
+    private const int ComposerMaxLines = 5;
+    private const double ComposerMaxHeightFraction = 0.3;
+    private const int ComposerRestingHeight = 44;
+    private const int ComposerBottomInset = 20;
+    private const int ComposerKeyboardGap = 8;
+
+    // Matches the floating tab bar's inset so the composer and the bar read as one stack of controls.
+    private const int ComposerSideInset = 22;
     private readonly IAppRouter router;
     private readonly MessagesPresentationStore store;
     private readonly string username;
@@ -924,21 +937,58 @@ internal sealed class ConversationViewController : UIViewController
         EstimatedRowHeight = 72,
         KeyboardDismissMode = UIScrollViewKeyboardDismissMode.Interactive,
     };
+    // The composer is an unfilled container so the field floats over the conversation, rather than a bar whose
+    // edge welds itself to whatever sits below the screen.
     private readonly UIView composer = new()
     {
         TranslatesAutoresizingMaskIntoConstraints = false,
-        BackgroundColor = UIColor.SecondarySystemBackground,
+        BackgroundColor = UIColor.Clear,
     };
-    private readonly UITextField messageField = UIKitFactory.TextField(
-        AppStrings.Get("IosUiMessagePlaceholder"),
-        new NSString(string.Empty));
+    private readonly UIView fieldBackground = new()
+    {
+        TranslatesAutoresizingMaskIntoConstraints = false,
+        BackgroundColor = UIColor.TertiarySystemFill,
+    };
+
+    // A conversation composer has to accept line breaks, so the input is a text view whose Return key inserts
+    // one and whose height follows its content. Sending is the send control's job alone — as in a room.
+    private readonly UITextView messageView = new()
+    {
+        TranslatesAutoresizingMaskIntoConstraints = false,
+        BackgroundColor = UIColor.Clear,
+        Font = UIFont.GetPreferredFontForTextStyle(UIFontTextStyle.Body),
+        AdjustsFontForContentSizeCategory = true,
+        ScrollEnabled = false,
+        TextContainerInset = UIEdgeInsets.Zero,
+        ReturnKeyType = UIReturnKeyType.Default,
+    };
+
+    // A text view has no placeholder of its own, so the hint is a label the field's own text covers.
+    private readonly UILabel placeholderLabel = UIKitFactory.Label(
+        UIFontTextStyle.Body,
+        UIColor.PlaceholderText,
+        lines: 1);
     private readonly UILabel sendStatus = UIKitFactory.Label(UIFontTextStyle.Footnote, UIColor.SecondaryLabel);
+    private NSLayoutConstraint composerHeight = null!;
+    private UITextViewDelegate? composerDelegate;
     private readonly Dictionary<string, PrivateMessageRow> messagesById = new(StringComparer.Ordinal);
     private UITableViewDiffableDataSource<NSString, NSString> messageDataSource = null!;
     private MessageDelegate messageDelegate = null!;
     private UIButton sendButton = null!;
     private UIButton jumpToLatestButton = null!;
+    private KeyboardDismissTap? dismissTap;
     private IReadOnlyList<PrivateMessageRow> messages = [];
+
+    // Whether the thread is following its newest message. This is latched rather than measured, because the
+    // keyboard shrinks the table without anyone scrolling: measuring at that moment would report "reading
+    // history" and abandon the conversation halfway up the screen.
+    private bool followsLatest = true;
+
+    // The last height the thread was laid out at, so a keyboard or a grown composer can be told apart from an
+    // ordinary layout pass.
+    private nfloat lastTableHeight;
+    private bool swipeOpen;
+    private bool reloadDeferred;
     private bool hasMessageSnapshot;
     private bool pendingMessageSnapshot;
     private bool pendingScrollToLatest;
@@ -1007,6 +1057,42 @@ internal sealed class ConversationViewController : UIViewController
     }
 
     /// <inheritdoc/>
+    public override void ViewDidLayoutSubviews()
+    {
+        base.ViewDidLayoutSubviews();
+
+        // The field's fitted height depends on its resolved width, so it is re-measured once layout settles —
+        // which also re-measures it after a Dynamic Type change.
+        UpdateComposerHeight();
+        KeepFollowingLatest();
+    }
+
+    /// <summary>Re-anchors the newest message whenever the keyboard or a grown composer shortens the table.</summary>
+    /// <remarks>
+    /// The table's bottom rides the composer, which rides the keyboard, so raising the keyboard shortens the
+    /// thread while its content offset stays put — which pushes the newest message below the fold. This runs
+    /// on every frame of that animation, so the conversation stays pinned to its latest message instead of
+    /// sliding out from under the person reading it.
+    /// </remarks>
+    private void KeepFollowingLatest()
+    {
+        if (Math.Abs(table.Bounds.Height - lastTableHeight) < 0.5)
+        {
+            return;
+        }
+
+        lastTableHeight = table.Bounds.Height;
+        if (followsLatest)
+        {
+            ScrollToLatest(animated: false);
+        }
+        else
+        {
+            UpdateJumpToLatestVisibility();
+        }
+    }
+
+    /// <inheritdoc/>
     public override void DidMoveToParentViewController(UIViewController? parent)
     {
         base.DidMoveToParentViewController(parent);
@@ -1032,53 +1118,79 @@ internal sealed class ConversationViewController : UIViewController
     /// <summary>Builds the table and keyboard-layout-guide composer using directional constraints.</summary>
     private void ConfigureHierarchy()
     {
-        messageDataSource = new UITableViewDiffableDataSource<NSString, NSString>(
-            table,
-            ConfigureMessageCell);
-        messageDelegate = new MessageDelegate(MessageAt, PresentMessageActions, UpdateJumpToLatestVisibility);
+        // Replying is a gesture on the row itself, so the transcript needs no native row editing at all.
+        messageDataSource = new UITableViewDiffableDataSource<NSString, NSString>(table, ConfigureMessageCell);
+        messageDelegate = new MessageDelegate(
+            MessageAt,
+            PresentMessageActions,
+            ThreadScrolled);
         table.DataSource = messageDataSource;
         table.Delegate = messageDelegate;
         table.AccessibilityIdentifier = "messages.thread.list";
-        messageField.AccessibilityIdentifier = "messages.thread.composer";
-        messageField.ReturnKeyType = UIReturnKeyType.Send;
-        messageField.ShouldReturn = field =>
-        {
-            _ = SendAsync();
-            return false;
-        };
+        messageView.AccessibilityIdentifier = "messages.thread.composer";
+        messageView.AccessibilityLabel = AppStrings.Get("IosUiMessagePlaceholder");
+        messageView.TextContainer.LineFragmentPadding = 0;
+        composerDelegate = new ComposerTextViewDelegate(this);
+        messageView.Delegate = composerDelegate;
+        placeholderLabel.Text = AppStrings.Get("IosUiMessagePlaceholder");
+        placeholderLabel.IsAccessibilityElement = false;
+        UIKitFactory.ApplyGrowingFieldCorners(fieldBackground);
+        UIKitFactory.ApplyComposerFieldBorder(fieldBackground);
+        fieldBackground.AddSubviews(messageView, placeholderLabel);
+
+        // Sending was the only way out of the keyboard, which trapped the thread at half height. A tap on the
+        // conversation now puts it away and gives the history its full height back.
+        dismissTap = new KeyboardDismissTap(
+            table,
+            () => messageView.IsFirstResponder,
+            () => View!.EndEditing(true));
         sendStatus.Lines = 0;
         sendStatus.AccessibilityIdentifier = "messages.thread.send-status";
-        sendButton = UIKitFactory.Button(
+        sendStatus.Hidden = true;
+        sendButton = UIKitFactory.CircularAction(
+            "arrow.up",
             AppStrings.Get("IosUiSend"),
-            UIButtonConfiguration.TintedButtonConfiguration,
             () => _ = SendAsync(),
-            "arrow.up.circle.fill");
+            filled: true);
         sendButton.AccessibilityIdentifier = "messages.thread.send";
-        jumpToLatestButton = UIKitFactory.Button(
+
+        // The jump control floats over the conversation instead of taking a full row of the composer.
+        jumpToLatestButton = UIKitFactory.CircularAction(
+            "chevron.down",
             AppStrings.Get("IosUiJumpToLatest"),
-            UIButtonConfiguration.TintedButtonConfiguration,
-            () => ScrollToLatest(animated: true),
-            "arrow.down.to.line");
+            () => ScrollToLatest(animated: true));
         jumpToLatestButton.AccessibilityIdentifier = "messages.thread.jump-to-latest";
         jumpToLatestButton.Hidden = true;
-        var inputRow = new UIStackView([messageField, sendButton])
+
+        // A growing field must not drag the send control up with it: the two stay aligned on their bottom edges.
+        var inputRow = new UIStackView([fieldBackground, sendButton])
         {
             Axis = UILayoutConstraintAxis.Horizontal,
-            Alignment = UIStackViewAlignment.Center,
+            Alignment = UIStackViewAlignment.Bottom,
             Distribution = UIStackViewDistribution.Fill,
             Spacing = 8,
             TranslatesAutoresizingMaskIntoConstraints = false,
         };
-        var stack = new UIStackView([jumpToLatestButton, sendStatus, inputRow])
+        var stack = new UIStackView([sendStatus, inputRow])
         {
             Axis = UILayoutConstraintAxis.Vertical,
             Alignment = UIStackViewAlignment.Fill,
             Distribution = UIStackViewDistribution.Fill,
-            Spacing = 4,
+            Spacing = 6,
             TranslatesAutoresizingMaskIntoConstraints = false,
         };
+        composer.DirectionalLayoutMargins = new NSDirectionalEdgeInsets(0, ComposerSideInset, 0, ComposerSideInset);
         composer.AddSubview(stack);
-        View!.AddSubviews(table, composer);
+        View!.AddSubviews(table, composer, jumpToLatestButton);
+        composerHeight = messageView.HeightAnchor.ConstraintEqualTo(
+            messageView.Font?.LineHeight ?? ComposerRestingHeight - (2 * ComposerVerticalInset));
+
+        // The composer rides the keyboard, but never below a clear gap above the bottom safe area, so it keeps
+        // an obvious margin from the tab bar. The keyboard constraint yields to the required clamp when the
+        // keyboard is dismissed.
+        NSLayoutConstraint keyboardBottom = composer.BottomAnchor
+            .ConstraintEqualTo(View.KeyboardLayoutGuide.TopAnchor)
+            .WithPriority(UILayoutPriority.DefaultHigh);
         NSLayoutConstraint.ActivateConstraints(
         [
             table.TopAnchor.ConstraintEqualTo(View.TopAnchor),
@@ -1087,45 +1199,147 @@ internal sealed class ConversationViewController : UIViewController
             table.BottomAnchor.ConstraintEqualTo(composer.TopAnchor),
             composer.LeadingAnchor.ConstraintEqualTo(View.LeadingAnchor),
             composer.TrailingAnchor.ConstraintEqualTo(View.TrailingAnchor),
-            composer.BottomAnchor.ConstraintEqualTo(View.KeyboardLayoutGuide.TopAnchor),
+            keyboardBottom,
+            composer.BottomAnchor.ConstraintLessThanOrEqualTo(
+                View.SafeAreaLayoutGuide.BottomAnchor,
+                -(ComposerBottomInset - ComposerKeyboardGap)),
             stack.TopAnchor.ConstraintEqualTo(composer.TopAnchor, 8),
-            stack.BottomAnchor.ConstraintEqualTo(composer.BottomAnchor, -8),
+            stack.BottomAnchor.ConstraintEqualTo(composer.BottomAnchor, -ComposerKeyboardGap),
             stack.LeadingAnchor.ConstraintEqualTo(composer.LayoutMarginsGuide.LeadingAnchor),
             stack.TrailingAnchor.ConstraintEqualTo(composer.LayoutMarginsGuide.TrailingAnchor),
-            sendButton.WidthAnchor.ConstraintGreaterThanOrEqualTo(44),
+            messageView.TopAnchor.ConstraintEqualTo(fieldBackground.TopAnchor, ComposerVerticalInset),
+            messageView.BottomAnchor.ConstraintEqualTo(fieldBackground.BottomAnchor, -ComposerVerticalInset),
+            messageView.LeadingAnchor.ConstraintEqualTo(fieldBackground.LeadingAnchor, ComposerLeadingInset),
+            messageView.TrailingAnchor.ConstraintEqualTo(fieldBackground.TrailingAnchor, -ComposerLeadingInset),
+            composerHeight,
+            placeholderLabel.TopAnchor.ConstraintEqualTo(messageView.TopAnchor),
+            placeholderLabel.LeadingAnchor.ConstraintEqualTo(messageView.LeadingAnchor),
+            placeholderLabel.TrailingAnchor.ConstraintLessThanOrEqualTo(messageView.TrailingAnchor),
+            fieldBackground.HeightAnchor.ConstraintGreaterThanOrEqualTo(ComposerRestingHeight),
+
+            // The jump control floats over the conversation, aligned to the composer's own trailing edge.
+            jumpToLatestButton.TrailingAnchor.ConstraintEqualTo(composer.LayoutMarginsGuide.TrailingAnchor),
+            jumpToLatestButton.BottomAnchor.ConstraintEqualTo(composer.TopAnchor, -12),
         ]);
+
+        // An empty draft has nothing to send, so the control starts disabled rather than inviting a no-op.
+        ComposerChanged();
+    }
+
+    /// <summary>Shows or clears the composer's status line, collapsing the row when there is nothing to say.</summary>
+    /// <param name="text">The status text, or empty to hide the line.</param>
+    /// <param name="color">The semantic color carrying the status alongside its words.</param>
+    private void ShowSendStatus(string text, UIColor color)
+    {
+        sendStatus.Text = text;
+        sendStatus.TextColor = color;
+
+        // A stack collapses the hidden row, so an idle composer gives its whole height to the input.
+        sendStatus.Hidden = string.IsNullOrWhiteSpace(text);
+    }
+
+    /// <summary>Replaces the draft and its caret, keeping the placeholder, height, and send control truthful.</summary>
+    /// <param name="text">The replacement draft.</param>
+    /// <param name="caret">The caret offset to restore inside the new draft.</param>
+    private void SetDraft(string text, int caret)
+    {
+        messageView.Text = text;
+
+        // A programmatic assignment never reaches the delegate, so the derived composer state is refreshed here.
+        ComposerChanged();
+        messageView.SelectedRange = new NSRange(Math.Clamp(caret, 0, text.Length), 0);
+    }
+
+    /// <summary>Quotes one message into the draft and leaves the caret on the blank line beneath it.</summary>
+    /// <param name="row">The message being replied to.</param>
+    private void QuoteMessage(PrivateMessageRow row)
+    {
+        // A quote has to survive as one line of Markdown, so any newlines inside the original collapse to spaces.
+        string quoted = string.Join(' ', row.Text.Split(
+            ['\r', '\n'],
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+        string author = row.IsOutgoing ? store.CurrentUsername ?? AppStrings.Get("IosUiYou") : username;
+        string prefix = $"{AppStrings.Format("IosUiRoomReplyQuote", author, quoted)}\n\n";
+        string draft = messageView.Text ?? string.Empty;
+        SetDraft(draft.Length == 0 ? prefix : prefix + draft, prefix.Length);
+        messageView.BecomeFirstResponder();
+        AccessibilityExtensions.Announce(AppStrings.Format("IosUiRoomReplyAdded", author));
+    }
+
+    /// <summary>Refreshes the placeholder, the composer height, and send availability after any draft edit.</summary>
+    private void ComposerChanged()
+    {
+        placeholderLabel.Hidden = messageView.Text?.Length > 0;
+        UpdateComposerHeight();
+        sendButton.Enabled = messageView.Editable && !string.IsNullOrWhiteSpace(messageView.Text);
+    }
+
+    /// <summary>Grows the field with its content up to <see cref="ComposerMaxLines"/>, then lets it scroll.</summary>
+    private void UpdateComposerHeight()
+    {
+        double width = messageView.Bounds.Width;
+        if (width <= 0)
+        {
+            return;
+        }
+
+        double line = messageView.Font?.LineHeight ?? ComposerRestingHeight - (2 * ComposerVerticalInset);
+        double fitted = messageView.SizeThatFits(new CGSize((nfloat)width, (nfloat)10000)).Height;
+
+        // Five lines of an accessibility text size would swallow the conversation, so the field also never
+        // claims more than a third of the screen — whichever limit is reached first wins.
+        double ceiling = Math.Max(line, Math.Min(line * ComposerMaxLines, View!.Bounds.Height * ComposerMaxHeightFraction));
+        double target = Math.Min(Math.Max(fitted, line), ceiling);
+        messageView.ScrollEnabled = fitted > ceiling + 0.5;
+        if (Math.Abs(composerHeight.Constant - target) < 0.5)
+        {
+            return;
+        }
+
+        composerHeight.Constant = (nfloat)target;
+        View?.LayoutIfNeeded();
     }
 
     /// <summary>Sends the current draft with visible pending, failure, and completion feedback.</summary>
     private async Task SendAsync()
     {
-        string text = messageField.Text?.Trim() ?? string.Empty;
+        string text = messageView.Text?.Trim() ?? string.Empty;
         if (text.Length == 0 || !sendButton.Enabled)
         {
             return;
         }
 
+        // Sending is an explicit act of joining the conversation, so it always returns to the newest message
+        // even when the person was reading history a moment ago.
+        followsLatest = true;
+
+        // Locking the field to block edits mid-flight also drops the keyboard, and the composer is now the only
+        // way to send, so focus is handed back once the send resolves.
+        bool composing = messageView.IsFirstResponder;
         sendButton.Enabled = false;
-        messageField.Enabled = false;
-        sendStatus.Text = AppStrings.Get("IosUiMessageSending");
-        messageField.Text = string.Empty;
+        messageView.Editable = false;
+        ShowSendStatus(AppStrings.Get("IosUiMessageSending"), UIColor.SecondaryLabel);
+        SetDraft(string.Empty, caret: 0);
         try
         {
             await store.SendAsync(username, text);
-            sendStatus.Text = string.Empty;
+            ShowSendStatus(string.Empty, UIColor.SecondaryLabel);
             ReloadMessages(scrollToLatest: true);
         }
         catch
         {
-            sendStatus.Text = AppStrings.Get("IosUiMessageSendFailed");
-            sendStatus.TextColor = UIColor.SystemRed;
-            messageField.Text = text;
+            ShowSendStatus(AppStrings.Get("IosUiMessageSendFailed"), UIColor.SystemRed);
+            SetDraft(text, text.Length);
             AccessibilityExtensions.Announce(sendStatus.Text);
         }
         finally
         {
-            messageField.Enabled = true;
-            sendButton.Enabled = true;
+            messageView.Editable = true;
+            ComposerChanged();
+            if (composing)
+            {
+                messageView.BecomeFirstResponder();
+            }
         }
     }
 
@@ -1138,6 +1352,10 @@ internal sealed class ConversationViewController : UIViewController
             row.Timestamp,
             UIAlertControllerStyle.ActionSheet);
         sheet.AddAction(UIAlertAction.Create(
+            AppStrings.Get("IosUiReply"),
+            UIAlertActionStyle.Default,
+            _ => QuoteMessage(row)));
+        sheet.AddAction(UIAlertAction.Create(
             AppStrings.Get("IosUiCopyMessage"),
             UIAlertActionStyle.Default,
             _ => UIPasteboard.General.String = row.Text));
@@ -1148,7 +1366,7 @@ internal sealed class ConversationViewController : UIViewController
                 UIAlertActionStyle.Default,
                 action =>
                 {
-                    messageField.Text = row.Text;
+                    SetDraft(row.Text, row.Text.Length);
                     _ = SendAsync();
                 }));
         }
@@ -1162,11 +1380,7 @@ internal sealed class ConversationViewController : UIViewController
         }
 
         sheet.AddAction(UIAlertAction.Create(AppStrings.Get("IosUiCancel"), UIAlertActionStyle.Cancel, null));
-        if (sheet.PopoverPresentationController is { } popover)
-        {
-            popover.SourceView = table;
-            popover.SourceRect = table.Bounds;
-        }
+        UIKitFactory.AnchorActionSheet(sheet, table);
 
         PresentViewController(sheet, true, null);
     }
@@ -1215,11 +1429,7 @@ internal sealed class ConversationViewController : UIViewController
                 }
             }));
         sheet.AddAction(UIAlertAction.Create(AppStrings.Get("IosUiCancel"), UIAlertActionStyle.Cancel, null));
-        if (sheet.PopoverPresentationController is { } popover)
-        {
-            popover.SourceView = View!;
-            popover.SourceRect = new CGRect(View!.Bounds.Width - 44, 0, 44, 44);
-        }
+        UIKitFactory.AnchorActionSheet(sheet, View!, new CGRect(View!.Bounds.Width - 44, 0, 44, 44));
 
         PresentViewController(sheet, true, null);
     }
@@ -1356,30 +1566,62 @@ internal sealed class ConversationViewController : UIViewController
     /// <param name="animated">Whether native scrolling may animate when Reduce Motion permits it.</param>
     private void ScrollToLatest(bool animated)
     {
+        followsLatest = true;
         if (messages.Count == 0)
         {
             jumpToLatestButton.Hidden = true;
             return;
         }
 
-        if (messageDataSource.GetIndexPath(new NSString(messages[^1].StableId)) is { } latestPath)
+        // Auto-following must never yank the table out from under a touch: scrolling while a swipe or drag is
+        // in flight cancels that gesture, which silently broke swipe-to-reply in a busy thread.
+        if (table.Dragging || table.Tracking)
         {
-            table.ScrollToRow(
-                latestPath,
-                UITableViewScrollPosition.Bottom,
-                animated && AccessibilityExtensions.AccessibleAnimationDuration(0.25) > 0);
+            UpdateJumpToLatestVisibility();
+            return;
+        }
+
+        // Self-sizing rows report an estimated height until UIKit has actually measured them, so an animated
+        // scroll aims at an end that moves while it travels — which is how a long arriving message ended up
+        // half-hidden behind the composer. Two unanimated passes land on the settled end instead: the first
+        // forces the rows it passes to be measured, the second aims at what they turned out to be.
+        if (messageDataSource.GetIndexPath(new NSString(messages[^1].StableId)) is not { } latest)
+        {
+            return;
+        }
+
+        CGPoint from = table.ContentOffset;
+        table.LayoutIfNeeded();
+        table.ScrollToRow(latest, UITableViewScrollPosition.Bottom, false);
+        table.LayoutIfNeeded();
+        table.ScrollToRow(latest, UITableViewScrollPosition.Bottom, false);
+
+        // The exact destination is only known after those passes, so an animated request replays the journey
+        // from where it started rather than aiming at an estimate.
+        if (animated &&
+            AccessibilityExtensions.AccessibleAnimationDuration(0.25) > 0 &&
+            Math.Abs(from.Y - table.ContentOffset.Y) > 0.5)
+        {
+            CGPoint destination = table.ContentOffset;
+            table.SetContentOffset(from, false);
+            table.SetContentOffset(destination, true);
         }
 
         jumpToLatestButton.Hidden = true;
     }
 
     /// <summary>Shows Jump to Latest only while a person is intentionally reading older content.</summary>
-    private void UpdateJumpToLatestVisibility()
+    private void UpdateJumpToLatestVisibility() => jumpToLatestButton.Hidden = NearLatest;
+
+    /// <summary>Keeps the follow decision in a person's own hands: only their own scrolling changes it.</summary>
+    private void ThreadScrolled()
     {
-        bool nearLatest = messages.Count == 0 ||
-            table.ContentSize.Height <= table.Bounds.Height ||
-            table.ContentOffset.Y + table.Bounds.Height >= table.ContentSize.Height - 80;
-        jumpToLatestButton.Hidden = nearLatest;
+        if (table.Dragging || table.Decelerating)
+        {
+            followsLatest = NearLatest;
+        }
+
+        UpdateJumpToLatestVisibility();
     }
 
     /// <summary>Creates a readable empty-thread state that leaves the composer available.</summary>
@@ -1412,9 +1654,35 @@ internal sealed class ConversationViewController : UIViewController
     /// <param name="args">Unused event data.</param>
     private void OnChanged(object? sender, EventArgs args)
     {
-        bool nearLatest = table.ContentSize.Height <= table.Bounds.Height ||
-            table.ContentOffset.Y + table.Bounds.Height >= table.ContentSize.Height - 80;
-        ReloadMessages(nearLatest);
+        // Reloading the table closes an open swipe, so an arriving message would snap Reply shut before it
+        // could be pressed. The refresh waits until the swipe is resolved instead.
+        if (swipeOpen)
+        {
+            reloadDeferred = true;
+            return;
+        }
+
+        ReloadMessages(followsLatest);
+        store.MarkRead(username);
+    }
+
+    /// <summary>Reports whether the thread is already showing its newest message.</summary>
+    private bool NearLatest => messages.Count == 0 ||
+        table.ContentSize.Height <= table.Bounds.Height ||
+        table.ContentOffset.Y + table.Bounds.Height >= table.ContentSize.Height - 80;
+
+    /// <summary>Tracks a reply drag and flushes whatever arrived while a row was held under a finger.</summary>
+    /// <param name="open">Whether a row is currently being dragged.</param>
+    private void SetSwipeOpen(bool open)
+    {
+        swipeOpen = open;
+        if (open || !reloadDeferred)
+        {
+            return;
+        }
+
+        reloadDeferred = false;
+        ReloadMessages(followsLatest);
         store.MarkRead(username);
     }
 
@@ -1434,15 +1702,19 @@ internal sealed class ConversationViewController : UIViewController
     {
         var cell = tableView.DequeueReusableCell(MessageReuseIdentifier) as MessageBubbleCell ??
             new MessageBubbleCell(MessageReuseIdentifier);
-        if (messagesById.TryGetValue(identifier.ToString(), out PrivateMessageRow? message))
+        // A reused row must never keep the previous message's reply target, so the gesture is repointed
+        // even when the identifier no longer resolves after a concurrent snapshot.
+        bool resolved = messagesById.TryGetValue(identifier.ToString(), out PrivateMessageRow? message);
+        cell.ConfigureReply(resolved ? () => QuoteMessage(message!) : null, SetSwipeOpen);
+        if (resolved)
         {
-            cell.Configure(message, username);
+            cell.Configure(message!, username);
         }
 
         return cell;
     }
 
-    /// <summary>Forwards stable message activation and scrolling without owning row counts.</summary>
+    /// <summary>Forwards stable message activation, swipe actions, and scrolling without owning row counts.</summary>
     private sealed class MessageDelegate(
         Func<NSIndexPath, PrivateMessageRow?> getMessage,
         Action<PrivateMessageRow> select,
@@ -1466,6 +1738,14 @@ internal sealed class ConversationViewController : UIViewController
         public override void Scrolled(UIScrollView scrollView) => scrolled();
     }
 
+    /// <summary>Keeps the placeholder, height, and send control in step with what a person types.</summary>
+    /// <param name="owner">The presenting conversation controller.</param>
+    private sealed class ComposerTextViewDelegate(ConversationViewController owner) : UITextViewDelegate
+    {
+        /// <inheritdoc/>
+        public override void Changed(UITextView textView) => owner.ComposerChanged();
+    }
+
     /// <summary>Renders a self-sizing semantic bubble aligned by incoming or outgoing direction.</summary>
     private sealed class MessageBubbleCell : UITableViewCell
     {
@@ -1483,6 +1763,7 @@ internal sealed class ConversationViewController : UIViewController
         };
         private readonly NSLayoutConstraint leadingAlignment;
         private readonly NSLayoutConstraint trailingAlignment;
+        private readonly ReplySwipe replySwipe;
 
         /// <summary>Creates a reusable message bubble.</summary>
         /// <param name="reuseIdentifier">The table reuse identifier.</param>
@@ -1532,6 +1813,38 @@ internal sealed class ConversationViewController : UIViewController
             ]);
             IsAccessibilityElement = true;
             AccessibilityTraits = UIAccessibilityTrait.Button;
+
+            // The bubble carries the drag, not the content view, whose frame the table assigns directly.
+            replySwipe = new ReplySwipe(this, bubble);
+        }
+
+        /// <inheritdoc/>
+        public override void PrepareForReuse()
+        {
+            base.PrepareForReuse();
+            replySwipe.Reset();
+        }
+
+        /// <summary>Points the drag and its VoiceOver equivalent at the message this row currently shows.</summary>
+        /// <param name="reply">Quotes the current message into the composer, or null for a row with none.</param>
+        /// <param name="dragging">Receives whether a drag is in flight, so arriving messages hold their reload.</param>
+        public void ConfigureReply(Action? reply, Action<bool> dragging)
+        {
+            replySwipe.Configure(reply, dragging);
+
+            // A drag is invisible to VoiceOver, so the same intent is offered as a rotor action.
+            AccessibilityCustomActions = reply is null
+                ? []
+                :
+                [
+                    new UIAccessibilityCustomAction(
+                        AppStrings.Get("IosUiReply"),
+                        (UIAccessibilityCustomActionHandler)(_ =>
+                        {
+                            reply();
+                            return true;
+                        })),
+                ];
         }
 
         /// <summary>Applies one immutable row and flips only the directional alignment constraint.</summary>

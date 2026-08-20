@@ -45,6 +45,62 @@ internal static class UIKitFactory
         view.CornerConfiguration = UICornerConfiguration.CreateCapsule();
     }
 
+    /// <summary>The shared size of the circular conversation controls, which is also the touch-target minimum.</summary>
+    public const int CircularActionSize = 44;
+
+    /// <summary>The fixed glyph size for the circular conversation controls.</summary>
+    /// <remarks>
+    /// A button configuration scales its symbol with Dynamic Type, but these controls are pinned at 44 points,
+    /// so at accessibility sizes an unconstrained glyph grows past the circle and renders as a clipped sliver.
+    /// A fixed point size keeps it inside; the 44-point target already satisfies the touch minimum.
+    /// </remarks>
+    private static UIImageSymbolConfiguration CircularActionSymbol =>
+        UIImageSymbolConfiguration.Create(20, UIImageSymbolWeight.Semibold);
+
+    /// <summary>Creates one 44-point circular glyph control that carries its meaning through VoiceOver.</summary>
+    /// <param name="symbol">The SF Symbol glyph.</param>
+    /// <param name="label">The localized accessible name, since the control shows no text.</param>
+    /// <param name="action">The action invoked after explicit activation.</param>
+    /// <param name="filled">Whether this is the filled primary variant rather than the gray secondary one.</param>
+    /// <returns>A configured, self-constraining circular button.</returns>
+    public static UIButton CircularAction(string symbol, string label, Action action, bool filled = false)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+        var button = UIButton.FromType(UIButtonType.System);
+        UIButtonConfiguration configuration = filled
+            ? UIButtonConfiguration.FilledButtonConfiguration
+            : UIButtonConfiguration.GrayButtonConfiguration;
+        configuration.Image = UIImage.GetSystemImage(symbol);
+        configuration.PreferredSymbolConfigurationForImage = CircularActionSymbol;
+        configuration.CornerStyle = UIButtonConfigurationCornerStyle.Capsule;
+        configuration.ContentInsets = NSDirectionalEdgeInsets.Zero;
+        button.Configuration = configuration;
+        button.TranslatesAutoresizingMaskIntoConstraints = false;
+        button.AccessibilityLabel = label;
+        button.TouchUpInside += (_, _) => action();
+        NSLayoutConstraint.ActivateConstraints(
+        [
+            button.WidthAnchor.ConstraintEqualTo(CircularActionSize),
+            button.HeightAnchor.ConstraintEqualTo(CircularActionSize),
+        ]);
+        return button;
+    }
+
+    /// <summary>Applies the composer field's hairline separator border and keeps it correct across appearances.</summary>
+    /// <param name="view">The field container.</param>
+    /// <remarks>
+    /// A <c>CGColor</c> is a resolved value, not a dynamic color, so the border has to be re-resolved whenever
+    /// the interface style flips.
+    /// </remarks>
+    public static void ApplyComposerFieldBorder(UIView view)
+    {
+        ArgumentNullException.ThrowIfNull(view);
+        view.Layer.BorderWidth = (nfloat)0.5;
+        view.Layer.BorderColor = UIColor.Separator.GetResolvedColor(view.TraitCollection).CGColor;
+        view.RegisterForTraitChanges<UITraitUserInterfaceStyle>((_, _) =>
+            view.Layer.BorderColor = UIColor.Separator.GetResolvedColor(view.TraitCollection).CGColor);
+    }
+
     /// <summary>Anchors an action sheet only where a popover is the platform's own presentation.</summary>
     /// <param name="sheet">The action sheet about to be presented.</param>
     /// <param name="source">The view the popover points at on a regular width.</param>
@@ -66,6 +122,23 @@ internal static class UIKitFactory
 
         popover.SourceView = source;
         popover.SourceRect = sourceRect ?? source.Bounds;
+    }
+
+    /// <summary>The fixed corner radius shared by growing text wells: half the 44 pt resting control height.</summary>
+    public const int GrowingFieldCornerRadius = 22;
+
+    /// <summary>Applies the corner treatment for a text well that grows with its content.</summary>
+    /// <param name="view">The container to shape.</param>
+    /// <remarks>
+    /// A capsule tracks the measured height, so a field that grows past one line turns into a lozenge whose
+    /// half-circle ends overrun the text and steal usable width. Pinning the radius at the resting half-height
+    /// keeps a one-line field visually identical to a capsule while a grown field stays a calm rounded well.
+    /// </remarks>
+    public static void ApplyGrowingFieldCorners(UIView view)
+    {
+        ArgumentNullException.ThrowIfNull(view);
+        view.CornerConfiguration = UICornerConfiguration.CreateUniformCorners(
+            UICornerRadius.CreateFixed(GrowingFieldCornerRadius));
     }
 
     /// <summary>Creates a self-sizing label that follows Dynamic Type and semantic colors.</summary>

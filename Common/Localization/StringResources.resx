@@ -2686,6 +2686,10 @@ Any information about the steps / conditions leading up to the issue is much app
   <data name="IosUiSignInToContinue" xml:space="preserve"><value>Sign in to continue.</value></data>
   <data name="IosUiReconnectFailed" xml:space="preserve"><value>Could not reconnect.</value></data>
   <data name="IosUiMoreActions" xml:space="preserve"><value>More Actions</value></data>
+  <data name="IosUiReply" xml:space="preserve"><value>Reply</value></data>
+  <data name="IosUiRoomReplyQuote" xml:space="preserve"><value>&gt; {0} said: "{1}"</value></data>
+  <data name="IosUiRoomReplyAdded" xml:space="preserve"><value>Quoted {0} in the message field.</value></data>
+  <data name="IosUiYou" xml:space="preserve"><value>You</value></data>
   <data name="IosUiEdit" xml:space="preserve"><value>Edit</value></data>
   <data name="IosUiSelectedMessages" xml:space="preserve"><value>{0} conversations selected</value></data>
   <data name="IosUiDeleteSelectedConversations" xml:space="preserve"><value>Delete Selected Conversations</value></data>
