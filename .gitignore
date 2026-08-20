@@ -363,3 +363,6 @@ healthchecksdb
 !/Common/Debug/
 # macOS
 .DS_Store
+
+# .serena config
+.serena

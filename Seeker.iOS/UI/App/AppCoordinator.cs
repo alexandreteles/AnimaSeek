@@ -919,7 +919,8 @@ internal sealed class AppCoordinator : IAppRouter, IDisposable
     /// <remarks>
     /// Supported <c>ANIMASEEK_UI_ROUTE</c> values are home, search, transfers, browse, settings, account,
     /// privileges, messages, rooms, users, profile, about, legal, and diagnostics. <c>ANIMASEEK_UI_USER</c> supplies the Browse or
-    /// Profile identity and the private mock login identity. <c>ANIMASEEK_UI_QUERY</c> runs a search
+    /// Profile identity and the private mock login identity. <c>ANIMASEEK_UI_ROOM</c> opens one named
+    /// chatroom directly on the rooms route. <c>ANIMASEEK_UI_QUERY</c> runs a search
     /// immediately on the search route, so a simulator smoke can exercise the whole request-to-rows path
     /// without keyboard automation. This code is excluded from non-Mock assemblies.
     /// </remarks>
@@ -936,6 +937,12 @@ internal sealed class AppCoordinator : IAppRouter, IDisposable
         string requestedUser = Environment.GetEnvironmentVariable("ANIMASEEK_UI_USER")?.Trim() is { Length: > 0 } user
             ? user
             : "animaseek-preview";
+
+        // The room list reorders itself as unread counts arrive, so naming a room is the only way to land on
+        // one conversation repeatably.
+        string? requestedRoom = Environment.GetEnvironmentVariable("ANIMASEEK_UI_ROOM")?.Trim() is { Length: > 0 } room
+            ? room
+            : null;
         AppRoute? route = requestedName switch
         {
             "home" => new AppRoute.SelectTab(AppTab.Home),
@@ -946,7 +953,7 @@ internal sealed class AppCoordinator : IAppRouter, IDisposable
             "account" => new AppRoute.Account(),
             "privileges" => new AppRoute.Privileges(),
             "messages" => new AppRoute.Messages(),
-            "rooms" => new AppRoute.Chatrooms(),
+            "rooms" => new AppRoute.Chatrooms(requestedRoom),
             "users" => new AppRoute.Users(),
             "profile" => new AppRoute.UserProfile(requestedUser),
             "about" => new AppRoute.About(),

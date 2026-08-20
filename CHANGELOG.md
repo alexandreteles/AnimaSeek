@@ -10,6 +10,7 @@
 - Fixed the keyboard being impossible to put away without sending: a tap anywhere on the conversation now dismisses it and restores the full message history. With the keyboard down, tapping a message still opens its actions.
 - Enabled both send controls only for a reachable conversation with a non-empty draft, and returned focus to the composer after a send so the keyboard survives a conversation.
 - Fixed the conversation send and jump-to-latest glyphs rendering as clipped slivers at accessibility text sizes.
+- Added `ANIMASEEK_UI_ROOM` to the Debug Mock launch harness so one named chatroom can be opened directly for repeatable simulator inspection.
 - Pointed the About screen's source-code link at the renamed `alexandreteles/AnimaSeek` repository.
 - Consolidated CI into a single workflow: an Ubuntu test matrix (portable core and Soulseek AOT regression suites) gates the sole strict `Debug Mock` macOS build, the on-simulator filesystem harness became local-only, and every bundled-license check was removed from CI.
 - Simplified tagged releases to a single stable channel: removed the beta channel, prerelease flag, IPA license injection, notice verification, and legal boilerplate from release notes and AltStore metadata, which now carry a plain product description.

@@ -95,10 +95,14 @@ xcrun simctl spawn booted log stream \
   --predicate 'process == "AnimaSeek"'
 ```
 
-The root controller is the production four-tab UIKit shell. `Debug Mock` can open a destination directly for repeatable simulator inspection by passing `ANIMASEEK_UI_ROUTE` with one of `home`, `search`, `transfers`, `browse`, `settings`, `account`, `privileges`, `messages`, `rooms`, `users`, `profile`, `about`, `legal`, or `diagnostics`; `ANIMASEEK_UI_USER` supplies the Browse/Profile subject. For example:
+The root controller is the production four-tab UIKit shell. `Debug Mock` can open a destination directly for repeatable simulator inspection by passing `ANIMASEEK_UI_ROUTE` with one of `home`, `search`, `transfers`, `browse`, `settings`, `account`, `privileges`, `messages`, `rooms`, `users`, `profile`, `about`, `legal`, or `diagnostics`; `ANIMASEEK_UI_USER` supplies the Browse/Profile subject, and `ANIMASEEK_UI_ROOM` opens one named chatroom directly on the `rooms` route — the room list reorders itself as unread counts arrive, so naming the room is the only way to land on one conversation repeatably. For example:
 
 ```sh
 SIMCTL_CHILD_ANIMASEEK_UI_ROUTE=search \
+  xcrun simctl launch --terminate-running-process booted com.animaseek.app
+
+SIMCTL_CHILD_ANIMASEEK_UI_ROUTE=rooms \
+  SIMCTL_CHILD_ANIMASEEK_UI_ROOM=test_owned \
   xcrun simctl launch --terminate-running-process booted com.animaseek.app
 ```
 
