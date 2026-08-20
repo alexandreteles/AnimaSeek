@@ -187,7 +187,7 @@ internal sealed class RoomUsersViewController : UITableViewController, IUISearch
         }
 
         sheet.AddAction(UIAlertAction.Create(AppStrings.Get("IosUiCancel"), UIAlertActionStyle.Cancel, null));
-        AnchorSheet(sheet);
+        UIKitFactory.AnchorActionSheet(sheet, TableView);
         PresentViewController(sheet, true, null);
     }
 
@@ -236,7 +236,7 @@ internal sealed class RoomUsersViewController : UITableViewController, IUISearch
                 ReloadUsers();
             }));
         sheet.AddAction(UIAlertAction.Create(AppStrings.Get("IosUiCancel"), UIAlertActionStyle.Cancel, null));
-        AnchorSheet(sheet);
+        UIKitFactory.AnchorActionSheet(sheet, TableView);
         PresentViewController(sheet, true, null);
     }
 
@@ -326,17 +326,6 @@ internal sealed class RoomUsersViewController : UITableViewController, IUISearch
                 AppStrings.Get("IosUiNoRoomUsers"),
                 string.IsNullOrWhiteSpace(query) ? null : AppStrings.Get("IosUiNoRoomsMatch"),
                 "person.2.slash"));
-        }
-    }
-
-    /// <summary>Anchors the user action sheet on iPad.</summary>
-    /// <param name="sheet">The sheet to anchor.</param>
-    private void AnchorSheet(UIAlertController sheet)
-    {
-        if (sheet.PopoverPresentationController is { } popover)
-        {
-            popover.SourceView = TableView;
-            popover.SourceRect = TableView.Bounds;
         }
     }
 

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Fixed the chatroom, room-user, and private-message action sheets rendering as a clipped bubble squeezed against the bottom of the screen: iOS 26 honors a popover anchor on a compact iPhone, so those widths now take the system's own full-width sheet and only regular widths anchor, through one shared helper.
 - Pointed the About screen's source-code link at the renamed `alexandreteles/AnimaSeek` repository.
 - Consolidated CI into a single workflow: an Ubuntu test matrix (portable core and Soulseek AOT regression suites) gates the sole strict `Debug Mock` macOS build, the on-simulator filesystem harness became local-only, and every bundled-license check was removed from CI.
 - Simplified tagged releases to a single stable channel: removed the beta channel, prerelease flag, IPA license injection, notice verification, and legal boilerplate from release notes and AltStore metadata, which now carry a plain product description.

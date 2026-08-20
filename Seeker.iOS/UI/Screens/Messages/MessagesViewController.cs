@@ -481,11 +481,10 @@ internal sealed class MessagesViewController : UITableViewController, IAppRouteR
             UIAlertActionStyle.Default,
             _ => router.Navigate(new AppRoute.Search(Target: SearchRouteTarget.User, Subject: username))));
         sheet.AddAction(UIAlertAction.Create(AppStrings.Get("IosUiCancel"), UIAlertActionStyle.Cancel, null));
-        if (sheet.PopoverPresentationController is { } popover)
-        {
-            popover.SourceView = View!;
-            popover.SourceRect = new CGRect(View!.Bounds.GetMidX(), View.Bounds.Height - 44, 1, 1);
-        }
+        UIKitFactory.AnchorActionSheet(
+            sheet,
+            View!,
+            new CGRect(View!.Bounds.GetMidX(), View.Bounds.Height - 44, 1, 1));
 
         PresentViewController(sheet, true, null);
     }

@@ -383,7 +383,7 @@ internal sealed class RoomViewController : UIViewController
         }
 
         sheet.AddAction(UIAlertAction.Create(AppStrings.Get("IosUiCancel"), UIAlertActionStyle.Cancel, null));
-        AnchorSheet(sheet, table);
+        UIKitFactory.AnchorActionSheet(sheet, table);
         PresentViewController(sheet, true, null);
     }
 
@@ -408,7 +408,7 @@ internal sealed class RoomViewController : UIViewController
             UIAlertControllerStyle.ActionSheet);
         AddUserActions(sheet, activity.Username);
         sheet.AddAction(UIAlertAction.Create(AppStrings.Get("IosUiCancel"), UIAlertActionStyle.Cancel, null));
-        AnchorSheet(sheet, table);
+        UIKitFactory.AnchorActionSheet(sheet, table);
         PresentViewController(sheet, true, null);
     }
 
@@ -503,7 +503,7 @@ internal sealed class RoomViewController : UIViewController
         }
 
         sheet.AddAction(UIAlertAction.Create(AppStrings.Get("IosUiCancel"), UIAlertActionStyle.Cancel, null));
-        AnchorSheet(sheet, View!);
+        UIKitFactory.AnchorActionSheet(sheet, View!);
         PresentViewController(sheet, true, null);
     }
 
@@ -789,18 +789,6 @@ internal sealed class RoomViewController : UIViewController
             _ => "IosUiRoomUserOffline",
         },
         activity.Username);
-
-    /// <summary>Anchors an action sheet safely on iPad.</summary>
-    /// <param name="sheet">The action sheet.</param>
-    /// <param name="source">The source view.</param>
-    private static void AnchorSheet(UIAlertController sheet, UIView source)
-    {
-        if (sheet.PopoverPresentationController is { } popover)
-        {
-            popover.SourceView = source;
-            popover.SourceRect = source.Bounds;
-        }
-    }
 
     /// <summary>Provides self-sizing, link-aware message rows and textual member-activity rows.</summary>
     private sealed class TimelineSource(

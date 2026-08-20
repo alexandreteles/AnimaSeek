@@ -45,6 +45,29 @@ internal static class UIKitFactory
         view.CornerConfiguration = UICornerConfiguration.CreateCapsule();
     }
 
+    /// <summary>Anchors an action sheet only where a popover is the platform's own presentation.</summary>
+    /// <param name="sheet">The action sheet about to be presented.</param>
+    /// <param name="source">The view the popover points at on a regular width.</param>
+    /// <param name="sourceRect">The anchor rectangle, or the source's own bounds when omitted.</param>
+    /// <remarks>
+    /// iOS 26 honors a popover anchor on a compact iPhone too, so an anchor there turns the system's full-width
+    /// sheet into a bubble squeezed against the anchor with its actions clipped. Compact widths therefore leave
+    /// <c>SourceView</c> unset; a regular width still needs a source, which is what an anchor is actually for.
+    /// </remarks>
+    public static void AnchorActionSheet(UIAlertController sheet, UIView source, CGRect? sourceRect = null)
+    {
+        ArgumentNullException.ThrowIfNull(sheet);
+        ArgumentNullException.ThrowIfNull(source);
+        if (source.TraitCollection.HorizontalSizeClass != UIUserInterfaceSizeClass.Regular ||
+            sheet.PopoverPresentationController is not { } popover)
+        {
+            return;
+        }
+
+        popover.SourceView = source;
+        popover.SourceRect = sourceRect ?? source.Bounds;
+    }
+
     /// <summary>Creates a self-sizing label that follows Dynamic Type and semantic colors.</summary>
     /// <param name="style">The preferred system text style.</param>
     /// <param name="color">The semantic text color, or <see cref="UIColor.Label"/> when omitted.</param>
