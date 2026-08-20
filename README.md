@@ -64,7 +64,7 @@ gh attestation verify animaseek_vX.Y.Z_unsigned.ipa \
 
 A successful verification proves that the file's contents match an artifact built for this repository by GitHub Actions. A modified or independently rebuilt IPA will not match the signed attestation. Provenance establishes origin and integrity; it does not replace reviewing the source code or deciding whether you trust it. The [v1.1.0 release](https://github.com/alexandreteles/AnimaSeek/releases/tag/v1.1.0) is an example with its SBOM, SLSA provenance, attestations, and build information available for inspection.
 
-In the future, I expect to add more transparent supply-chain checks directly to the public build workflow. Planned work includes integrating [Package Manager Guard (`pmg`)](https://github.com/safedep/pmg) to screen package installations for known malicious packages and apply a dependency-cooldown policy to newly published versions, alongside other defense-in-depth techniques intended to protect users. Any checks I add will be visible in the workflow so their scope and results can be independently inspected.
+In the future, I expect to add more transparent supply-chain checks directly to the public build workflow. Any checks I add will be visible in the workflow so their scope and results can be independently inspected.
 
 ---
 
